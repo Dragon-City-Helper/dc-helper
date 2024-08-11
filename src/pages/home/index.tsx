@@ -1,7 +1,7 @@
 import DragonsTable from "@/components/DragonsTable";
 import { IDragonSimple } from "@/types/Dragon";
 import fetchDragons from "@/utils/fetchDragons";
-import fetchOwned from "@/utils/fetchOwned";
+import { fetchOwned, postOwned } from "@/utils/manageOwned";
 import { useCallback, useEffect, useMemo, useState } from "react";
 
 export async function getServerSideProps() {
@@ -33,7 +33,6 @@ export default function Page({
     useState<IDragonSimple[]>(dragons);
   const [search, setSearch] = useState<string>("");
   const ownedIdsMap = useMemo(() => {
-    console.log(owned);
     return owned.reduce((acc, curr) => {
       acc.set(curr, true);
       return acc;
@@ -41,10 +40,17 @@ export default function Page({
   }, [owned]);
 
   const onOwned = (dragon: IDragonSimple, checked: boolean) => {
-    if (checked) {
-      setOwned([...owned, dragon.id]);
-    } else {
-      setOwned(owned.filter((id) => id != dragon.id));
+    try {
+      let newOwned = owned;
+      if (checked) {
+        newOwned = [...owned, dragon.id];
+      } else {
+        newOwned = owned.filter((id) => id != dragon.id);
+      }
+      postOwned(newOwned);
+      setOwned(newOwned);
+    } catch (error) {
+      console.log(error);
     }
   };
 

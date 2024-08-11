@@ -1,7 +1,7 @@
 import TopDragonsCard from "@/components/TopDragonsCard";
 import { IDragonSimple, rarities, Rarity } from "@/types/Dragon";
 import fetchDragons from "@/utils/fetchDragons";
-import fetchOwned from "@/utils/fetchOwned";
+import { fetchOwned } from "@/utils/manageOwned";
 import { useMemo } from "react";
 
 export async function getServerSideProps() {
