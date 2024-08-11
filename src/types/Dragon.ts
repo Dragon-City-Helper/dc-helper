@@ -7,7 +7,15 @@ export enum Rarity {
   "V" = "Very Rare",
   "E" = "Epic",
 }
-export const rarities: (keyof typeof Rarity)[] = ["H", "M", "L", "E", "V", "R", "C"];
+export const rarities: (keyof typeof Rarity)[] = [
+  "H",
+  "M",
+  "L",
+  "E",
+  "V",
+  "R",
+  "C",
+];
 
 export enum Elements {
   "pu" = "Pure",
@@ -69,6 +77,7 @@ export interface IDragon {
   familyName: string;
   breedable: boolean;
   elements: Elements[];
+  image: string;
 }
 
 export interface IDragonSimple {
@@ -82,4 +91,6 @@ export interface IDragonSimple {
   familyName: string;
   breedable: boolean;
   elements: Elements[];
+  image: string;
+  thumbnail: string;
 }

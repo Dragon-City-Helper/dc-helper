@@ -80,15 +80,15 @@ export default function Page({
     <div className="flex flex-row w-100 h-100 overflow-auto">
       <div className="flex-1 m-6">
         <div>
-          Search
-          <div>
+          <label>
+            <p>Search</p>
             <input
               type="text"
-              className="grow"
+              className="input input-bordered"
               placeholder="Search by name"
               onChange={onSearchChange}
             />
-          </div>
+          </label>
         </div>
         <DragonsTable
           dragons={filteredDragons}

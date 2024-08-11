@@ -1,4 +1,5 @@
 import { IDragonSimple } from "@/types/Dragon";
+import Image from "next/image";
 import { FC } from "react";
 
 interface IDragonsTableProps {
@@ -6,34 +7,30 @@ interface IDragonsTableProps {
   viewOnly?: boolean;
   onOwned?: (dragon: IDragonSimple, checked: boolean) => void;
   ownedIdsMap: Map<number, boolean>;
-  compact?: boolean;
 }
 const DragonsTable: FC<IDragonsTableProps> = ({
   dragons,
   viewOnly = false,
   onOwned,
   ownedIdsMap,
-  compact = true,
 }) => {
   return (
     <table className="table">
       {/* head */}
       <thead>
         <tr>
-          <th>Owned ?</th>
-          {!compact && <th>Id</th>}
+          {!viewOnly && onOwned && <th>Owned ?</th>}
           <th>Name</th>
           <th>rank</th>
           <th>rarity</th>
-          {!compact && <th>breedable</th>}
         </tr>
       </thead>
       <tbody>
         {dragons.map((dragon: IDragonSimple) => {
           return (
             <tr key={dragon.id}>
-              <td>
-                {!viewOnly && onOwned ? (
+              {!viewOnly && onOwned && (
+                <td>
                   <label>
                     <input
                       type="checkbox"
@@ -44,16 +41,19 @@ const DragonsTable: FC<IDragonsTableProps> = ({
                       }
                     />
                   </label>
-                ) : (
-                  <p>{ownedIdsMap.has(dragon.id) ? "Yes" : "No"}</p>
-                )}
+                </td>
+              )}
+              <td className="flex flex-row gap-2 items-center">
+                <Image
+                  src={dragon.image}
+                  alt={dragon.name}
+                  width={72}
+                  height={72}
+                ></Image>
+                <div>{dragon.name}</div>
               </td>
-
-              {!compact && <td>{dragon.id}</td>}
-              <td>{dragon.name}</td>
               <td>{dragon.globalRank}</td>
               <td>{dragon.rarity}</td>
-              {!compact && <td>{dragon.breedable ? "Yes" : "No"}</td>}
             </tr>
           );
         })}

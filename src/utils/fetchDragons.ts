@@ -34,8 +34,32 @@ const fetchDragons = async ({
       },
     }
   );
+  const getImageUrl = ({
+    image,
+    isThumbnail,
+  }: {
+    image: string;
+    isThumbnail: boolean;
+  }) => {
+    // https://dci-static-s1.socialpointgames.com/static/dragoncity/mobile/ui/dragons/HD/thumb_2607_dragon_hexedvampire_3.png
+    const host =
+      "https://dci-static-s1.socialpointgames.com/static/dragoncity/mobile/ui";
+    if (isThumbnail) {
+      return `${host}/${image.replace("/ui_", "/HD/thumb_")}_3.png`;
+    }
+    return `${host}/${image}_3@2x.png`;
+  };
   const dragonsSimple: IDragonSimple[] = (data.items as IDragon[]).map(
-    ({ name, id, rank, rarity, familyName, breedable, elements }: IDragon) => ({
+    ({
+      name,
+      id,
+      rank,
+      rarity,
+      familyName,
+      breedable,
+      elements,
+      image,
+    }: IDragon) => ({
       name,
       id,
       ...rank,
@@ -43,6 +67,8 @@ const fetchDragons = async ({
       familyName,
       breedable,
       elements,
+      image: getImageUrl({ image, isThumbnail: false }),
+      thumbnail: getImageUrl({ image, isThumbnail: true }),
     })
   );
   kv.set("dragonsSimple", dragonsSimple);

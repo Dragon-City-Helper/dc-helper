@@ -9,6 +9,15 @@ const nextConfig = {
       },
     ];
   },
+  images: {
+    remotePatterns: [
+      {
+        protocol: "https",
+        hostname: "dci-static-s1.socialpointgames.com",
+        port: "",
+      },
+    ],
+  },
 };
 
 export default nextConfig;

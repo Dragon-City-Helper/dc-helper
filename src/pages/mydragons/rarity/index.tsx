@@ -2,7 +2,7 @@ import TopDragonsCard from "@/components/TopDragonsCard";
 import { IDragonSimple, rarities, Rarity } from "@/types/Dragon";
 import fetchDragons from "@/utils/fetchDragons";
 import { fetchOwned } from "@/utils/manageOwned";
-import { useMemo } from "react";
+import { useCallback, useMemo } from "react";
 
 export async function getServerSideProps() {
   try {
@@ -34,17 +34,43 @@ export default function Page({
     }, new Map<number, boolean>());
   }, [ownedIds]);
 
+  const getTotalRarityDragons = useCallback(
+    (rarity: Rarity) => {
+      return dragons.filter((dragon) => dragon.rarity === rarity).length;
+    },
+    [dragons]
+  );
+  const getTotalRarityDragonsOwned = useCallback(
+    (rarity: Rarity) => {
+      return dragons.filter(
+        (dragon) => dragon.rarity === rarity && ownedIdsMap.has(dragon.id)
+      ).length;
+    },
+    [dragons, ownedIdsMap]
+  );
   return (
-    <div className="flex vw-100 vh-100 flex-wrap gap-4">
-      {rarities.map((rarity) => (
-        <TopDragonsCard
-          key={rarity}
-          title={`My Top ${Rarity[rarity]} Dragons`}
-          dragons={dragons}
-          ownedIdsMap={ownedIdsMap}
-          options={{ owned: true, size: 10, rarity }}
-        />
-      ))}
+    <div className="flex flex-col gap-6">
+      <div className="stats stats-vertical lg:stats-horizontal shadow">
+        {rarities.map((rarity) => (
+          <div className="stat" key={`stat-${rarity}`}>
+            <div className="stat-title">{`Total ${Rarity[rarity]} Dragons`}</div>
+            <div className="stat-value">{`${getTotalRarityDragonsOwned(
+              rarity as Rarity
+            )}/${getTotalRarityDragons(rarity as Rarity)}`}</div>
+          </div>
+        ))}
+      </div>
+      <div className="flex flex-wrap gap-4">
+        {rarities.map((rarity) => (
+          <TopDragonsCard
+            key={`card-${rarity}`}
+            title={`My Top ${Rarity[rarity]} Dragons`}
+            dragons={dragons}
+            ownedIdsMap={ownedIdsMap}
+            options={{ owned: true, size: 5, rarity }}
+          />
+        ))}
+      </div>
     </div>
   );
 }

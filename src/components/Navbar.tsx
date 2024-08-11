@@ -44,25 +44,19 @@ const NavBar: FC = () => {
         </div>
         <a className="btn btn-ghost text-xl">DC Helper</a>
       </div>
-      <div className="navbar-center hidden lg:flex">
+      <div className="navbar-end hidden lg:flex">
         <ul className="menu menu-horizontal px-1">
           <li>
             <Link href="/home">Home</Link>
           </li>
           <li>
-            <details>
-              <summary>
-                <Link href="/mydragons">My Top Dragons</Link>
-              </summary>
-              <ul className="p-2">
-                <li>
-                  <Link href="/mydragons/rarity">By Rarity</Link>
-                </li>
-                <li>
-                  <Link href="/mydragons/elements">By Element</Link>
-                </li>
-              </ul>
-            </details>
+            <Link href="/mydragons">My Top Dragons</Link>
+          </li>
+          <li>
+            <Link href="/mydragons/rarity">By Rarity</Link>
+          </li>
+          <li>
+            <Link href="/mydragons/elements">By Element</Link>
           </li>
         </ul>
       </div>

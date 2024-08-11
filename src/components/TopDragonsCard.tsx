@@ -25,16 +25,22 @@ const TopDragonsCard: FC<ITopDragonsCard> = ({
   const filteredDragons = useMemo(() => {
     const dragonsFilter = dragons
       .filter((dragon) => {
-        const OwnedFilterMatcher = options.owned
-          ? ownedIdsMap.has(dragon.id)
-          : true;
-        const BreedableMatcher = options.breedable ? dragon.breedable : true;
-        const RarityMatcher = options.rarity
-          ? (options.rarity as Rarity) === dragon.rarity
-          : true;
-        const ElementsMatcher = options.element
-          ? dragon.elements.includes(options.element as Elements)
-          : true;
+        const OwnedFilterMatcher =
+          options.owned !== undefined
+            ? ownedIdsMap.has(dragon.id) === options.owned
+            : true;
+        const BreedableMatcher =
+          options.breedable !== undefined
+            ? dragon.breedable === options.breedable
+            : true;
+        const RarityMatcher =
+          options.rarity !== undefined
+            ? (options.rarity as Rarity) === dragon.rarity
+            : true;
+        const ElementsMatcher =
+          options.element !== undefined
+            ? dragon.elements.includes(options.element as Elements)
+            : true;
         return (
           OwnedFilterMatcher &&
           BreedableMatcher &&
