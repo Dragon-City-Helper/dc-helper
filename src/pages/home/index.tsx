@@ -94,7 +94,6 @@ export default function Page({
           dragons={filteredDragons}
           onOwned={onOwned}
           ownedIdsMap={ownedIdsMap}
-          compact={false}
         ></DragonsTable>
       </div>
     </div>

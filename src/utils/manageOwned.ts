@@ -2,8 +2,7 @@ import { kv } from "@vercel/kv";
 import axios from "axios";
 
 export const fetchOwned = async () => {
-  const ownedIdsFromSource = await kv.get<number[]>("ownedIds");
-  return ownedIdsFromSource;
+  return await kv.get<number[]>("ownedIds");
 };
 
 export const setOwnedIds = async (ownedIds: number[]) => {

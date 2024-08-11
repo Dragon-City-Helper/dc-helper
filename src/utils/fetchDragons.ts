@@ -41,7 +41,6 @@ const fetchDragons = async ({
     image: string;
     isThumbnail: boolean;
   }) => {
-    // https://dci-static-s1.socialpointgames.com/static/dragoncity/mobile/ui/dragons/HD/thumb_2607_dragon_hexedvampire_3.png
     const host =
       "https://dci-static-s1.socialpointgames.com/static/dragoncity/mobile/ui";
     if (isThumbnail) {

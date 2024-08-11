@@ -21,8 +21,9 @@ const DragonsTable: FC<IDragonsTableProps> = ({
         <tr>
           {!viewOnly && onOwned && <th>Owned ?</th>}
           <th>Name</th>
-          <th>rank</th>
-          <th>rarity</th>
+          <th>Rank</th>
+          <th>Rarity</th>
+          <th>Elements</th>
         </tr>
       </thead>
       <tbody>
@@ -47,13 +48,31 @@ const DragonsTable: FC<IDragonsTableProps> = ({
                 <Image
                   src={dragon.image}
                   alt={dragon.name}
-                  width={72}
-                  height={72}
-                ></Image>
+                  width={100}
+                  height={100}
+                />
                 <div>{dragon.name}</div>
               </td>
               <td>{dragon.globalRank}</td>
-              <td>{dragon.rarity}</td>
+              <td>
+                <Image
+                  src={`/images/rarity/${dragon.rarity}.png`}
+                  alt={dragon.rarity}
+                  width={64}
+                  height={64}
+                />
+              </td>
+              <td className="flex flex-row gap-2 items-center">
+                {dragon.elements.map((element, index) => (
+                  <Image
+                    key={`${dragon.id}-${element}-${index}`}
+                    src={`/images/elements/${element}.png`}
+                    alt={element}
+                    width={36}
+                    height={76}
+                  />
+                ))}
+              </td>
             </tr>
           );
         })}
