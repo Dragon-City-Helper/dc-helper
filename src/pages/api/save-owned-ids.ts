@@ -2,7 +2,8 @@ import { setOwnedIds } from "@/utils/manageOwned";
 import type { NextApiRequest, NextApiResponse } from "next";
 
 type ResponseData = {
-  ownedIds: number[];
+  ownedIds?: number[];
+  message?: string;
 };
 
 export default function handler(
@@ -15,7 +16,7 @@ export default function handler(
       setOwnedIds(ownedIds);
       res.status(200).json({ ownedIds });
     } catch (error) {
-      res.status(501);
+      res.status(500).json({ message: "Internal server error" });
     }
   } else {
     res.status(405);

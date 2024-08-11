@@ -1,5 +1,6 @@
 import { IDragon, IDragonSimple } from "@/types/Dragon";
 import axios from "axios";
+import { kv } from "@vercel/kv";
 
 const fetchDragons = async ({
   dragonName = "",
@@ -11,6 +12,10 @@ const fetchDragons = async ({
   breedable = null,
   animation = null,
 }) => {
+  const dragons = await kv.get("dragonsSimple");
+  if (dragons) {
+    return dragons;
+  }
   const { data } = await axios.post(
     "https://www.ditlep.com/Dragon/Search",
     {
@@ -29,7 +34,7 @@ const fetchDragons = async ({
       },
     }
   );
-  const dragons: IDragonSimple[] = (data.items as IDragon[]).map(
+  const dragonsSimple: IDragonSimple[] = (data.items as IDragon[]).map(
     ({ name, id, rank, rarity, familyName, breedable, elements }: IDragon) => ({
       name,
       id,
@@ -40,7 +45,8 @@ const fetchDragons = async ({
       elements,
     })
   );
-  return dragons;
+  kv.set("dragonsSimple", dragonsSimple);
+  return dragonsSimple;
 };
 
 export default fetchDragons;
