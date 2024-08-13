@@ -7,12 +7,14 @@ interface IDragonsTableProps {
   viewOnly?: boolean;
   onOwned?: (dragon: dragons, checked: boolean) => void;
   ownedIdsMap: Map<number, boolean>;
+  loading?: boolean | number;
 }
 const DragonsTable: FC<IDragonsTableProps> = ({
   dragons,
   viewOnly = false,
   onOwned,
   ownedIdsMap,
+  loading,
 }) => {
   return (
     <table className="table">
@@ -29,19 +31,23 @@ const DragonsTable: FC<IDragonsTableProps> = ({
       <tbody>
         {dragons.map((dragon: dragons) => {
           return (
-            <tr key={dragon.id}>
+            <tr key={dragon.dragonId}>
               {!viewOnly && onOwned && (
                 <td>
-                  <label>
-                    <input
-                      type="checkbox"
-                      className="checkbox"
-                      checked={ownedIdsMap.has(dragon.dragonId)}
-                      onChange={() =>
-                        onOwned(dragon, !ownedIdsMap.get(dragon.dragonId))
-                      }
-                    />
-                  </label>
+                  {loading === true || loading === dragon.dragonId ? (
+                    <span className="loading loading-spinner loading-md"></span>
+                  ) : (
+                    <label>
+                      <input
+                        type="checkbox"
+                        className="checkbox"
+                        checked={ownedIdsMap.has(dragon.dragonId)}
+                        onChange={() =>
+                          onOwned(dragon, !ownedIdsMap.get(dragon.dragonId))
+                        }
+                      />
+                    </label>
+                  )}
                 </td>
               )}
               <td className="flex flex-row gap-2 items-center">

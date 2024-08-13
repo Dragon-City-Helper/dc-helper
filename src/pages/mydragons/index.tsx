@@ -21,9 +21,14 @@ export async function getStaticProps() {
 
 export default function Page({ dragons }: { dragons: dragons[] }) {
   const [ownedIds, setOwned] = useState<number[]>([]);
+  const [loading, setLoading] = useState<boolean>(false);
 
   useEffect(() => {
-    getOwned().then((res) => setOwned(res.data.ids));
+    setLoading(true);
+    getOwned().then((res) => {
+      setOwned(res.data.ids);
+      setLoading(false);
+    });
   }, []);
 
   const ownedIdsMap = useMemo(() => {
@@ -48,34 +53,53 @@ export default function Page({ dragons }: { dragons: dragons[] }) {
         <div className="stat">
           <div className="stat-title">Total</div>
           <div className="stat-value">
-            {ownedIds.length}/{dragons.length}
+            {loading ? (
+              <span className="loading loading-spinner loading-md"></span>
+            ) : (
+              ownedIds.length
+            )}
+            /{dragons.length}
           </div>
         </div>
 
         <div className="stat">
           <div className="stat-title">Total Below 100</div>
-          <div className="stat-value">{totalOwnedBelowX(100)}</div>
+          <div className="stat-value">
+            {loading ? (
+              <span className="loading loading-spinner loading-md"></span>
+            ) : (
+              totalOwnedBelowX(100)
+            )}
+          </div>
         </div>
 
         <div className="stat">
           <div className="stat-title">Total Below 500</div>
-          <div className="stat-value">{totalOwnedBelowX(500)}</div>
+          <div className="stat-value">
+            {loading ? (
+              <span className="loading loading-spinner loading-md"></span>
+            ) : (
+              totalOwnedBelowX(500)
+            )}
+          </div>
         </div>
       </div>
-      <div className="flex flex-wrap gap-4">
-        <TopDragonsCard
-          title="My Top Dragons"
-          dragons={dragons}
-          ownedIdsMap={ownedIdsMap}
-          options={{ owned: true, size: 13 }}
-        />
-        <TopDragonsCard
-          title=" Top Dragons to breed"
-          dragons={dragons}
-          ownedIdsMap={ownedIdsMap}
-          options={{ owned: false, breedable: true, size: 13 }}
-        />
-      </div>
+      {ownedIds.length > 0 && (
+        <div className="flex flex-wrap gap-4">
+          <TopDragonsCard
+            title="My Top Dragons"
+            dragons={dragons}
+            ownedIdsMap={ownedIdsMap}
+            options={{ owned: true, size: 13 }}
+          />
+          <TopDragonsCard
+            title=" Top Dragons to breed"
+            dragons={dragons}
+            ownedIdsMap={ownedIdsMap}
+            options={{ owned: false, breedable: true, size: 13 }}
+          />
+        </div>
+      )}
     </div>
   );
 }

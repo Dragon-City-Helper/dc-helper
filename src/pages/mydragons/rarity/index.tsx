@@ -22,9 +22,14 @@ export async function getStaticProps() {
 
 export default function Page({ dragons }: { dragons: dragons[] }) {
   const [ownedIds, setOwned] = useState<number[]>([]);
+  const [loading, setLoading] = useState<boolean>(false);
 
   useEffect(() => {
-    getOwned().then((res) => setOwned(res.data.ids));
+    setLoading(true);
+    getOwned().then((res) => {
+      setOwned(res.data.ids);
+      setLoading(false);
+    });
   }, []);
 
   const ownedIdsMap = useMemo(() => {
@@ -54,23 +59,30 @@ export default function Page({ dragons }: { dragons: dragons[] }) {
         {rarities.map((rarity) => (
           <div className="stat" key={`stat-${rarity}`}>
             <div className="stat-title">{`Total ${RarityNames[rarity]} Dragons`}</div>
-            <div className="stat-value">{`${getTotalRarityDragonsOwned(
-              rarity as Rarity
-            )}/${getTotalRarityDragons(rarity)}`}</div>
+            <div className="stat-value">
+              {loading ? (
+                <span className="loading loading-spinner loading-md"></span>
+              ) : (
+                getTotalRarityDragonsOwned(rarity)
+              )}
+              /{getTotalRarityDragons(rarity)}
+            </div>
           </div>
         ))}
       </div>
-      <div className="flex flex-wrap gap-4">
-        {rarities.map((rarity) => (
-          <TopDragonsCard
-            key={`card-${rarity}`}
-            title={`My Top ${RarityNames[rarity]} Dragons`}
-            dragons={dragons}
-            ownedIdsMap={ownedIdsMap}
-            options={{ owned: true, size: 5, rarity }}
-          />
-        ))}
-      </div>
+      {ownedIds.length > 0 && (
+        <div className="flex flex-wrap gap-4">
+          {rarities.map((rarity) => (
+            <TopDragonsCard
+              key={`card-${rarity}`}
+              title={`My Top ${RarityNames[rarity]} Dragons`}
+              dragons={dragons}
+              ownedIdsMap={ownedIdsMap}
+              options={{ owned: true, size: 5, rarity }}
+            />
+          ))}
+        </div>
+      )}
     </div>
   );
 }

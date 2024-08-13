@@ -22,9 +22,14 @@ export async function getStaticProps() {
 
 export default function Page({ dragons }: { dragons: dragons[] }) {
   const [ownedIds, setOwned] = useState<number[]>([]);
+  const [loading, setLoading] = useState<boolean>(false);
 
   useEffect(() => {
-    getOwned().then((res) => setOwned(res.data.ids));
+    setLoading(true);
+    getOwned().then((res) => {
+      setOwned(res.data.ids);
+      setLoading(false);
+    });
   }, []);
 
   const ownedIdsMap = useMemo(() => {
@@ -58,9 +63,14 @@ export default function Page({ dragons }: { dragons: dragons[] }) {
         {elements.slice(0, 11).map((element) => (
           <div className="stat" key={`stat-${element}`}>
             <div className="stat-title">{`Total ${ElementsNames[element]} Dragons`}</div>
-            <div className="stat-value">{`${getTotalElementDragonsOwned(
-              element as Elements
-            )}/${getTotalElementDragons(element)}`}</div>
+            <div className="stat-value">
+              {loading ? (
+                <span className="loading loading-spinner loading-md"></span>
+              ) : (
+                getTotalElementDragonsOwned(element)
+              )}
+              /{getTotalElementDragons(element)}
+            </div>
           </div>
         ))}
       </div>
@@ -68,23 +78,30 @@ export default function Page({ dragons }: { dragons: dragons[] }) {
         {elements.slice(11, -1).map((element) => (
           <div className="stat" key={`stat-${element}`}>
             <div className="stat-title">{`Total ${ElementsNames[element]} Dragons`}</div>
-            <div className="stat-value">{`${getTotalElementDragonsOwned(
-              element as Elements
-            )}/${getTotalElementDragons(element)}`}</div>
+            <div className="stat-value">
+              {loading ? (
+                <span className="loading loading-spinner loading-md"></span>
+              ) : (
+                getTotalElementDragonsOwned(element)
+              )}
+              /{getTotalElementDragons(element)}
+            </div>
           </div>
         ))}
       </div>
-      <div className="flex flex-wrap gap-4">
-        {elements.map((element) => (
-          <TopDragonsCard
-            key={element}
-            title={`My Top ${ElementsNames[element]} Dragons`}
-            dragons={dragons}
-            ownedIdsMap={ownedIdsMap}
-            options={{ owned: true, size: 5, element }}
-          />
-        ))}
-      </div>
+      {ownedIds.length > 0 && (
+        <div className="flex flex-wrap gap-4">
+          {elements.map((element) => (
+            <TopDragonsCard
+              key={element}
+              title={`My Top ${ElementsNames[element]} Dragons`}
+              dragons={dragons}
+              ownedIdsMap={ownedIdsMap}
+              options={{ owned: true, size: 5, element }}
+            />
+          ))}
+        </div>
+      )}
     </div>
   );
 }

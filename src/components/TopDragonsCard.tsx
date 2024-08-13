@@ -53,7 +53,7 @@ const TopDragonsCard: FC<ITopDragonsCard> = ({
   }, [dragons, ownedIdsMap, options]);
   return (
     <Card title={title}>
-      <DragonsTable dragons={filteredDragons} ownedIdsMap={ownedIdsMap} />
+      <DragonsTable dragons={filteredDragons} ownedIdsMap={ownedIdsMap}  />
     </Card>
   );
 };

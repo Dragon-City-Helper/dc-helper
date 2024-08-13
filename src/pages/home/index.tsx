@@ -23,9 +23,14 @@ export default function Page({ dragons }: { dragons: dragons[] }) {
   const [allDragons] = useState<dragons[]>(dragons);
   const [filteredDragons, setFilteredDragons] = useState<dragons[]>(dragons);
   const [search, setSearch] = useState<string>("");
+  const [loading, setLoading] = useState<boolean | number>(false);
 
   useEffect(() => {
-    getOwned().then((res) => setOwned(res.data.ids));
+    setLoading(true);
+    getOwned().then((res) => {
+      setOwned(res.data.ids);
+      setLoading(false);
+    });
   }, []);
   const ownedIdsMap = useMemo(() => {
     return owned.reduce((acc, curr) => {
@@ -34,7 +39,7 @@ export default function Page({ dragons }: { dragons: dragons[] }) {
     }, new Map<number, boolean>());
   }, [owned]);
 
-  const onOwned = (dragon: dragons, checked: boolean) => {
+  const onOwned = async (dragon: dragons, checked: boolean) => {
     try {
       let newOwned = owned;
       if (checked) {
@@ -42,8 +47,10 @@ export default function Page({ dragons }: { dragons: dragons[] }) {
       } else {
         newOwned = owned.filter((id) => id != dragon.dragonId);
       }
-      postOwned(newOwned);
+      setLoading(dragon.dragonId);
+      await postOwned(newOwned);
       setOwned(newOwned);
+      setLoading(false);
     } catch (error) {
       console.log(error);
     }
@@ -89,7 +96,8 @@ export default function Page({ dragons }: { dragons: dragons[] }) {
           dragons={filteredDragons}
           onOwned={onOwned}
           ownedIdsMap={ownedIdsMap}
-        ></DragonsTable>
+          loading={loading}
+        />
       </div>
     </div>
   );
