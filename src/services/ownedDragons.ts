@@ -1,4 +1,5 @@
 import prisma from "@/lib/prisma";
+import { ownedDragons } from "@prisma/client";
 import axios from "axios";
 
 export const seedUserId = "neel";
@@ -23,5 +24,9 @@ export const setOwnedIds = async (ownedIds: number[]) => {
 };
 
 export const postOwned = async (ownedIds: number[]) => {
-  return axios.post("/api/save-owned-ids", { ownedIds });
+  return axios.post(`/api/ownedDragons/${seedUserId}`, { ownedIds });
+};
+
+export const getOwned = async () => {
+  return axios.get<ownedDragons>("/api/ownedDragons");
 };

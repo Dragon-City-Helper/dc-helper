@@ -1,38 +1,38 @@
 import TopDragonsCard from "@/components/TopDragonsCard";
 import { fetchDragons } from "@/services/dragons";
-import { fetchOwned } from "@/services/ownedDragons";
-import { useCallback, useMemo } from "react";
+import { getOwned } from "@/services/ownedDragons";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { dragons } from "@prisma/client";
 
-export async function getServerSideProps() {
+export async function getStaticProps() {
   try {
     const dragons = await fetchDragons();
-    const { ids: ownedIds } = await fetchOwned();
 
     return {
       props: {
         dragons,
-        ownedIds,
       },
+      revalidate: 24 * 60 * 60,
     };
   } catch (error) {
     console.log(error);
   }
 }
 
-export default function Page({
-  dragons,
-  ownedIds,
-}: {
-  dragons: dragons[];
-  ownedIds: number[];
-}) {
+export default function Page({ dragons }: { dragons: dragons[] }) {
+  const [ownedIds, setOwned] = useState<number[]>([]);
+
+  useEffect(() => {
+    getOwned().then((res) => setOwned(res.data.ids));
+  }, []);
+
   const ownedIdsMap = useMemo(() => {
     return ownedIds.reduce((acc, curr) => {
       acc.set(curr, true);
       return acc;
     }, new Map<number, boolean>());
   }, [ownedIds]);
+
   const totalOwnedBelowX = useCallback(
     (x: number) => {
       return dragons.filter(
@@ -41,6 +41,7 @@ export default function Page({
     },
     [dragons, ownedIdsMap]
   );
+
   return (
     <div className="flex flex-col gap-4">
       <div className="stats stats-vertical lg:stats-horizontal shadow">
