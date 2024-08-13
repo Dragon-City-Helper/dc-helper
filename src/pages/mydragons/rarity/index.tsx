@@ -1,13 +1,14 @@
 import TopDragonsCard from "@/components/TopDragonsCard";
-import { IDragonSimple, rarities, Rarity } from "@/types/Dragon";
-import fetchDragons from "@/utils/fetchDragons";
-import { fetchOwned } from "@/utils/manageOwned";
+import { rarities, RarityNames } from "@/types/Dragon";
+import { fetchDragons } from "@/services/dragons";
+import { fetchOwned } from "@/services/ownedDragons";
 import { useCallback, useMemo } from "react";
+import { dragons, Rarity } from "@prisma/client";
 
 export async function getServerSideProps() {
   try {
-    const dragons = await fetchDragons({});
-    const ownedIds = await fetchOwned();
+    const dragons = await fetchDragons();
+    const { ids: ownedIds } = await fetchOwned();
 
     return {
       props: {
@@ -24,7 +25,7 @@ export default function Page({
   dragons,
   ownedIds,
 }: {
-  dragons: IDragonSimple[];
+  dragons: dragons[];
   ownedIds: number[];
 }) {
   const ownedIdsMap = useMemo(() => {
@@ -43,7 +44,7 @@ export default function Page({
   const getTotalRarityDragonsOwned = useCallback(
     (rarity: Rarity) => {
       return dragons.filter(
-        (dragon) => dragon.rarity === rarity && ownedIdsMap.has(dragon.id)
+        (dragon) => dragon.rarity === rarity && ownedIdsMap.has(dragon.dragonId)
       ).length;
     },
     [dragons, ownedIdsMap]
@@ -53,10 +54,10 @@ export default function Page({
       <div className="stats stats-vertical lg:stats-horizontal shadow">
         {rarities.map((rarity) => (
           <div className="stat" key={`stat-${rarity}`}>
-            <div className="stat-title">{`Total ${Rarity[rarity]} Dragons`}</div>
+            <div className="stat-title">{`Total ${RarityNames[rarity]} Dragons`}</div>
             <div className="stat-value">{`${getTotalRarityDragonsOwned(
               rarity as Rarity
-            )}/${getTotalRarityDragons(rarity as Rarity)}`}</div>
+            )}/${getTotalRarityDragons(rarity)}`}</div>
           </div>
         ))}
       </div>
@@ -64,7 +65,7 @@ export default function Page({
         {rarities.map((rarity) => (
           <TopDragonsCard
             key={`card-${rarity}`}
-            title={`My Top ${Rarity[rarity]} Dragons`}
+            title={`My Top ${RarityNames[rarity]} Dragons`}
             dragons={dragons}
             ownedIdsMap={ownedIdsMap}
             options={{ owned: true, size: 5, rarity }}

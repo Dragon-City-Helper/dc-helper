@@ -1,4 +1,4 @@
-import { setOwnedIds } from "@/utils/manageOwned";
+import { setOwnedIds } from "@/services/ownedDragons";
 import type { NextApiRequest, NextApiResponse } from "next";
 
 type ResponseData = {

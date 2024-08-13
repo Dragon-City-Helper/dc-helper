@@ -1,13 +1,13 @@
 import DragonsTable from "@/components/DragonsTable";
-import { IDragonSimple } from "@/types/Dragon";
-import fetchDragons from "@/utils/fetchDragons";
-import { fetchOwned, postOwned } from "@/utils/manageOwned";
+import { fetchDragons } from "@/services/dragons";
+import { fetchOwned, postOwned } from "@/services/ownedDragons";
 import { useCallback, useEffect, useMemo, useState } from "react";
+import { dragons } from "@prisma/client";
 
 export async function getServerSideProps() {
   try {
-    const dragons = await fetchDragons({});
-    const ownedIds = await fetchOwned();
+    const dragons = await fetchDragons();
+    const { ids: ownedIds } = await fetchOwned();
 
     return {
       props: {
@@ -24,13 +24,12 @@ export default function Page({
   dragons,
   ownedIds,
 }: {
-  dragons: IDragonSimple[];
+  dragons: dragons[];
   ownedIds: number[];
 }) {
   const [owned, setOwned] = useState<number[]>(ownedIds);
-  const [allDragons] = useState<IDragonSimple[]>(dragons);
-  const [filteredDragons, setFilteredDragons] =
-    useState<IDragonSimple[]>(dragons);
+  const [allDragons] = useState<dragons[]>(dragons);
+  const [filteredDragons, setFilteredDragons] = useState<dragons[]>(dragons);
   const [search, setSearch] = useState<string>("");
   const ownedIdsMap = useMemo(() => {
     return owned.reduce((acc, curr) => {
@@ -39,13 +38,13 @@ export default function Page({
     }, new Map<number, boolean>());
   }, [owned]);
 
-  const onOwned = (dragon: IDragonSimple, checked: boolean) => {
+  const onOwned = (dragon: dragons, checked: boolean) => {
     try {
       let newOwned = owned;
       if (checked) {
-        newOwned = [...owned, dragon.id];
+        newOwned = [...owned, dragon.dragonId];
       } else {
-        newOwned = owned.filter((id) => id != dragon.id);
+        newOwned = owned.filter((id) => id != dragon.dragonId);
       }
       postOwned(newOwned);
       setOwned(newOwned);

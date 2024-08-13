@@ -1,13 +1,14 @@
 import TopDragonsCard from "@/components/TopDragonsCard";
-import { elements, Elements, IDragonSimple } from "@/types/Dragon";
-import fetchDragons from "@/utils/fetchDragons";
-import { fetchOwned } from "@/utils/manageOwned";
+import { elements, ElementsNames } from "@/types/Dragon";
+import { fetchDragons } from "@/services/dragons";
+import { fetchOwned } from "@/services/ownedDragons";
 import { useCallback, useMemo } from "react";
+import { dragons, Elements } from "@prisma/client";
 
 export async function getServerSideProps() {
   try {
-    const dragons = await fetchDragons({});
-    const ownedIds = await fetchOwned();
+    const dragons = await fetchDragons();
+    const { ids: ownedIds } = await fetchOwned();
 
     return {
       props: {
@@ -24,7 +25,7 @@ export default function Page({
   dragons,
   ownedIds,
 }: {
-  dragons: IDragonSimple[];
+  dragons: dragons[];
   ownedIds: number[];
 }) {
   const ownedIdsMap = useMemo(() => {
@@ -45,7 +46,7 @@ export default function Page({
     (element: Elements) => {
       return dragons.filter(
         (dragon) =>
-          dragon.elements.includes(element) && ownedIdsMap.has(dragon.id)
+          dragon.elements.includes(element) && ownedIdsMap.has(dragon.dragonId)
       ).length;
     },
     [dragons, ownedIdsMap]
@@ -56,20 +57,20 @@ export default function Page({
       <div className="stats stats-vertical lg:stats-horizontal shadow">
         {elements.slice(0, 11).map((element) => (
           <div className="stat" key={`stat-${element}`}>
-            <div className="stat-title">{`Total ${Elements[element]} Dragons`}</div>
+            <div className="stat-title">{`Total ${ElementsNames[element]} Dragons`}</div>
             <div className="stat-value">{`${getTotalElementDragonsOwned(
               element as Elements
-            )}/${getTotalElementDragons(element as Elements)}`}</div>
+            )}/${getTotalElementDragons(element)}`}</div>
           </div>
         ))}
       </div>
       <div className="stats stats-vertical lg:stats-horizontal shadow">
         {elements.slice(11, -1).map((element) => (
           <div className="stat" key={`stat-${element}`}>
-            <div className="stat-title">{`Total ${Elements[element]} Dragons`}</div>
+            <div className="stat-title">{`Total ${ElementsNames[element]} Dragons`}</div>
             <div className="stat-value">{`${getTotalElementDragonsOwned(
               element as Elements
-            )}/${getTotalElementDragons(element as Elements)}`}</div>
+            )}/${getTotalElementDragons(element)}`}</div>
           </div>
         ))}
       </div>
@@ -77,7 +78,7 @@ export default function Page({
         {elements.map((element) => (
           <TopDragonsCard
             key={element}
-            title={`My Top ${Elements[element]} Dragons`}
+            title={`My Top ${ElementsNames[element]} Dragons`}
             dragons={dragons}
             ownedIdsMap={ownedIdsMap}
             options={{ owned: true, size: 5, element }}

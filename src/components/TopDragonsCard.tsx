@@ -1,18 +1,18 @@
 import { FC, useMemo } from "react";
 import Card from "./Card";
 import DragonsTable from "./DragonsTable";
-import { Elements, IDragonSimple, Rarity } from "@/types/Dragon";
+import { dragons, Elements, Rarity } from "@prisma/client";
 
 interface ITopDragonsCard {
   title: string;
-  dragons: IDragonSimple[];
+  dragons: dragons[];
   ownedIdsMap: Map<number, boolean>;
   options: {
-    rarity?: keyof typeof Rarity;
+    rarity?: Rarity;
     breedable?: boolean;
     owned?: boolean;
     size?: number;
-    element?: keyof typeof Elements;
+    element?: Elements;
   };
 }
 
@@ -27,7 +27,7 @@ const TopDragonsCard: FC<ITopDragonsCard> = ({
       .filter((dragon) => {
         const OwnedFilterMatcher =
           options.owned !== undefined
-            ? ownedIdsMap.has(dragon.id) === options.owned
+            ? ownedIdsMap.has(dragon.dragonId) === options.owned
             : true;
         const BreedableMatcher =
           options.breedable !== undefined
@@ -35,11 +35,11 @@ const TopDragonsCard: FC<ITopDragonsCard> = ({
             : true;
         const RarityMatcher =
           options.rarity !== undefined
-            ? (options.rarity as Rarity) === dragon.rarity
+            ? options.rarity === dragon.rarity
             : true;
         const ElementsMatcher =
           options.element !== undefined
-            ? dragon.elements.includes(options.element as Elements)
+            ? dragon.elements.includes(options.element)
             : true;
         return (
           OwnedFilterMatcher &&

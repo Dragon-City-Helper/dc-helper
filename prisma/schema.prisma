@@ -1,0 +1,64 @@
+datasource db {
+  provider = "mongodb"
+  url      = env("MONGODB_URI")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model dragons {
+  id String @id @default(auto()) @map("_id") @db.ObjectId
+  dragonId Int @unique
+  name String @unique
+  globalRank Int
+  rarityRank Int
+  categoryRank Int
+  speedRank Int
+  rarity Rarity
+  familyName String?
+  breedable Boolean
+  elements Elements[]
+  image String
+  thumbnail String
+}
+
+model ownedDragons {
+  id String @id @default(auto()) @map("_id") @db.ObjectId
+  userId String @unique
+  ids Int[]
+}
+
+enum Elements {
+  pu
+  d
+  f
+  wr
+  i
+  w
+  m
+  l
+  mg
+  li
+  ch
+  el
+  ti
+  wd
+  pr
+  e
+  p
+  hp
+  bt
+  so
+  dr
+}
+
+enum Rarity {
+  M
+  H
+  L
+  R
+  C
+  V
+  E
+}

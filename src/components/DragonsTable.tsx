@@ -1,11 +1,11 @@
-import { IDragonSimple } from "@/types/Dragon";
+import { dragons } from "@prisma/client";
 import Image from "next/image";
 import { FC } from "react";
 
 interface IDragonsTableProps {
-  dragons: IDragonSimple[];
+  dragons: dragons[];
   viewOnly?: boolean;
-  onOwned?: (dragon: IDragonSimple, checked: boolean) => void;
+  onOwned?: (dragon: dragons, checked: boolean) => void;
   ownedIdsMap: Map<number, boolean>;
 }
 const DragonsTable: FC<IDragonsTableProps> = ({
@@ -27,7 +27,7 @@ const DragonsTable: FC<IDragonsTableProps> = ({
         </tr>
       </thead>
       <tbody>
-        {dragons.map((dragon: IDragonSimple) => {
+        {dragons.map((dragon: dragons) => {
           return (
             <tr key={dragon.id}>
               {!viewOnly && onOwned && (
@@ -36,9 +36,9 @@ const DragonsTable: FC<IDragonsTableProps> = ({
                     <input
                       type="checkbox"
                       className="checkbox"
-                      checked={ownedIdsMap.has(dragon.id)}
+                      checked={ownedIdsMap.has(dragon.dragonId)}
                       onChange={() =>
-                        onOwned(dragon, !ownedIdsMap.get(dragon.id))
+                        onOwned(dragon, !ownedIdsMap.get(dragon.dragonId))
                       }
                     />
                   </label>

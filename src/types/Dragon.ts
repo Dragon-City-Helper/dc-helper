@@ -1,46 +1,41 @@
-export enum Rarity {
-  "M" = "Mythical",
-  "H" = "Heroic",
-  "L" = "Legendary",
-  "R" = "Rare",
-  "C" = "Common",
-  "V" = "Very Rare",
-  "E" = "Epic",
-}
-export const rarities: (keyof typeof Rarity)[] = [
-  "H",
-  "M",
-  "L",
-  "E",
-  "V",
-  "R",
-  "C",
-];
+import { Elements, Rarity } from "@prisma/client";
 
-export enum Elements {
-  "pu" = "Pure",
-  "d" = "Dark",
-  "f" = "Flame",
-  "wr" = "War",
-  "i" = "Ice",
-  "w" = "Water",
-  "m" = "Metal",
-  "l" = "Legend",
-  "mg" = "Magic",
-  "li" = "Light",
-  "ch" = "Chaos",
-  "el" = "Electric",
-  "ti" = "Time",
-  "wd" = "Wind",
-  "pr" = "Primal",
-  "e" = "Terra",
-  "p" = "Nature",
-  "hp" = "Happy",
-  "bt" = "Beauty",
-  "so" = "Soul",
-  "dr" = "Dream",
-}
-export const elements: (keyof typeof Elements)[] = [
+export const RarityNames: Record<Rarity, string> = {
+  M: "Mythical",
+  H: "Heroic",
+  L: "Legendary",
+  R: "Rare",
+  C: "Common",
+  V: "Very Rare",
+  E: "Epic",
+};
+export const rarities: Rarity[] = ["H", "M", "L", "E", "V", "R", "C"];
+
+export const ElementsNames: Record<Elements, string> = {
+  pu: "Pure",
+  d: "Dark",
+  f: "Flame",
+  wr: "War",
+  i: "Ice",
+  w: "Water",
+  m: "Metal",
+  l: "Legend",
+  mg: "Magic",
+  li: "Light",
+  ch: "Chaos",
+  el: "Electric",
+  ti: "Time",
+  wd: "Wind",
+  pr: "Primal",
+  e: "Terra",
+  p: "Nature",
+  hp: "Happy",
+  bt: "Beauty",
+  so: "Soul",
+  dr: "Dream",
+};
+
+export const elements: Elements[] = [
   "pu",
   "d",
   "f",
@@ -78,19 +73,4 @@ export interface IDragon {
   breedable: boolean;
   elements: Elements[];
   image: string;
-}
-
-export interface IDragonSimple {
-  name: string;
-  id: number;
-  globalRank: number;
-  rarityRank: number;
-  categoryRank: number;
-  speedRank: number;
-  rarity: Rarity;
-  familyName: string;
-  breedable: boolean;
-  elements: Elements[];
-  image: string;
-  thumbnail: string;
 }

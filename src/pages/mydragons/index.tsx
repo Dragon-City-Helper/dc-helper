@@ -1,13 +1,13 @@
 import TopDragonsCard from "@/components/TopDragonsCard";
-import { IDragonSimple } from "@/types/Dragon";
-import fetchDragons from "@/utils/fetchDragons";
-import { fetchOwned } from "@/utils/manageOwned";
+import { fetchDragons } from "@/services/dragons";
+import { fetchOwned } from "@/services/ownedDragons";
 import { useCallback, useMemo } from "react";
+import { dragons } from "@prisma/client";
 
 export async function getServerSideProps() {
   try {
-    const dragons = await fetchDragons({});
-    const ownedIds = await fetchOwned();
+    const dragons = await fetchDragons();
+    const { ids: ownedIds } = await fetchOwned();
 
     return {
       props: {
@@ -24,7 +24,7 @@ export default function Page({
   dragons,
   ownedIds,
 }: {
-  dragons: IDragonSimple[];
+  dragons: dragons[];
   ownedIds: number[];
 }) {
   const ownedIdsMap = useMemo(() => {
@@ -36,7 +36,7 @@ export default function Page({
   const totalOwnedBelowX = useCallback(
     (x: number) => {
       return dragons.filter(
-        (dragon) => ownedIdsMap.has(dragon.id) && dragon.globalRank <= x
+        (dragon) => ownedIdsMap.has(dragon.dragonId) && dragon.globalRank <= x
       ).length;
     },
     [dragons, ownedIdsMap]
