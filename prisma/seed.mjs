@@ -73,9 +73,9 @@ async function main() {
       create: {
         ...dragon,
       },
-      update: {},
+      update: { ...dragon },
     });
-    console.log(`Created dragon with id: ${dragonRow.dragonId}`);
+    console.log(`Created/Updated dragon with id: ${dragonRow.dragonId}`);
   }
   console.log(`Seeding finished.`);
 }
