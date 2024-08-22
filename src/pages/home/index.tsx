@@ -92,12 +92,19 @@ export default function Page({ dragons }: { dragons: dragons[] }) {
             />
           </label>
         </div>
-        <DragonsTable
-          dragons={filteredDragons}
-          onOwned={onOwned}
-          ownedIdsMap={ownedIdsMap}
-          loading={loading}
-        />
+        <div className="flex flex-col">
+          <div className="">
+            <b>
+              Owned {owned.length}/{dragons.length}
+            </b>
+          </div>
+          <DragonsTable
+            dragons={filteredDragons}
+            onOwned={onOwned}
+            ownedIdsMap={ownedIdsMap}
+            loading={loading}
+          />
+        </div>
       </div>
     </div>
   );
