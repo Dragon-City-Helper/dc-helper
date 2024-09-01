@@ -13,6 +13,7 @@ interface ITopDragonsCard {
     owned?: boolean;
     size?: number;
     element?: Elements;
+    offset?: number;
   };
 }
 
@@ -49,11 +50,14 @@ const TopDragonsCard: FC<ITopDragonsCard> = ({
         );
       })
       .sort((a, b) => a.globalRank - b.globalRank);
-    return dragonsFilter.slice(0, options.size);
+    return dragonsFilter.slice(
+      options.offset ?? 0,
+      options.offset ? options.offset + (options.size || 0) : options.size
+    );
   }, [dragons, ownedIdsMap, options]);
   return (
     <Card title={title}>
-      <DragonsTable dragons={filteredDragons} ownedIdsMap={ownedIdsMap}  />
+      <DragonsTable dragons={filteredDragons} ownedIdsMap={ownedIdsMap} />
     </Card>
   );
 };
