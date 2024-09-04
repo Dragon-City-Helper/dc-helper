@@ -14,7 +14,7 @@ export default async function handler(
 ) {
   if (req.method === "GET") {
     try {
-      const ownedDragons = await fetchOwned();
+      const ownedDragons = await fetchOwned(req.query.id as string);
       res.status(200).json(ownedDragons);
     } catch (error) {
       res.status(500).json({ message: "Internal server error" });
@@ -22,7 +22,7 @@ export default async function handler(
   } else if (req.method === "POST") {
     const { ownedIds } = req.body;
     try {
-      const ownedDragons = await setOwnedIds(ownedIds);
+      const ownedDragons = await setOwnedIds(req.query.id as string, ownedIds);
       res.status(200).json(ownedDragons);
     } catch (error) {
       res.status(500).json({ message: "Internal server error" });

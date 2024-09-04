@@ -1,7 +1,9 @@
 import Link from "next/link";
 import { FC } from "react";
+import { useSession, signOut } from "next-auth/react";
 
 const NavBar: FC = () => {
+  const session = useSession();
   return (
     <div className="navbar bg-base-100">
       <div className="navbar-start">
@@ -42,7 +44,9 @@ const NavBar: FC = () => {
             </li>
           </ul>
         </div>
-        <a className="btn btn-ghost text-xl">DC Helper</a>
+        <Link className="btn btn-ghost text-xl" href="/home">
+          DC Helper
+        </Link>
       </div>
       <div className="navbar-end hidden lg:flex">
         <ul className="menu menu-horizontal px-1">
@@ -58,6 +62,9 @@ const NavBar: FC = () => {
           <li>
             <Link href="/mydragons/elements">By Element</Link>
           </li>
+          {session.status === "authenticated" && (
+            <button onClick={() => signOut()}>Signout</button>
+          )}
         </ul>
       </div>
     </div>

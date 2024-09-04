@@ -3,8 +3,9 @@ import { fetchDragons } from "@/services/dragons";
 import { getOwned, postOwned } from "@/services/ownedDragons";
 import { useEffect, useMemo, useState } from "react";
 import { dragons, Elements, Rarity } from "@prisma/client";
-import { elements, ElementsNames, rarities, RarityNames } from "@/types/Dragon";
 import DragonFilters from "@/components/DragonFilters";
+import { useSession } from "next-auth/react";
+import { useRouter } from "next/router";
 
 export async function getStaticProps() {
   try {
@@ -34,16 +35,23 @@ const defaultFilters: IFilters = {
 export default function Page({ dragons }: { dragons: dragons[] }) {
   const [owned, setOwned] = useState<number[]>([]);
   const [allDragons] = useState<dragons[]>(dragons);
-  const [loading, setLoading] = useState<boolean | number>(false);
+  const [loading, setLoading] = useState<boolean | number>(true);
   const [filters, setFilters] = useState<IFilters>(defaultFilters);
-
+  const session = useSession();
+  const router = useRouter();
   useEffect(() => {
-    setLoading(true);
-    getOwned().then((res) => {
-      setOwned(res.data.ids);
-      setLoading(false);
-    });
-  }, []);
+    if (session.status === "loading") {
+      setLoading(true);
+    } else if (session.status === "authenticated") {
+      setLoading(true);
+      getOwned(session.data?.user?.email || "").then((res) => {
+        setOwned(res.data.ids);
+        setLoading(false);
+      });
+    } else {
+      router.push("/signin");
+    }
+  }, [router, session]);
 
   const ownedIdsMap = useMemo(() => {
     return owned.reduce((acc, curr) => {
@@ -61,7 +69,7 @@ export default function Page({ dragons }: { dragons: dragons[] }) {
         newOwned = owned.filter((id) => id != dragon.dragonId);
       }
       setLoading(dragon.dragonId);
-      await postOwned(newOwned);
+      await postOwned(session.data?.user?.email || "", newOwned);
       setOwned(newOwned);
       setLoading(false);
     } catch (error) {

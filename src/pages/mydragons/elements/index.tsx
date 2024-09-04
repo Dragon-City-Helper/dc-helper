@@ -4,6 +4,8 @@ import { fetchDragons } from "@/services/dragons";
 import { getOwned } from "@/services/ownedDragons";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { dragons, Elements } from "@prisma/client";
+import { useSession } from "next-auth/react";
+import { useRouter } from "next/router";
 
 export async function getStaticProps() {
   try {
@@ -22,15 +24,22 @@ export async function getStaticProps() {
 
 export default function Page({ dragons }: { dragons: dragons[] }) {
   const [ownedIds, setOwned] = useState<number[]>([]);
-  const [loading, setLoading] = useState<boolean>(false);
-
+  const [loading, setLoading] = useState<boolean>(true);
+  const session = useSession();
+  const router = useRouter();
   useEffect(() => {
-    setLoading(true);
-    getOwned().then((res) => {
-      setOwned(res.data.ids);
-      setLoading(false);
-    });
-  }, []);
+    if (session.status === "loading") {
+      setLoading(true);
+    } else if (session.status === "authenticated") {
+      setLoading(true);
+      getOwned(session.data?.user?.email || "").then((res) => {
+        setOwned(res.data.ids);
+        setLoading(false);
+      });
+    } else {
+      router.push("/signin");
+    }
+  }, [router, session]);
 
   const ownedIdsMap = useMemo(() => {
     return ownedIds.reduce((acc, curr) => {

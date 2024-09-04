@@ -2,20 +2,18 @@ import prisma from "@/lib/prisma";
 import { ownedDragons } from "@prisma/client";
 import axios from "axios";
 
-export const seedUserId = "neel";
-
-export const fetchOwned = async () => {
+export const fetchOwned = async (id: string) => {
   return await prisma.ownedDragons.findUniqueOrThrow({
     where: {
-      userId: seedUserId,
+      userId: id,
     },
   });
 };
 
-export const setOwnedIds = async (ownedIds: number[]) => {
+export const setOwnedIds = async (id: string, ownedIds: number[]) => {
   return await prisma.ownedDragons.update({
     where: {
-      userId: seedUserId,
+      userId: id,
     },
     data: {
       ids: ownedIds,
@@ -23,12 +21,12 @@ export const setOwnedIds = async (ownedIds: number[]) => {
   });
 };
 
-export const postOwned = async (ownedIds: number[]) => {
-  return axios.post<ownedDragons>(`/api/ownedDragons/${seedUserId}`, {
+export const postOwned = async (id: string, ownedIds: number[]) => {
+  return axios.post<ownedDragons>(`/api/ownedDragons/${id}`, {
     ownedIds,
   });
 };
 
-export const getOwned = async () => {
-  return axios.get<ownedDragons>(`/api/ownedDragons/${seedUserId}`);
+export const getOwned = async (id: string) => {
+  return axios.get<ownedDragons>(`/api/ownedDragons/${id}`);
 };
