@@ -17,7 +17,8 @@ const fetchDragons = async ({
   rarities = [],
   orderBy = 1,
   page = 0,
-  pageSize = 3000,
+  pageSize = 5000,
+  families = [],
   inStore = null,
   breedable = null,
   animation = null,
@@ -31,6 +32,7 @@ const fetchDragons = async ({
       page,
       pageSize,
       inStore,
+      families,
       breedable,
       animation,
     },
@@ -41,7 +43,7 @@ const fetchDragons = async ({
     }
   );
 
-  const dragonsSimple = response.data.items
+  return response.data.items
     .filter(
       ({ id }) =>
         ![1145, 1146, 1144, 1410, 1882, 1911, 1920, 1921, 1852, 1114].includes(
@@ -49,7 +51,19 @@ const fetchDragons = async ({
         )
     )
     .map(
-      ({ name, id, rank, rarity, familyName, breedable, elements, image }) => ({
+      ({
+        name,
+        id,
+        rank,
+        rarity,
+        familyName,
+        breedable,
+        elements,
+        image,
+        baseSpeed,
+        maxSpeed,
+        category,
+      }) => ({
         name,
         dragonId: id,
         ...rank,
@@ -57,11 +71,13 @@ const fetchDragons = async ({
         familyName,
         breedable,
         elements,
+        baseSpeed,
+        maxSpeed,
+        category,
         image: getImageUrl({ image, isThumbnail: false }),
         thumbnail: getImageUrl({ image, isThumbnail: true }),
       })
     );
-  return dragonsSimple;
 };
 
 async function main() {
@@ -75,9 +91,9 @@ async function main() {
       },
       update: { ...dragon },
     });
-    console.log(`Created/Updated dragon with id: ${dragonRow.dragonId}`);
+    console.log(`Created/Updated dragon: ${dragon.name}`);
   }
-  console.log(`Seeding finished.`);
+  console.log(`Seeding finished. ${dragons.length} Dragons seeded.`);
 }
 
 main()

@@ -21,6 +21,9 @@ model dragons {
   elements     Elements[]
   image        String
   thumbnail    String
+  baseSpeed    Int
+  maxSpeed     Int
+  category     Int
 }
 
 model ownedDragons {

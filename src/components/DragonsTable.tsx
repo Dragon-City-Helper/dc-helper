@@ -24,6 +24,8 @@ const DragonsTable: FC<IDragonsTableProps> = ({
           <tr>
             {!viewOnly && onOwned && <th>Owned ?</th>}
             <th>Name</th>
+            <th>Catgory</th>
+            <th>Speed</th>
             <th>Rank</th>
             <th>Rarity</th>
             <th>Elements</th>
@@ -60,6 +62,8 @@ const DragonsTable: FC<IDragonsTableProps> = ({
                   />
                   <div>{dragon.name}</div>
                 </td>
+                <td>{dragon.category}</td>
+                <td>{`${dragon.baseSpeed} - ${dragon.maxSpeed}`}</td>
                 <td>{dragon.globalRank}</td>
                 <td>
                   <Image
