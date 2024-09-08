@@ -106,7 +106,7 @@ export default function Page({ dragons }: { dragons: dragons[] }) {
               title={`My Top ${ElementsNames[element]} Dragons`}
               dragons={dragons}
               ownedIdsMap={ownedIdsMap}
-              options={{ owned: true, size: 5, element }}
+              options={{ owned: true, size: 10, element }}
             />
           ))}
         </div>

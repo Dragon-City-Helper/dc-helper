@@ -99,19 +99,19 @@ export default function Page({ dragons }: { dragons: dragons[] }) {
             title="My Top Dragons"
             dragons={dragons}
             ownedIdsMap={ownedIdsMap}
-            options={{ owned: true, size: 15 }}
+            options={{ owned: true, size: 25 }}
           />
           <TopDragonsCard
             title="My Top Dragons Continued"
             dragons={dragons}
             ownedIdsMap={ownedIdsMap}
-            options={{ owned: true, size: 15, offset: 15 }}
+            options={{ owned: true, size: 15, offset: 25 }}
           />
           <TopDragonsCard
             title=" Top Dragons to breed"
             dragons={dragons}
             ownedIdsMap={ownedIdsMap}
-            options={{ owned: false, breedable: true, size: 15 }}
+            options={{ breedable: true, size: 15 }}
           />
         </div>
       )}
