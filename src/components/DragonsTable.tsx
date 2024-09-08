@@ -1,6 +1,8 @@
+import ArrowDown from "@/icons/arrow-down";
+import ArrowUp from "@/icons/arrow-up";
 import { dragons } from "@prisma/client";
 import Image from "next/image";
-import { FC } from "react";
+import { FC, useCallback, useMemo, useState } from "react";
 
 interface IDragonsTableProps {
   dragons: dragons[];
@@ -9,30 +11,134 @@ interface IDragonsTableProps {
   ownedIdsMap: Map<number, boolean>;
   loading?: boolean | number;
 }
+interface ISortOptions {
+  sortBy: "name" | "category" | "speed" | "rank";
+  sortOrder: "asc" | "desc";
+}
+
 const DragonsTable: FC<IDragonsTableProps> = ({
-  dragons,
+  dragons: Dragons,
   viewOnly = false,
   onOwned,
   ownedIdsMap,
   loading,
 }) => {
+  const [sortOptions, setSortOptions] = useState<ISortOptions>({
+    sortBy: "rank",
+    sortOrder: "asc",
+  });
+
+  const sortOnclickHandler = useCallback(
+    (key: ISortOptions["sortBy"]) => {
+      const getSortOptions: () => ISortOptions = () => {
+        if (sortOptions) {
+          if (sortOptions.sortBy !== key) {
+            return {
+              sortBy: key,
+              sortOrder: "asc",
+            };
+          } else if (sortOptions.sortOrder) {
+            switch (sortOptions.sortOrder) {
+              case "asc":
+                return {
+                  ...sortOptions,
+                  sortOrder: "desc",
+                };
+              case "desc":
+                return { sortBy: "rank", sortOrder: "asc" };
+              default:
+                return { sortBy: "rank", sortOrder: "asc" };
+            }
+          }
+        }
+        return {
+          sortBy: key,
+          sortOrder: "asc",
+        };
+      };
+      setSortOptions(getSortOptions());
+    },
+    [sortOptions]
+  );
+
+  const getSortOptionIndicator = useCallback(
+    (key: ISortOptions["sortBy"]) => {
+      if (key === sortOptions?.sortBy) {
+        return sortOptions?.sortOrder === "asc" ? <ArrowUp /> : <ArrowDown />;
+      }
+      return null;
+    },
+    [sortOptions?.sortBy, sortOptions?.sortOrder]
+  );
+
+  const sortedDragons = useMemo(() => {
+    const { sortBy, sortOrder } = sortOptions || {};
+    const sortByMapping: Record<
+      ISortOptions["sortBy"],
+      "name" | "category" | "maxSpeed" | "globalRank"
+    > = {
+      name: "name",
+      category: "category",
+      speed: "maxSpeed",
+      rank: "globalRank",
+    };
+    if (sortBy) {
+      const sortByKey = sortByMapping[sortBy];
+      return Dragons.sort((a, b) => {
+        if (sortOrder === "asc") {
+          return a[sortByKey] > b[sortByKey] ? 1 : -1;
+        } else {
+          return a[sortByKey] > b[sortByKey] ? -1 : 1;
+        }
+      });
+    }
+    return Dragons;
+  }, [sortOptions, Dragons]);
+
   return (
     <div className="overflow-x-auto">
       <table className="table">
-        {/* head */}
         <thead>
           <tr>
             {!viewOnly && onOwned && <th>Owned ?</th>}
-            <th>Name</th>
-            <th>Catgory</th>
-            <th>Speed</th>
-            <th>Rank</th>
+            <th>
+              <div
+                onClick={() => sortOnclickHandler("name")}
+                className="hover:cursor-pointer flex gap-2"
+              >
+                Name {getSortOptionIndicator("name")}
+              </div>
+            </th>
+            <th>
+              <div
+                onClick={() => sortOnclickHandler("category")}
+                className="hover:cursor-pointer flex gap-2"
+              >
+                Category {getSortOptionIndicator("category")}
+              </div>
+            </th>
+            <th>
+              <div
+                onClick={() => sortOnclickHandler("speed")}
+                className="hover:cursor-pointer flex gap-2"
+              >
+                Speed {getSortOptionIndicator("speed")}
+              </div>
+            </th>
+            <th>
+              <div
+                onClick={() => sortOnclickHandler("rank")}
+                className="hover:cursor-pointer flex gap-2"
+              >
+                Rank {getSortOptionIndicator("rank")}
+              </div>
+            </th>
             <th>Rarity</th>
             <th>Elements</th>
           </tr>
         </thead>
         <tbody>
-          {dragons.map((dragon: dragons) => {
+          {sortedDragons.map((dragon: dragons) => {
             return (
               <tr key={dragon.dragonId} className="hover">
                 {!viewOnly && onOwned && (
