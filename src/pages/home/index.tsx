@@ -130,7 +130,7 @@ export default function Page({ dragons }: { dragons: dragons[] }) {
     <div className="flex flex-row w-100 h-100 overflow-auto">
       <div className="flex-1 m-6">
         <div className="flex flex-col gap-4">
-          <DragonFilters onFilterChange={onFilterChange} />
+          <DragonFilters onFilterChange={onFilterChange} filters={filters} />
           <b>
             {filteredDragons.length === dragons.length
               ? `Showing all Dragons`
