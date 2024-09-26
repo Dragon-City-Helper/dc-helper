@@ -50,7 +50,7 @@ export default function Page({ dragons }: { dragons: dragons[] }) {
   const totalOwnedBelowX = useCallback(
     (x: number) => {
       return dragons.filter(
-        (dragon) => ownedIdsMap.has(dragon.dragonId) && dragon.globalRank <= x
+        (dragon) => ownedIdsMap.has(dragon.dragonId) && dragon.rank <= x
       ).length;
     },
     [dragons, ownedIdsMap]

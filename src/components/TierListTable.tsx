@@ -4,7 +4,7 @@ import { dragons } from "@prisma/client";
 import Image from "next/image";
 import { FC, useCallback, useMemo, useState } from "react";
 
-interface IDragonsTableProps {
+interface ITierListProps {
   dragons: dragons[];
   viewOnly?: boolean;
   onOwned?: (dragon: dragons, checked: boolean) => void;
@@ -12,20 +12,28 @@ interface IDragonsTableProps {
   loading?: boolean | number;
 }
 interface ISortOptions {
-  sortBy: "name" | "category" | "speed" | "rank";
+  sortBy: "name" | "speed" | "rank";
   sortOrder: "asc" | "desc";
 }
 
-const DragonsTable: FC<IDragonsTableProps> = ({
-  dragons: Dragons,
-  viewOnly = false,
-  onOwned,
-  ownedIdsMap,
-  loading,
-}) => {
+const TierList: FC<ITierListProps> = ({ dragons: Dragons }) => {
   const [sortOptions, setSortOptions] = useState<ISortOptions>({
     sortBy: "rank",
-    sortOrder: "asc",
+    sortOrder: "desc",
+  });
+
+  const [weights] = useState<{
+    skills: number;
+    rarity: number;
+    elements: number;
+    speed: number;
+    damage: number;
+  }>({
+    rarity: 3,
+    skills: 1,
+    elements: 1,
+    speed: 2,
+    damage: 2,
   });
 
   const sortOnclickHandler = useCallback(
@@ -74,16 +82,28 @@ const DragonsTable: FC<IDragonsTableProps> = ({
     const { sortBy, sortOrder } = sortOptions || {};
     const sortByMapping: Record<
       ISortOptions["sortBy"],
-      "name" | "category" | "maxSpeed" | "rank"
+      "name" | "dragonScore" | "speedScore" | "skillsScore" | "elementsScore"
     > = {
       name: "name",
-      category: "category",
-      speed: "maxSpeed",
-      rank: "rank",
+      speed: "speedScore",
+      rank: "dragonScore",
+    };
+
+    const calculateDragonScore = (dragon: dragons) => {
+      return (
+        (weights["speed"] * dragon.speedScore) / 10 +
+        weights["elements"] * dragon.elementsScore +
+        weights["rarity"] * dragon.rarityScore * 5 +
+        weights["skills"] * dragon.skillsScore +
+        (weights["damage"] * dragon.damageScore) / 100
+      );
     };
     if (sortBy) {
       const sortByKey = sortByMapping[sortBy];
-      return Dragons.sort((a, b) => {
+      return Dragons.map((dragon) => ({
+        ...dragon,
+        dragonScore: calculateDragonScore(dragon),
+      })).sort((a, b) => {
         if (sortOrder === "asc") {
           return a[sortByKey] > b[sortByKey] ? 1 : -1;
         } else {
@@ -99,7 +119,6 @@ const DragonsTable: FC<IDragonsTableProps> = ({
       <table className="table">
         <thead>
           <tr>
-            {!viewOnly && onOwned && <th>Owned ?</th>}
             <th>
               <div
                 onClick={() => sortOnclickHandler("name")}
@@ -108,14 +127,8 @@ const DragonsTable: FC<IDragonsTableProps> = ({
                 Name {getSortOptionIndicator("name")}
               </div>
             </th>
-            <th>
-              <div
-                onClick={() => sortOnclickHandler("category")}
-                className="hover:cursor-pointer flex gap-2"
-              >
-                Category {getSortOptionIndicator("category")}
-              </div>
-            </th>
+            <th>Rarity</th>
+            <th>Elements</th>
             <th>
               <div
                 onClick={() => sortOnclickHandler("speed")}
@@ -124,71 +137,68 @@ const DragonsTable: FC<IDragonsTableProps> = ({
                 Speed {getSortOptionIndicator("speed")}
               </div>
             </th>
+            <th>Damage</th>
+            <th>Skills Score</th>
             <th>
               <div
                 onClick={() => sortOnclickHandler("rank")}
                 className="hover:cursor-pointer flex gap-2"
               >
-                Rank {getSortOptionIndicator("rank")}
+                Total Score {getSortOptionIndicator("rank")}
               </div>
             </th>
-            <th>Rarity</th>
-            <th>Elements</th>
           </tr>
         </thead>
         <tbody>
           {sortedDragons.map((dragon: dragons) => {
             return (
               <tr key={dragon.dragonId} className="hover">
-                {!viewOnly && onOwned && (
-                  <td>
-                    {loading === true || loading === dragon.dragonId ? (
-                      <span className="loading loading-spinner loading-md"></span>
-                    ) : (
-                      <label>
-                        <input
-                          type="checkbox"
-                          className="checkbox"
-                          checked={ownedIdsMap.has(dragon.dragonId)}
-                          onChange={() =>
-                            onOwned(dragon, !ownedIdsMap.get(dragon.dragonId))
-                          }
-                        />
-                      </label>
-                    )}
-                  </td>
-                )}
-                <td className="flex flex-row gap-2 items-center">
-                  <Image
-                    src={dragon.image}
-                    alt={dragon.name}
-                    width={100}
-                    height={100}
-                  />
-                  <div>{dragon.name}</div>
-                </td>
-                <td>{dragon.category}</td>
-                <td>{`${dragon.baseSpeed} - ${dragon.maxSpeed}`}</td>
-                <td>{dragon.rank + 1}</td>
                 <td>
-                  <Image
-                    src={`/images/rarity/${dragon.rarity}.png`}
-                    alt={dragon.rarity}
-                    width={64}
-                    height={64}
-                  />
-                </td>
-                <td className="flex flex-row gap-2 items-center">
-                  {dragon.elements.map((element, index) => (
+                  <div className="flex flex-row gap-2 items-center">
                     <Image
-                      key={`${dragon.id}-${element}-${index}`}
-                      src={`/images/elements/${element}.png`}
-                      alt={element}
-                      width={36}
-                      height={76}
+                      src={dragon.image}
+                      alt={dragon.name}
+                      width={100}
+                      height={100}
                     />
-                  ))}
+                    <div>{dragon.name}</div>
+                  </div>
                 </td>
+                <td>
+                  <div className="flex flex-row gap-2 items-center">
+                    <Image
+                      src={`/images/rarity/${dragon.rarity}.png`}
+                      alt={dragon.rarity}
+                      width={64}
+                      height={64}
+                    />
+                    <b>({dragon.rarityScore})</b>
+                  </div>
+                </td>
+                <td>
+                  <div className="flex flex-row gap-2 items-center">
+                    {dragon.elements.map((element, index) => (
+                      <Image
+                        key={`${dragon.id}-${element}-${index}`}
+                        src={`/images/elements/${element}.png`}
+                        alt={element}
+                        width={36}
+                        height={76}
+                      />
+                    ))}
+                    <b>({dragon.elementsScore})</b>
+                  </div>
+                </td>
+                <td>
+                  {`${dragon.baseSpeed} - ${dragon.maxSpeed}`}
+                  <b>({dragon.speedScore})</b>
+                </td>
+                <td>
+                  {dragon.maxDamage}
+                  <b>({dragon.damageScore})</b>
+                </td>
+                <td>{dragon.skillsScore}</td>
+                <td>{dragon.dragonScore}</td>
               </tr>
             );
           })}
@@ -198,4 +208,4 @@ const DragonsTable: FC<IDragonsTableProps> = ({
   );
 };
 
-export default DragonsTable;
+export default TierList;

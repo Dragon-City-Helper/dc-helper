@@ -58,19 +58,3 @@ export const elements: Elements[] = [
   "so",
   "dr",
 ];
-
-export interface IDragon {
-  name: string;
-  id: number;
-  rank: {
-    globalRank: number;
-    rarityRank: number;
-    categoryRank: number;
-    speedRank: number;
-  };
-  rarity: Rarity;
-  familyName: string;
-  breedable: boolean;
-  elements: Elements[];
-  image: string;
-}

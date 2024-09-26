@@ -8,28 +8,44 @@ generator client {
 }
 
 model dragons {
-  id           String     @id @default(auto()) @map("_id") @db.ObjectId
-  dragonId     Int        @unique
-  name         String     @unique
-  globalRank   Int
-  rarityRank   Int
-  categoryRank Int
-  speedRank    Int
-  rarity       Rarity
-  familyName   String?
-  breedable    Boolean
-  elements     Elements[]
-  image        String
-  thumbnail    String
-  baseSpeed    Int
-  maxSpeed     Int
-  category     Int
+  id            String     @id @default(auto()) @map("_id") @db.ObjectId
+  dragonId      Int        @unique
+  name          String     @unique
+  globalRank    Int
+  rarity        Rarity
+  familyName    String?
+  breedable     Boolean
+  elements      Elements[]
+  image         String
+  thumbnail     String
+  baseSpeed     Int
+  maxSpeed      Int
+  maxDamage     Int
+  category      Int
+  skills        Skill[]    @relation(fields: [skillsId], references: [id])
+  skillsId      String[]   @db.ObjectId
+  speedScore    Float
+  damageScore   Float
+  elementsScore Int
+  rarityScore   Int
+  skillsScore   Int
+  dragonScore   Float
+  rank          Int
 }
 
 model ownedDragons {
   id     String @id @default(auto()) @map("_id") @db.ObjectId
   userId String @unique
   ids    Int[]
+}
+
+model Skill {
+  id          String    @id @default(auto()) @map("_id") @db.ObjectId
+  name        String    @unique
+  skillType   Int
+  description String
+  dragons     dragons[] @relation(fields: [dragonsId], references: [id])
+  dragonsId   String[]  @db.ObjectId
 }
 
 enum Elements {

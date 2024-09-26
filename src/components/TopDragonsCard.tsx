@@ -49,7 +49,7 @@ const TopDragonsCard: FC<ITopDragonsCard> = ({
           ElementsMatcher
         );
       })
-      .sort((a, b) => a.globalRank - b.globalRank);
+      .sort((a, b) => a.rank - b.rank);
     return dragonsFilter.slice(
       options.offset ?? 0,
       options.offset ? options.offset + (options.size || 0) : options.size
