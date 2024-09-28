@@ -1,5 +1,5 @@
 import prisma from "@/lib/prisma";
-import { Prisma, Rarity, Rating } from "@prisma/client";
+import { Rarity, Rating } from "@prisma/client";
 import axios from "axios";
 
 export const fetchDragons = async (options?: { rarity: Rarity }) => {

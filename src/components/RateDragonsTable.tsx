@@ -9,15 +9,16 @@ interface IRateDragonsTableProps {
 }
 
 const RateDragonsTable: FC<IRateDragonsTableProps> = ({ dragons }) => {
-  const keys: Exclude<keyof Rating, "id" | "dragonsId">[] = [
+  const keys: Exclude<keyof Rating, "id" | "dragonsId" | "score">[] = [
     "cooldown",
     "value",
     "versatility",
     "potency",
-    "primary_coverage",
-    "crit_coverage",
-    "viability",
+    "primary",
+    "coverage",
+    "rarity",
     "usability",
+    "extra",
   ] as const;
   type AllowedKey = (typeof keys)[number];
 
@@ -26,10 +27,11 @@ const RateDragonsTable: FC<IRateDragonsTableProps> = ({ dragons }) => {
     value: "Value",
     versatility: "Versatility",
     potency: "Potency",
-    primary_coverage: "Primary Coverage",
-    crit_coverage: "Crit Coverage",
-    viability: "Viability",
+    primary: "Primary",
+    coverage: " Coverage",
+    rarity: "Rarity",
     usability: "Usability",
+    extra: "Extra",
   };
 
   const [localRatings, setLocalRatings] = useState<Record<string, Rating>>({});
@@ -51,7 +53,17 @@ const RateDragonsTable: FC<IRateDragonsTableProps> = ({ dragons }) => {
       ...loading,
       [dragonId]: true,
     });
-    await putRatings(dragonId, localRatings[dragonId]);
+    const { data: newDragonRating } = await putRatings(
+      dragonId,
+      localRatings[dragonId]
+    );
+    console.log(newDragonRating);
+    setLocalRatings((rating) => {
+      return {
+        ...rating,
+        [dragonId]: newDragonRating,
+      };
+    });
     setDirty({
       ...dirty,
       [dragonId]: false,
@@ -71,33 +83,39 @@ const RateDragonsTable: FC<IRateDragonsTableProps> = ({ dragons }) => {
       [dragonId]: true,
     });
     setLocalRatings((rating) => {
+      const newRating = {
+        ...(rating || {})[dragonId],
+        [ratingKey]: value,
+      };
+      newRating.score = getScore(newRating);
       return {
         ...rating,
-        [dragonId]: {
-          ...(rating || {})[dragonId],
-          [ratingKey]: value,
-        },
+        [dragonId]: newRating,
       };
     });
   };
-  const getScore = (dragonId: string) => {
-    const ratings = localRatings[dragonId];
+  const getScore = (rating: Rating) => {
     const {
       cooldown,
       value,
       potency,
       versatility,
-      primary_coverage,
-      crit_coverage,
-    } = ratings || {};
+      primary,
+      coverage,
+      rarity,
+      usability,
+      extra,
+    } = rating || {};
     return (
       (cooldown ?? 0) +
       (value ?? 0) +
       (potency ?? 0) +
       (versatility ?? 0) +
-      0.5 * (primary_coverage ?? 0) +
-      0.5 * (crit_coverage ?? 0) +
-      40
+      (usability ?? 0) +
+      0.5 * (primary ?? 0) +
+      0.5 * (coverage ?? 0) +
+      0.25 * (extra ?? 0) +
+      2 * (rarity ?? 0)
     );
   };
   return (
@@ -165,7 +183,7 @@ const RateDragonsTable: FC<IRateDragonsTableProps> = ({ dragons }) => {
                     />
                   </td>
                 ))}
-                <td>{getScore(dragon.id)}</td>
+                <td>{localRatings[dragon.id]?.score ?? 0}</td>
                 <td>
                   {loading[dragon.id] ? (
                     <span className="loading loading-spinner loading-md"></span>

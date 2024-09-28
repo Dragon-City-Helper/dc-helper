@@ -35,17 +35,19 @@ model dragons {
 }
 
 model Rating {
-  cooldown         Int? // Skill Cooldown
-  value            Int? // Skill yields consistent benefits in proportion to drawbacks if any (health sacrifice, random skill, etc)
-  versatility      Int? // Skill effectiveness in various situations
-  potency          Int? // Damage potential
-  primary_coverage Int? // Defensive capability (excluding guards, twds)
-  crit_coverage    Int? // Offensive capability (points deduced for elements that crit a primary that subsequently crits your own)
-  viability        Int? // Performance in arenas against meta picks
-  usability        Int? //  How many of it’s 4 masters arenas can you use it in
-  id               String   @id @default(auto()) @map("_id") @db.ObjectId
-  dragons          dragons? @relation(fields: [dragonsId], references: [id])
-  dragonsId        String?  @unique @db.ObjectId
+  cooldown    Int      @default(0) // Skill Cooldown
+  value       Int      @default(0) // Skill yields consistent benefits in proportion to drawbacks if any (health sacrifice, random skill, etc)
+  versatility Int      @default(0) // Skill effectiveness in various situations
+  potency     Int      @default(0) // Damage potential
+  primary     Int      @default(0) // Defensive capability (excluding guards, twds)
+  coverage    Int      @default(0) // Offensive capability (points deduced for elements that crit a primary that subsequently crits your own)
+  rarity      Int      @default(0) // Rarity factor
+  usability   Int      @default(0) //  How many of it’s 4 masters arenas can you use it in
+  extra       Int      @default(0) // extra adjustments
+  score       Int      @default(0) // saved computed score
+  id          String   @id @default(auto()) @map("_id") @db.ObjectId
+  dragons     dragons? @relation(fields: [dragonsId], references: [id])
+  dragonsId   String?  @unique @db.ObjectId
 }
 
 model ownedDragons {

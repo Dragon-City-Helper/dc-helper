@@ -9,56 +9,60 @@ interface IRatingDropdown {
 
 const ratings = [
   {
-    value: 13,
+    value: 52,
     label: "SSS",
   },
   {
-    value: 12,
+    value: 48,
     label: "SS",
   },
   {
-    value: 11,
+    value: 44,
     label: "S++",
   },
   {
-    value: 10,
+    value: 40,
     label: "S+",
   },
   {
-    value: 9,
+    value: 36,
     label: "S",
   },
   {
-    value: 8,
+    value: 32,
     label: "S-",
   },
   {
-    value: 7,
+    value: 28,
     label: "A+",
   },
   {
-    value: 6,
+    value: 24,
     label: "A",
   },
   {
-    value: 5,
+    value: 20,
     label: "A-",
   },
   {
-    value: 4,
+    value: 16,
     label: "B+",
   },
   {
-    value: 3,
+    value: 12,
     label: "B",
   },
   {
-    value: 2,
+    value: 8,
     label: "B-",
   },
   {
-    value: 1,
+    value: 4,
     label: "C+",
+  },
+  {
+    value: 0,
+    label: "C",
   },
 ];
 const RatingDropdown: FC<IRatingDropdown> = ({
@@ -70,7 +74,7 @@ const RatingDropdown: FC<IRatingDropdown> = ({
   return (
     <select
       className="select select-bordered w-full max-w-xs"
-      value={value ?? undefined}
+      value={value ?? 0}
       onChange={(e) =>
         onRatingChange(dragonId, ratingKey, parseInt(e.target.value, 10))
       }
