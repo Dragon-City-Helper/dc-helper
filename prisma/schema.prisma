@@ -31,6 +31,21 @@ model dragons {
   skillsScore   Int
   dragonScore   Float
   rank          Int
+  rating        Rating?
+}
+
+model Rating {
+  cooldown         Int? // Skill Cooldown
+  value            Int? // Skill yields consistent benefits in proportion to drawbacks if any (health sacrifice, random skill, etc)
+  versatility      Int? // Skill effectiveness in various situations
+  potency          Int? // Damage potential
+  primary_coverage Int? // Defensive capability (excluding guards, twds)
+  crit_coverage    Int? // Offensive capability (points deduced for elements that crit a primary that subsequently crits your own)
+  viability        Int? // Performance in arenas against meta picks
+  usability        Int? //  How many of it’s 4 masters arenas can you use it in
+  id               String   @id @default(auto()) @map("_id") @db.ObjectId
+  dragons          dragons? @relation(fields: [dragonsId], references: [id])
+  dragonsId        String?  @unique @db.ObjectId
 }
 
 model ownedDragons {
@@ -92,9 +107,15 @@ model User {
   sessions      Session[]
   // Optional for WebAuthn support
   Authenticator Authenticator[]
+  role          Role            @default(USER)
+  createdAt     DateTime        @default(now())
+  updatedAt     DateTime        @updatedAt
+}
 
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+enum Role {
+  GOD
+  ADMIN
+  USER
 }
 
 model Account {

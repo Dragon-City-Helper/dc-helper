@@ -3,16 +3,32 @@ import Discord from "next-auth/providers/discord";
 import { PrismaAdapter } from "@auth/prisma-adapter";
 import { prisma } from "@/lib/prisma";
 
+import { type DefaultSession } from "next-auth";
+import { Role } from "@prisma/client";
+
+declare module "next-auth" {
+  interface Session extends DefaultSession {
+    user: DefaultSession["user"] & {
+      id: string;
+      role: Role;
+    };
+  }
+}
+
 export const { handlers, signIn, signOut, auth } = NextAuth({
   adapter: PrismaAdapter(prisma),
   providers: [Discord],
-  pages: {
-    signIn: "/signin",
-  },
   callbacks: {
-    authorized: async ({ auth }) => {
-      // Logged in users are authenticated, otherwise redirect to login page
-      return !!auth;
+    session({ session }) {
+      return {
+        expires: session.expires,
+        user: {
+          email: session.user.email,
+          role: session.user.role,
+          id: session.user.id,
+          name: session.user.name,
+        },
+      };
     },
   },
 });

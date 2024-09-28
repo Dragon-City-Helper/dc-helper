@@ -9,7 +9,6 @@ import { useRouter } from "next/router";
 export async function getStaticProps() {
   try {
     const dragons = await fetchDragons();
-
     return {
       props: {
         dragons,
@@ -36,7 +35,7 @@ export default function Page({ dragons }: { dragons: dragons[] }) {
         setLoading(false);
       });
     } else {
-      router.push("/signin");
+      router.push("/api/auth/signin");
     }
   }, [router, session]);
 

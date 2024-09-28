@@ -37,7 +37,7 @@ export default function Page({ dragons }: { dragons: dragons[] }) {
         setLoading(false);
       });
     } else {
-      router.push("/signin");
+      router.push("/api/auth/signin");
     }
   }, [router, session]);
 

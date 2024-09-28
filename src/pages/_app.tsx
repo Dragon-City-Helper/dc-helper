@@ -17,7 +17,6 @@ export default function App({
           <Component {...pageProps} />
         </div>
       </SessionProvider>
-
       <SpeedInsights />
       <Analytics />
     </>
