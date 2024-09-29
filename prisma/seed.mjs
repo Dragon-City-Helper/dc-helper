@@ -158,7 +158,7 @@ export const ElementsScores = {
 export const RarityScores = {
   H: 15,
   M: 10,
-  L: 8,
+  L: 7,
   E: 5,
   V: 3,
   R: 2,
@@ -166,10 +166,10 @@ export const RarityScores = {
 };
 export const weights = {
   rarity: 3,
-  skills: 1,
-  elements: 1,
-  speed: 2,
-  damage: 2,
+  skills: 2,
+  elements: 3,
+  speed: 1,
+  damage: 1,
 };
 
 export const dragonSpeedScore = (dragon, minSpeed, maxSpeed) => {

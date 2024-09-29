@@ -10,7 +10,7 @@ interface IRatingDropdown {
 const ratings = [
   {
     value: 52,
-    label: "SSS",
+    label: "OP",
   },
   {
     value: 48,

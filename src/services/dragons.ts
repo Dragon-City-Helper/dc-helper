@@ -26,6 +26,22 @@ export type dragonsWithRating = ThenArg<
   ReturnType<typeof fetchDragonsWithRatings>
 >;
 
+export const fetchDragonsWithRatingsNotNull = async (options?: {
+  rarity: Rarity;
+}) => {
+  return await prisma.dragons.findMany({
+    where: {
+      rarity: options?.rarity,
+      NOT: {
+        rating: null,
+      },
+    },
+    include: {
+      rating: true,
+    },
+  });
+};
+
 export const saveDragonRatings = async (dragonsId: string, rating: Rating) => {
   const { id, dragonsId: dragonId, ...rest } = rating;
   return await prisma.rating.upsert({

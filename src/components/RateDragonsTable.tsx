@@ -29,7 +29,7 @@ const RateDragonsTable: FC<IRateDragonsTableProps> = ({ dragons }) => {
     potency: "Potency",
     primary: "Primary",
     coverage: " Coverage",
-    rarity: "Rarity",
+    rarity: "Stat Boost",
     usability: "Usability",
     extra: "Extra",
   };
