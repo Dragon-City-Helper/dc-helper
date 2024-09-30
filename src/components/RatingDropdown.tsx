@@ -1,10 +1,15 @@
+import { dragonsWithRating } from "@/services/dragons";
 import { FC } from "react";
 
 interface IRatingDropdown {
-  dragonId: string;
+  dragon: dragonsWithRating[number];
   ratingKey: string;
   value?: number | null;
-  onRatingChange: (dragonId: string, ratingKey: string, value: number) => void;
+  onRatingChange: (
+    dragon: dragonsWithRating[number],
+    ratingKey: string,
+    value: number
+  ) => void;
 }
 
 const ratings = [
@@ -66,7 +71,7 @@ const ratings = [
   },
 ];
 const RatingDropdown: FC<IRatingDropdown> = ({
-  dragonId,
+  dragon,
   ratingKey,
   value,
   onRatingChange,
@@ -76,12 +81,12 @@ const RatingDropdown: FC<IRatingDropdown> = ({
       className="select select-bordered w-full max-w-xs"
       value={value ?? 0}
       onChange={(e) =>
-        onRatingChange(dragonId, ratingKey, parseInt(e.target.value, 10))
+        onRatingChange(dragon, ratingKey, parseInt(e.target.value, 10))
       }
     >
       {ratings.map((rating) => (
         <option
-          key={`${dragonId}-${ratingKey}-${rating.label}`}
+          key={`${dragon.id}-${ratingKey}-${rating.label}`}
           value={rating.value}
         >
           {rating.label}

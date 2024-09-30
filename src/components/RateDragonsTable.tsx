@@ -1,4 +1,4 @@
-import { Rating } from "@prisma/client";
+import { Rarity, Rating } from "@prisma/client";
 import Image from "next/image";
 import { FC, useEffect, useState } from "react";
 import RatingDropdown from "./RatingDropdown";
@@ -8,6 +8,15 @@ interface IRateDragonsTableProps {
   dragons: dragonsWithRating;
 }
 
+const rarityBasedOffset: { [key in Rarity]: number } = {
+  H: 200,
+  M: 130,
+  L: 100,
+  E: 85,
+  V: 70,
+  R: 60,
+  C: 50,
+};
 const RateDragonsTable: FC<IRateDragonsTableProps> = ({ dragons }) => {
   const keys: Exclude<keyof Rating, "id" | "dragonsId" | "score">[] = [
     "cooldown",
@@ -73,28 +82,36 @@ const RateDragonsTable: FC<IRateDragonsTableProps> = ({ dragons }) => {
       [dragonId]: false,
     });
   };
+
+  // const updateAllDragonRatings = async (dragons: dragonsWithRating) => {
+  //   dragons.forEach((dragon) => {
+  //     if (dragon.rating) {
+  //       updateDragonRating(dragon.id, dragon.rarity);
+  //     }
+  //   });
+  // };
   const onRatingChange = (
-    dragonId: string,
+    dragon: dragonsWithRating[number],
     ratingKey: string,
     value: number
   ) => {
     setDirty({
       ...dirty,
-      [dragonId]: true,
+      [dragon.id]: true,
     });
     setLocalRatings((rating) => {
       const newRating = {
-        ...(rating || {})[dragonId],
+        ...(rating || {})[dragon.id],
         [ratingKey]: value,
       };
-      newRating.score = getScore(newRating);
+      newRating.score = getScore(newRating, dragon.rarity);
       return {
         ...rating,
-        [dragonId]: newRating,
+        [dragon.id]: newRating,
       };
     });
   };
-  const getScore = (rating: Rating) => {
+  const getScore = (rating: Rating, dragonRarity: Rarity) => {
     const {
       cooldown,
       value,
@@ -115,11 +132,20 @@ const RateDragonsTable: FC<IRateDragonsTableProps> = ({ dragons }) => {
       0.5 * (primary ?? 0) +
       0.5 * (coverage ?? 0) +
       0.25 * (extra ?? 0) +
-      2 * (rarity ?? 0)
+      2 * (rarity ?? 0) +
+      rarityBasedOffset[dragonRarity]
     );
   };
   return (
     <div className="overflow-x-auto">
+      {/* <div className="flex justify-end">
+        <button
+          className="btn btn-primary"
+          onClick={() => updateAllDragonRatings(dragons)}
+        >
+          recalculate existing ratings
+        </button>
+      </div> */}
       <table className="table">
         <thead>
           <tr>
@@ -176,7 +202,7 @@ const RateDragonsTable: FC<IRateDragonsTableProps> = ({ dragons }) => {
                 {keys.map((key) => (
                   <td key={key}>
                     <RatingDropdown
-                      dragonId={dragon.id}
+                      dragon={dragon}
                       ratingKey={key}
                       value={localRatings?.[dragon.id]?.[key]}
                       onRatingChange={onRatingChange}
