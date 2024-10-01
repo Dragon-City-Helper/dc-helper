@@ -6,7 +6,7 @@ import { dragons, Elements, Rarity } from "@prisma/client";
 interface ITopDragonsCard {
   title: string;
   dragons: dragons[];
-  ownedIdsMap: Map<number, boolean>;
+  ownedIdsMap: Map<string, boolean>;
   options: {
     rarity?: Rarity;
     breedable?: boolean;
@@ -28,7 +28,7 @@ const TopDragonsCard: FC<ITopDragonsCard> = ({
       .filter((dragon) => {
         const OwnedFilterMatcher =
           options.owned !== undefined
-            ? ownedIdsMap.has(dragon.dragonId) === options.owned
+            ? ownedIdsMap.has(dragon.id) === options.owned
             : true;
         const BreedableMatcher =
           options.breedable !== undefined

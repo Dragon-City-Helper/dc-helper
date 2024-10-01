@@ -33,9 +33,9 @@ const defaultFilters: IFilters = {
 };
 
 export default function Page({ dragons }: { dragons: dragons[] }) {
-  const [owned, setOwned] = useState<number[]>([]);
+  const [owned, setOwned] = useState<string[]>([]);
   const [allDragons] = useState<dragons[]>(dragons);
-  const [loading, setLoading] = useState<boolean | number>(true);
+  const [loading, setLoading] = useState<boolean | string>(true);
   const [filters, setFilters] = useState<IFilters>(defaultFilters);
   const session = useSession();
   const router = useRouter();
@@ -44,8 +44,8 @@ export default function Page({ dragons }: { dragons: dragons[] }) {
       setLoading(true);
     } else if (session.status === "authenticated") {
       setLoading(true);
-      getOwned(session.data?.user?.email || "").then((res) => {
-        setOwned(res.data.ids);
+      getOwned(session.data?.user?.id || "").then((res) => {
+        setOwned(res.data.dragons);
         setLoading(false);
       });
     } else {
@@ -57,19 +57,19 @@ export default function Page({ dragons }: { dragons: dragons[] }) {
     return owned.reduce((acc, curr) => {
       acc.set(curr, true);
       return acc;
-    }, new Map<number, boolean>());
+    }, new Map<string, boolean>());
   }, [owned]);
 
   const onOwned = async (dragon: dragons, checked: boolean) => {
     try {
       let newOwned = owned;
       if (checked) {
-        newOwned = [...owned, dragon.dragonId];
+        newOwned = [...owned, dragon.id];
       } else {
-        newOwned = owned.filter((id) => id != dragon.dragonId);
+        newOwned = owned.filter((id) => id != dragon.id);
       }
-      setLoading(dragon.dragonId);
-      await postOwned(session.data?.user?.email || "", newOwned);
+      setLoading(dragon.id);
+      await postOwned(session.data?.user?.id || "", newOwned);
       setOwned(newOwned);
       setLoading(false);
     } catch (error) {
@@ -98,12 +98,12 @@ export default function Page({ dragons }: { dragons: dragons[] }) {
     switch (filters.show) {
       case "owned":
         finalDragons = finalDragons.filter((dragon) =>
-          ownedIdsMap.has(dragon.dragonId)
+          ownedIdsMap.has(dragon.id)
         );
         break;
       case "unowned":
         finalDragons = finalDragons.filter(
-          (dragon) => !ownedIdsMap.has(dragon.dragonId)
+          (dragon) => !ownedIdsMap.has(dragon.id)
         );
       case "all":
       default:

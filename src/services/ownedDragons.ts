@@ -2,31 +2,31 @@ import prisma from "@/lib/prisma";
 import { ownedDragons } from "@prisma/client";
 import axios from "axios";
 
-export const fetchOwned = async (id: string) => {
+export const fetchOwned = async (userId: string) => {
   return await prisma.ownedDragons.findUniqueOrThrow({
     where: {
-      userId: id,
+      userId,
     },
   });
 };
 
-export const setOwnedIds = async (id: string, ownedIds: number[]) => {
+export const setOwnedIds = async (userId: string, ownedIds: string[]) => {
   return await prisma.ownedDragons.update({
     where: {
-      userId: id,
+      userId,
     },
     data: {
-      ids: ownedIds,
+      dragons: ownedIds,
     },
   });
 };
 
-export const postOwned = async (id: string, ownedIds: number[]) => {
-  return axios.post<ownedDragons>(`/api/ownedDragons/${id}`, {
+export const postOwned = async (userId: string, ownedIds: string[]) => {
+  return axios.post<ownedDragons>(`/api/ownedDragons/${userId}`, {
     ownedIds,
   });
 };
 
-export const getOwned = async (id: string) => {
-  return axios.get<ownedDragons>(`/api/ownedDragons/${id}`);
+export const getOwned = async (userId: string) => {
+  return axios.get<ownedDragons>(`/api/ownedDragons/${userId}`);
 };

@@ -51,9 +51,9 @@ model Rating {
 }
 
 model ownedDragons {
-  id     String @id @default(auto()) @map("_id") @db.ObjectId
-  userId String @unique
-  ids    Int[]
+  id      String   @id @default(auto()) @map("_id") @db.ObjectId
+  userId  String   @unique
+  dragons String[] @db.ObjectId
 }
 
 model Skill {

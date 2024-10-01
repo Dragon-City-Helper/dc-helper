@@ -8,8 +8,8 @@ interface IDragonsTableProps {
   dragons: dragons[];
   viewOnly?: boolean;
   onOwned?: (dragon: dragons, checked: boolean) => void;
-  ownedIdsMap: Map<number, boolean>;
-  loading?: boolean | number;
+  ownedIdsMap: Map<string, boolean>;
+  loading?: boolean | string;
 }
 interface ISortOptions {
   sortBy: "name" | "category" | "speed" | "rank";
@@ -139,19 +139,19 @@ const DragonsTable: FC<IDragonsTableProps> = ({
         <tbody>
           {sortedDragons.map((dragon: dragons) => {
             return (
-              <tr key={dragon.dragonId} className="hover">
+              <tr key={dragon.id} className="hover">
                 {!viewOnly && onOwned && (
                   <td>
-                    {loading === true || loading === dragon.dragonId ? (
+                    {loading === true || loading === dragon.id ? (
                       <span className="loading loading-spinner loading-md"></span>
                     ) : (
                       <label>
                         <input
                           type="checkbox"
                           className="checkbox"
-                          checked={ownedIdsMap.has(dragon.dragonId)}
+                          checked={ownedIdsMap.has(dragon.id)}
                           onChange={() =>
-                            onOwned(dragon, !ownedIdsMap.get(dragon.dragonId))
+                            onOwned(dragon, !ownedIdsMap.get(dragon.id))
                           }
                         />
                       </label>

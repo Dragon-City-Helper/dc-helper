@@ -23,7 +23,7 @@ export async function getStaticProps() {
 }
 
 export default function Page({ dragons }: { dragons: dragons[] }) {
-  const [ownedIds, setOwned] = useState<number[]>([]);
+  const [ownedIds, setOwned] = useState<string[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const session = useSession();
   const router = useRouter();
@@ -32,8 +32,8 @@ export default function Page({ dragons }: { dragons: dragons[] }) {
       setLoading(true);
     } else if (session.status === "authenticated") {
       setLoading(true);
-      getOwned(session.data?.user?.email || "").then((res) => {
-        setOwned(res.data.ids);
+      getOwned(session.data?.user?.id || "").then((res) => {
+        setOwned(res.data.dragons);
         setLoading(false);
       });
     } else {
@@ -45,7 +45,7 @@ export default function Page({ dragons }: { dragons: dragons[] }) {
     return ownedIds.reduce((acc, curr) => {
       acc.set(curr, true);
       return acc;
-    }, new Map<number, boolean>());
+    }, new Map<string, boolean>());
   }, [ownedIds]);
 
   const getTotalElementDragons = useCallback(
@@ -60,7 +60,7 @@ export default function Page({ dragons }: { dragons: dragons[] }) {
     (element: Elements) => {
       return dragons.filter(
         (dragon) =>
-          dragon.elements.includes(element) && ownedIdsMap.has(dragon.dragonId)
+          dragon.elements.includes(element) && ownedIdsMap.has(dragon.id)
       ).length;
     },
     [dragons, ownedIdsMap]

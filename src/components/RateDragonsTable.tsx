@@ -160,7 +160,7 @@ const RateDragonsTable: FC<IRateDragonsTableProps> = ({ dragons }) => {
         <tbody>
           {dragons.map((dragon) => {
             return (
-              <tr key={dragon.dragonId} className="hover">
+              <tr key={dragon.id} className="hover">
                 <td className="w-1/5">
                   <div className="flex flex-row gap-5 items-center">
                     <div className="relative">
