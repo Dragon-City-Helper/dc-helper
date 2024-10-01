@@ -57,29 +57,26 @@ const RateDragonsTable: FC<IRateDragonsTableProps> = ({ dragons }) => {
     setLocalRatings(initState);
   }, [dragons]);
 
-  const updateDragonRating = async (dragonId: string) => {
+  const updateDragonRating = async (id: string) => {
     setLoading({
       ...loading,
-      [dragonId]: true,
+      [id]: true,
     });
-    const { data: newDragonRating } = await putRatings(
-      dragonId,
-      localRatings[dragonId]
-    );
+    const { data: newDragonRating } = await putRatings(id, localRatings[id]);
     console.log(newDragonRating);
     setLocalRatings((rating) => {
       return {
         ...rating,
-        [dragonId]: newDragonRating,
+        [id]: newDragonRating,
       };
     });
     setDirty({
       ...dirty,
-      [dragonId]: false,
+      [id]: false,
     });
     setLoading({
       ...loading,
-      [dragonId]: false,
+      [id]: false,
     });
   };
 

@@ -43,7 +43,7 @@ export const fetchDragonsWithRatingsNotNull = async (options?: {
 };
 
 export const saveDragonRatings = async (dragonsId: string, rating: Rating) => {
-  const { id, dragonsId: dragonId, ...rest } = rating;
+  const { id, dragonsId: _, ...rest } = rating;
   return await prisma.rating.upsert({
     where: {
       dragonsId: dragonsId,

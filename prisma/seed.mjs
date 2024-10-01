@@ -194,7 +194,7 @@ export const dragonElementsScores = (dragon) => {
 
 export const dragonSkillScores = (dragon) => {
   return (dragon.skills || []).reduce((acc, curr) => {
-    return acc + skillsScore[curr.name] * 10 ?? 0;
+    return acc + (skillsScore[curr.name] ?? 0) * 10;
   }, 0);
 };
 
@@ -219,7 +219,7 @@ const fetchDragons = async ({
   breedable = null,
   animation = null,
 }) => {
-  const response = await axios.post(
+  const ditlepResponse = await axios.post(
     "https://www.ditlep.com/Dragon/Search",
     {
       dragonName,
@@ -239,50 +239,77 @@ const fetchDragons = async ({
     }
   );
 
-  const dragons = response.data.items
+  const dcMetaResponse = await axios.get(
+    "https://dragoncitymeta.com/calculate-tier/t-all-nonee",
+    {
+      headers: {
+        "Content-Type": "application/json",
+      },
+    }
+  );
+
+  const nameCorrections = {
+    "Spiked Ghoul Dragon": "Spiky Ghoul Dragon",
+  };
+
+  const dcMetaResponseByName = dcMetaResponse.data.reduce((acc, curr) => {
+    const name = (nameCorrections[curr.dragon.name] ?? curr.dragon.name).trim();
+    return {
+      ...acc,
+      [name]: curr,
+    };
+  }, {});
+  const dragons = ditlepResponse.data.items
     .filter(
       ({ id }) =>
         ![1145, 1146, 1144, 1410, 1882, 1911, 1920, 1921, 1852, 1114].includes(
           id
         )
     )
+    .filter(({ name }) => !!dcMetaResponseByName[name.trim()])
     .map(
       ({
         name,
-        id,
-        rank,
         rarity,
-        familyName,
         breedable,
         elements,
-        image,
         baseSpeed,
         maxSpeed,
         maxDamage,
         skills,
+        skillType,
+        hasSKill,
         category,
-      }) => ({
-        name,
-        dragonId: id,
-        globalRank: rank.globalRank,
-        rarity,
-        familyName,
-        breedable,
-        elements,
-        baseSpeed,
-        maxSpeed,
-        maxDamage,
-        category,
-        skills: skills.map((skill) => ({
-          name: skill.name === "" ? "Produce Food" : skill.name,
-          skillType: skill.skillType,
-          description: skill.descriptionKey,
-        })),
-        image: getImageUrl({ image, isThumbnail: false }),
-        thumbnail: getImageUrl({ image, isThumbnail: true }),
-      })
+      }) => {
+        const trimmedName = name.trim();
+        const { dragon, thumb } = dcMetaResponseByName[trimmedName];
+        return {
+          name: trimmedName,
+          rarity,
+          familyName: dragon.family,
+          breedable,
+          elements,
+          baseSpeed,
+          maxSpeed,
+          maxDamage,
+          category,
+          skills: skills.map((skill) => ({
+            name: skill.name === "" ? "Produce Food" : skill.name,
+            skillType: skill.skillType,
+            description: skill.descriptionKey,
+          })),
+          skins: dragon.skins,
+          image: dragon.image,
+          thumbnail: thumb,
+          isVip: !!dragon.family && (skills?.length ?? 0) > 0,
+          hasSkills: hasSKill,
+          skillType,
+          isSkin: false,
+          hasAllSkins: false,
+        };
+      }
     );
-  const metadata = getMetadata(response.data.items);
+  const metadata = getMetadata(ditlepResponse.data.items);
   return { dragons, metadata };
 };
 
@@ -361,11 +388,51 @@ function getMetadata(dragonsRaw) {
   return { skills, families, maxSpeed, minSpeed, maxDamage, minDamage };
 }
 
+const addRankToDragon = (dragons, metadata) => {
+  const dragonsWithScores = dragons.map((dragon) => {
+    return {
+      ...dragon,
+      speedScore: dragonSpeedScore(
+        dragon,
+        metadata.minSpeed,
+        metadata.maxSpeed
+      ),
+      damageScore: dragonDamageScore(
+        dragon,
+        metadata.minDamage,
+        metadata.maxDamage
+      ),
+      elementsScore: dragonElementsScores(dragon),
+      rarityScore: RarityScores[dragon.rarity],
+      skillsScore: dragonSkillScores(dragon),
+    };
+  });
+  const dragonsWithFinalScore = dragonsWithScores.map((dragon) => {
+    return {
+      ...dragon,
+      dragonScore: dragon.hasAllSkins
+        ? dragonTotalScore(dragon) * 1.5
+        : dragon.isSkin
+        ? dragonTotalScore(dragon) * 1.25
+        : dragonTotalScore(dragon),
+    };
+  });
+  const dragonsWithRank = dragonsWithFinalScore
+    .sort((a, b) => b.dragonScore - a.dragonScore)
+    .map((dragon, index) => {
+      return {
+        ...dragon,
+        rank: index + 1,
+      };
+    });
+  return dragonsWithRank;
+};
+
 async function seedDragons(dragons) {
   console.log(`Start seeding dragons...`);
   for (const dragon of dragons) {
     await prisma.dragons.upsert({
-      where: { dragonId: dragon.dragonId },
+      where: { name: dragon.name },
       create: {
         ...dragon,
         skills: {
@@ -396,39 +463,38 @@ async function seedDragons(dragons) {
 
 async function main() {
   const { dragons, metadata } = await fetchDragons({});
-  const dragonsWithScores = dragons.map((dragon) => {
-    return {
-      ...dragon,
-      speedScore: dragonSpeedScore(
-        dragon,
-        metadata.minSpeed,
-        metadata.maxSpeed
-      ),
-      damageScore: dragonDamageScore(
-        dragon,
-        metadata.minDamage,
-        metadata.maxDamage
-      ),
-      elementsScore: dragonElementsScores(dragon),
-      rarityScore: RarityScores[dragon.rarity],
-      skillsScore: dragonSkillScores(dragon),
-    };
-  });
-  const dragonsWithFinalScore = dragonsWithScores.map((dragon) => {
-    return {
-      ...dragon,
-      dragonScore: dragonTotalScore(dragon),
-    };
-  });
-  const dragonsWithRank = dragonsWithFinalScore
-    .sort((a, b) => b.dragonScore - a.dragonScore)
-    .map((dragon, index) => {
-      return {
-        ...dragon,
-        rank: index,
-      };
-    });
-  // console.log(JSON.stringify(dragonsWithRank, null, 2));
+  const dragonsAndSkins = dragons.reduce((acc, curr) => {
+    if (curr.skins) {
+      const skinsWithAbilities = curr.skins.filter((skin) => !!skin.descr);
+      delete curr.skins;
+      const skinDragons = skinsWithAbilities.map((skin) => {
+        return {
+          ...curr,
+          name: `${curr.name} (${skin.skinname})`,
+          image: skin.img,
+          isSkin: true,
+        };
+      });
+      if (skinDragons.length > 1) {
+        return [
+          ...acc,
+          curr,
+          ...skinDragons,
+          {
+            ...curr,
+            name: `${curr.name} (All Skins)`,
+            isSkin: true,
+            hasAllSkins: true,
+          },
+        ];
+      } else if (skinDragons.length > 0) {
+        return [...acc, curr, ...skinDragons];
+      }
+    }
+    return [...acc, curr];
+  }, []);
+  const dragonsWithRank = addRankToDragon(dragonsAndSkins, metadata);
+
   seedDragons(dragonsWithRank);
 }
 
