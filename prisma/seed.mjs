@@ -280,6 +280,7 @@ const fetchDragons = async ({
         skillType,
         hasSKill,
         category,
+        image,
       }) => {
         const trimmedName = name.trim();
         const { dragon, thumb } = dcMetaResponseByName[trimmedName];
@@ -300,7 +301,7 @@ const fetchDragons = async ({
           })),
           skins: dragon.skins,
           image: dragon.image,
-          thumbnail: thumb,
+          thumbnail: getImageUrl({ image, isThumbnail: true }),
           isVip: !!dragon.family && (skills?.length ?? 0) > 0,
           hasSkills: hasSKill,
           skillType,
