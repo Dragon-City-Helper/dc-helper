@@ -116,7 +116,7 @@ const FamilyFilter: FC<DragonFilters> = ({
         onChange={(e) => onFilterChange("familyName", e)}
         value={filters.familyName}
       >
-        <option value="">All Dragons</option>
+        <option value="all">All Dragons</option>
         {options.map((option) => (
           <option value={option} key={option}>
             {option}
@@ -137,9 +137,9 @@ const SkinsFilter: FC<DragonFilters> = ({ filters, onFilterChange }) => {
         className="select select-bordered"
         onChange={(e) => onFilterChange("skins", e)}
       >
-        <option value="all">Skins and Dragons</option>
-        <option value="skins">Skins Only</option>
-        <option value="dragons">Dragons Only</option>
+        <option value="all">All</option>
+        <option value="skins">Skins</option>
+        <option value="dragons">Skinless</option>
       </select>
     </label>
   );

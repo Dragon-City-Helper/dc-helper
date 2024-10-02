@@ -31,7 +31,7 @@ export default function Page({ dragons }: { dragons: dragonsWithRating }) {
         dragons={dragons}
         onFilterChange={onFilterChange}
         filters={filters}
-        allowedFilters={["search", "element", "familyName", "skins"]}
+        allowedFilters={["search", "element", "familyName", "rarity", "skins"]}
       />
       <TierListLayout dragons={filteredDragons as dragonsWithRating} />
     </div>
