@@ -143,71 +143,74 @@ const RateDragonsTable: FC<IRateDragonsTableProps> = ({ dragons }) => {
           recalculate existing ratings
         </button>
       </div> */}
-      <table className="table">
-        <thead>
-          <tr>
-            <th>Name</th>
-            {keys.map((key) => (
-              <th key={key}>{keysText[key]}</th>
-            ))}
-            <th>Score</th>
-            <th>Action</th>
-          </tr>
-        </thead>
-        <tbody>
-          {dragons.map((dragon) => {
-            return (
-              <tr key={dragon.id} className="hover">
-                <td className="w-1/5">
-                  <div className="flex flex-row gap-5 items-center">
-                    <div className="relative">
-                      <div className="p-4">
-                        <Image
-                          className="rounded-full border-2 border-gray-200"
-                          src={dragon.thumbnail}
-                          alt={dragon.name}
-                          width={100}
-                          height={100}
-                        />
-                      </div>
-                      <div className="absolute top-0 right-0">
-                        <Image
-                          src={`/images/rarity/${dragon.rarity}.png`}
-                          alt={dragon.rarity}
-                          width={32}
-                          height={32}
-                        />
-                      </div>
-                    </div>
-                    <div className="flex flex-col justify-between items-start flex-grow">
-                      <div className="flex flex-row gap-0 items-start">
-                        {dragon.elements.map((element, index) => (
-                          <Image
-                            key={`${dragon.id}-${element}-${index}`}
-                            src={`/images/elements/${element}.png`}
-                            alt={element}
-                            width={15}
-                            height={31}
-                          />
-                        ))}
-                      </div>
-                      <div className="text-left">{dragon.name}</div>
-                    </div>
-                  </div>
-                </td>
+      <div className="table">
+        {dragons.map((dragon) => {
+          return (
+            <div
+              key={dragon.id}
+              className=" w-full border-gray-700 border-2 mt-2 p-6"
+            >
+              <div className="flex flex-row gap-5 items-center">
+                <div className="p-4">
+                  <Image
+                    className="rounded-full border-2 border-gray-200"
+                    src={dragon.thumbnail}
+                    alt={dragon.name}
+                    width={100}
+                    height={100}
+                  />
+                </div>
+                <div className="flex flex-col justify-between items-start flex-grow">
+                  <div className="flex flex-row gap-2 items-start">
+                    {dragon.elements.map((element, index) => (
+                      <Image
+                        key={`${dragon.id}-${element}-${index}`}
+                        src={`/images/elements/${element}.png`}
+                        alt={element}
+                        width={15}
+                        height={31}
+                      />
+                    ))}
 
+                    <Image
+                      src={`/images/rarity/${dragon.rarity}.png`}
+                      alt={dragon.rarity}
+                      width={32}
+                      height={32}
+                    />
+                    {dragon.familyName && (
+                      <Image
+                        src={`/images/family/icon-${dragon.familyName}.png`}
+                        alt={dragon.familyName}
+                        width={32}
+                        height={32}
+                      />
+                    )}
+                  </div>
+                  <div className="text-left">{dragon.name}</div>
+                </div>
+              </div>
+              <div className="flex flex-wrap items-center justify-between gap-6">
                 {keys.map((key) => (
-                  <td key={key}>
+                  <div key={key} className="flex flex-col gap-2">
+                    <div>
+                      <b>{keysText[key]}</b>
+                    </div>
                     <RatingDropdown
                       dragon={dragon}
                       ratingKey={key}
                       value={localRatings?.[dragon.id]?.[key]}
                       onRatingChange={onRatingChange}
                     />
-                  </td>
+                  </div>
                 ))}
-                <td>{localRatings[dragon.id]?.score ?? 0}</td>
-                <td>
+                <div className="flex flex-col gap-2">
+                  <div>
+                    <b>Score</b>
+                  </div>
+                  <div> {localRatings[dragon.id]?.score ?? 0}</div>
+                </div>
+                <div className="flex flex-col gap-2">
                   {loading[dragon.id] ? (
                     <span className="loading loading-spinner loading-md"></span>
                   ) : (
@@ -219,12 +222,12 @@ const RateDragonsTable: FC<IRateDragonsTableProps> = ({ dragons }) => {
                       Save
                     </button>
                   )}
-                </td>
-              </tr>
-            );
-          })}
-        </tbody>
-      </table>
+                </div>
+              </div>
+            </div>
+          );
+        })}
+      </div>
     </div>
   );
 };

@@ -457,9 +457,21 @@ async function seedDragons(dragons) {
         },
       },
     });
-    console.log(`Created/Updated dragon: ${dragon.name}`);
+    if (dragon.isSkin) {
+      console.log(`Created/Updated Skinned Dragon: ${dragon.name}`);
+    } else {
+      console.log(`Created/Updated Dragon: ${dragon.name}`);
+    }
   }
-  console.log(`Seeding finished. ${dragons.length} Dragons seeded.`);
+  const dragonsLength = dragons.filter((dragon) => !dragon.isSkin).length;
+  const skinsLength = dragons.filter(
+    (dragon) => dragon.isSkin && !dragon.hasAllSkins
+  ).length;
+  const allSkinsLength = dragons.filter((dragon) => dragon.hasAllSkins).length;
+  console.log(`Seeding finished.
+    ${dragonsLength} Dragons seeded.
+    ${skinsLength} Combat Skins seeded.
+    ${allSkinsLength} All Skin dragons seeded.`);
 }
 
 async function main() {
@@ -496,7 +508,16 @@ async function main() {
   }, []);
   const dragonsWithRank = addRankToDragon(dragonsAndSkins, metadata);
 
-  seedDragons(dragonsWithRank);
+  const familyNames = dragonsWithRank
+    .map((dragon) => dragon.familyName)
+    .filter(Boolean);
+  console.log(familyNames);
+  const uniqueFamilyNames = new Set(familyNames);
+  const images = [...uniqueFamilyNames].map(
+    (family) => `https://dragoncitymeta.com/img/icon-${family}.png`
+  );
+  console.log(images);
+  // seedDragons(dragonsWithRank);
 }
 
 main()
