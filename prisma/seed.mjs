@@ -508,16 +508,16 @@ async function main() {
   }, []);
   const dragonsWithRank = addRankToDragon(dragonsAndSkins, metadata);
 
-  const familyNames = dragonsWithRank
-    .map((dragon) => dragon.familyName)
-    .filter(Boolean);
-  console.log(familyNames);
-  const uniqueFamilyNames = new Set(familyNames);
-  const images = [...uniqueFamilyNames].map(
-    (family) => `https://dragoncitymeta.com/img/icon-${family}.png`
-  );
-  console.log(images);
-  // seedDragons(dragonsWithRank);
+  // const familyNames = dragonsWithRank
+  //   .map((dragon) => dragon.familyName)
+  //   .filter(Boolean);
+  // console.log(familyNames);
+  // const uniqueFamilyNames = new Set(familyNames);
+  // const images = [...uniqueFamilyNames].map(
+  //   (family) => `https://dragoncitymeta.com/img/icon-${family}.png`
+  // );
+  // console.log(images);
+  seedDragons(dragonsWithRank);
 }
 
 main()

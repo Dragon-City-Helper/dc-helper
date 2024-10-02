@@ -6,6 +6,8 @@ import { useRouter } from "next/router";
 import RateDragonsTable from "@/components/RateDragonsTable";
 import { NextRequest } from "next/server";
 import { GetServerSidePropsContext } from "next";
+import DragonFilters from "@/components/DragonFilters";
+import useDragonFilters from "@/hooks/useDragonFilters";
 
 export async function getServerSideProps(context: GetServerSidePropsContext) {
   const rarityParam = context.params?.rarity as string;
@@ -51,11 +53,19 @@ export default function Page({ dragons }: { dragons: dragonsWithRating }) {
     }
   }, [data?.user.id, data?.user.role, router, status]);
 
+  const { filteredDragons, onFilterChange, filters } =
+    useDragonFilters(dragons);
   return (
-    <div className="flex flex-row w-100 h-100 overflow-auto">
-      <div className="flex-1 m-6">
-        <RateDragonsTable dragons={dragons} />
+    <div className="flex flex-col w-100 h-100 overflow-auto m-6 gap-6">
+      <div className="flex flex-wrap justify-between items-center">
+        <DragonFilters
+          dragons={dragons}
+          onFilterChange={onFilterChange}
+          filters={filters}
+          allowedFilters={["search", "element", "familyName", "skins"]}
+        />
       </div>
+      <RateDragonsTable dragons={filteredDragons as dragonsWithRating} />
     </div>
   );
 }

@@ -2,10 +2,11 @@ import DragonsTable from "@/components/DragonsTable";
 import { fetchDragons } from "@/services/dragons";
 import { getOwned, postOwned } from "@/services/ownedDragons";
 import { useEffect, useMemo, useState } from "react";
-import { dragons, Elements, Rarity } from "@prisma/client";
+import { dragons } from "@prisma/client";
 import DragonFilters from "@/components/DragonFilters";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/router";
+import useDragonFilters from "@/hooks/useDragonFilters";
 
 export async function getStaticProps() {
   try {
@@ -21,22 +22,11 @@ export async function getStaticProps() {
   }
 }
 
-export interface IFilters {
-  search?: string;
-  show: "all" | "owned" | "unowned";
-  rarity?: Rarity | "all";
-  element?: Elements | "all";
-}
-
-const defaultFilters: IFilters = {
-  show: "all",
-};
-
 export default function Page({ dragons }: { dragons: dragons[] }) {
   const [owned, setOwned] = useState<string[]>([]);
   const [allDragons] = useState<dragons[]>(dragons);
   const [loading, setLoading] = useState<boolean | string>(true);
-  const [filters, setFilters] = useState<IFilters>(defaultFilters);
+
   const session = useSession();
   const router = useRouter();
   useEffect(() => {
@@ -78,63 +68,27 @@ export default function Page({ dragons }: { dragons: dragons[] }) {
     }
   };
 
-  const filteredDragons = useMemo(() => {
-    let finalDragons = allDragons;
-    if (filters.search) {
-      finalDragons = finalDragons.filter((dragon) =>
-        new RegExp(`${filters.search}`, "gi").test(dragon.name)
-      );
-    }
-    if (filters.rarity && filters.rarity !== "all") {
-      finalDragons = finalDragons.filter(
-        (dragon) => dragon.rarity === filters.rarity
-      );
-    }
-    if (filters.element && filters.element !== "all") {
-      finalDragons = finalDragons.filter((dragon) =>
-        dragon.elements.includes(filters.element as Elements)
-      );
-    }
-    switch (filters.show) {
-      case "owned":
-        finalDragons = finalDragons.filter((dragon) =>
-          ownedIdsMap.has(dragon.id)
-        );
-        break;
-      case "unowned":
-        finalDragons = finalDragons.filter(
-          (dragon) => !ownedIdsMap.has(dragon.id)
-        );
-      case "all":
-      default:
-        break;
-    }
-    return finalDragons;
-  }, [
-    allDragons,
-    filters.element,
-    filters.rarity,
-    filters.search,
-    filters.show,
-    ownedIdsMap,
-  ]);
-
-  const onFilterChange = (key: keyof IFilters, e: any) => {
-    setFilters({
-      ...filters,
-      [key]: e.target.value,
-    });
-  };
-
+  const { filteredDragons, onFilterChange, filters } = useDragonFilters(
+    dragons,
+    ownedIdsMap
+  );
   return (
     <div className="flex flex-row w-100 h-100 overflow-auto">
       <div className="flex-1 m-6">
         <div className="flex flex-col gap-4">
-          <DragonFilters onFilterChange={onFilterChange} filters={filters} />
+          <DragonFilters
+            onFilterChange={onFilterChange}
+            filters={filters}
+            dragons={allDragons}
+          />
           <b>
             {filteredDragons.length === dragons.length
-              ? `Showing all Dragons`
-              : `Showing ${filteredDragons.length} of ${dragons.length} dragons`}
+              ? `Showing all Dragons and Skins`
+              : `Showing ${
+                  filteredDragons.filter((d) => !d.isSkin).length
+                } of ${dragons.filter((d) => !d.isSkin).length} dragons and ${
+                  filteredDragons.filter((d) => d.isSkin).length
+                } of ${dragons.filter((d) => d.isSkin).length} Skins`}
           </b>
           <DragonsTable
             dragons={filteredDragons}

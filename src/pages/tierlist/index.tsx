@@ -3,6 +3,8 @@ import {
   fetchDragonsWithRatingsNotNull,
 } from "@/services/dragons";
 import TierListLayout from "@/components/TierListLayout";
+import DragonFilters from "@/components/DragonFilters";
+import useDragonFilters from "@/hooks/useDragonFilters";
 
 export async function getServerSideProps() {
   try {
@@ -21,5 +23,17 @@ export async function getServerSideProps() {
 }
 
 export default function Page({ dragons }: { dragons: dragonsWithRating }) {
-  return <TierListLayout dragons={dragons} />;
+  const { filteredDragons, onFilterChange, filters } =
+    useDragonFilters(dragons);
+  return (
+    <div className="flex flex-col w-100 h-100 overflow-auto m-6 gap-6">
+      <DragonFilters
+        dragons={dragons}
+        onFilterChange={onFilterChange}
+        filters={filters}
+        allowedFilters={["search", "element", "familyName", "skins"]}
+      />
+      <TierListLayout dragons={filteredDragons as dragonsWithRating} />
+    </div>
+  );
 }

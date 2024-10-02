@@ -14,14 +14,21 @@ const DragonFaceCard: FC<IDragonFaceCardProps> = ({ dragon }) => {
       <div className="card-body text-center items-center">
         <h2 className="card-title">{dragon.name}</h2>
         <div className="flex flex-row gap-2 items-start justify-between">
-          <div>
+          <Image
+            src={`/images/rarity/${dragon.rarity}.png`}
+            alt={dragon.rarity}
+            width={32}
+            height={32}
+          />
+
+          {dragon.familyName && (
             <Image
-              src={`/images/rarity/${dragon.rarity}.png`}
-              alt={dragon.rarity}
+              src={`/images/family/icon-${dragon.familyName}.png`}
+              alt={dragon.familyName}
               width={32}
               height={32}
             />
-          </div>
+          )}
           <div className="flex flex-row gap-1">
             {dragon.elements.map((element, index) => (
               <Image

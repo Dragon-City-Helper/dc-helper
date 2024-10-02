@@ -12,7 +12,7 @@ interface IDragonsTableProps {
   loading?: boolean | string;
 }
 interface ISortOptions {
-  sortBy: "name" | "category" | "speed" | "rank";
+  sortBy: "name" | "speed" | "rank";
   sortOrder: "asc" | "desc";
 }
 
@@ -74,10 +74,9 @@ const DragonsTable: FC<IDragonsTableProps> = ({
     const { sortBy, sortOrder } = sortOptions || {};
     const sortByMapping: Record<
       ISortOptions["sortBy"],
-      "name" | "category" | "maxSpeed" | "rank"
+      "name" | "maxSpeed" | "rank"
     > = {
       name: "name",
-      category: "category",
       speed: "maxSpeed",
       rank: "rank",
     };
@@ -95,9 +94,9 @@ const DragonsTable: FC<IDragonsTableProps> = ({
   }, [sortOptions, Dragons]);
 
   return (
-    <div className="overflow-x-auto">
+    <div className="overflow-x-auto ">
       <table className="table">
-        <thead>
+        <thead className="text-center">
           <tr>
             {!viewOnly && onOwned && <th>Owned ?</th>}
             <th>
@@ -106,14 +105,6 @@ const DragonsTable: FC<IDragonsTableProps> = ({
                 className="hover:cursor-pointer flex gap-2"
               >
                 Name {getSortOptionIndicator("name")}
-              </div>
-            </th>
-            <th>
-              <div
-                onClick={() => sortOnclickHandler("category")}
-                className="hover:cursor-pointer flex gap-2"
-              >
-                Category {getSortOptionIndicator("category")}
               </div>
             </th>
             <th>
@@ -133,6 +124,7 @@ const DragonsTable: FC<IDragonsTableProps> = ({
               </div>
             </th>
             <th>Rarity</th>
+            <th>Family</th>
             <th>Elements</th>
           </tr>
         </thead>
@@ -167,27 +159,44 @@ const DragonsTable: FC<IDragonsTableProps> = ({
                   />
                   <div>{dragon.name}</div>
                 </td>
-                <td>{dragon.category}</td>
                 <td>{`${dragon.baseSpeed} - ${dragon.maxSpeed}`}</td>
                 <td>{dragon.rank + 1}</td>
                 <td>
-                  <Image
-                    src={`/images/rarity/${dragon.rarity}.png`}
-                    alt={dragon.rarity}
-                    width={64}
-                    height={64}
-                  />
-                </td>
-                <td className="flex flex-row gap-2 items-center">
-                  {dragon.elements.map((element, index) => (
+                  <div className="flex items-center justify-center">
                     <Image
-                      key={`${dragon.id}-${element}-${index}`}
-                      src={`/images/elements/${element}.png`}
-                      alt={element}
-                      width={36}
-                      height={76}
+                      src={`/images/rarity/${dragon.rarity}.png`}
+                      alt={dragon.rarity}
+                      width={64}
+                      height={64}
                     />
-                  ))}
+                  </div>
+                </td>
+                <td>
+                  <div className="flex items-center justify-center">
+                    {dragon.familyName ? (
+                      <Image
+                        src={`/images/family/icon-${dragon.familyName}.png`}
+                        alt={dragon.familyName}
+                        width={64}
+                        height={64}
+                      />
+                    ) : (
+                      <div className="text-center">NA</div>
+                    )}
+                  </div>
+                </td>
+                <td>
+                  <div className="flex flex-row gap-2 items-center justify-center">
+                    {dragon.elements.map((element, index) => (
+                      <Image
+                        key={`${dragon.id}-${element}-${index}`}
+                        src={`/images/elements/${element}.png`}
+                        alt={element}
+                        width={36}
+                        height={76}
+                      />
+                    ))}
+                  </div>
                 </td>
               </tr>
             );
