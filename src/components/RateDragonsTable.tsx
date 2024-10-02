@@ -11,7 +11,7 @@ interface IRateDragonsTableProps {
 const rarityBasedOffset: { [key in Rarity]: number } = {
   H: 200,
   M: 170,
-  L: 140,
+  L: 150,
   E: 100,
   V: 80,
   R: 60,
