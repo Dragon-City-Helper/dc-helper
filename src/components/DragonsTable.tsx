@@ -160,7 +160,7 @@ const DragonsTable: FC<IDragonsTableProps> = ({
                   <div>{dragon.name}</div>
                 </td>
                 <td>{`${dragon.baseSpeed} - ${dragon.maxSpeed}`}</td>
-                <td>{dragon.rank + 1}</td>
+                <td>{dragon.rank}</td>
                 <td>
                   <div className="flex items-center justify-center">
                     <Image
