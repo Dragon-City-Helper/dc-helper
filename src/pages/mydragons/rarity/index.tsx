@@ -1,5 +1,5 @@
 import TopDragonsCard from "@/components/TopDragonsCard";
-import { rarities, RarityNames } from "@/types/Dragon";
+import { rarities, RarityNames } from "@/constants/Dragon";
 import { fetchDragons } from "@/services/dragons";
 import { getOwned } from "@/services/ownedDragons";
 import { useCallback, useMemo, useEffect, useState } from "react";

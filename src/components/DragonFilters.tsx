@@ -1,6 +1,11 @@
-import { elements, ElementsNames, rarities, RarityNames } from "@/types/Dragon";
+import {
+  elements,
+  ElementsNames,
+  rarities,
+  RarityNames,
+} from "@/constants/Dragon";
 import { dragons, Elements, Rarity } from "@prisma/client";
-import { Component, FC } from "react";
+import { FC } from "react";
 
 export interface IFilters {
   search?: string;

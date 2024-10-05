@@ -1,3 +1,4 @@
+import { ratings } from "@/constants/Rating";
 import { dragonsWithRating } from "@/services/dragons";
 import { FC } from "react";
 
@@ -12,64 +13,6 @@ interface IRatingDropdown {
   ) => void;
 }
 
-const ratings = [
-  {
-    value: 52,
-    label: "OP",
-  },
-  {
-    value: 48,
-    label: "SS",
-  },
-  {
-    value: 44,
-    label: "S++",
-  },
-  {
-    value: 40,
-    label: "S+",
-  },
-  {
-    value: 36,
-    label: "S",
-  },
-  {
-    value: 32,
-    label: "S-",
-  },
-  {
-    value: 28,
-    label: "A+",
-  },
-  {
-    value: 24,
-    label: "A",
-  },
-  {
-    value: 20,
-    label: "A-",
-  },
-  {
-    value: 16,
-    label: "B+",
-  },
-  {
-    value: 12,
-    label: "B",
-  },
-  {
-    value: 8,
-    label: "B-",
-  },
-  {
-    value: 4,
-    label: "C+",
-  },
-  {
-    value: 0,
-    label: "C",
-  },
-];
 const RatingDropdown: FC<IRatingDropdown> = ({
   dragon,
   ratingKey,

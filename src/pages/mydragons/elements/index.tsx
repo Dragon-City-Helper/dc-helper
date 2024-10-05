@@ -1,5 +1,5 @@
 import TopDragonsCard from "@/components/TopDragonsCard";
-import { elements, ElementsNames } from "@/types/Dragon";
+import { elements, ElementsNames } from "@/constants/Dragon";
 import { fetchDragons } from "@/services/dragons";
 import { getOwned } from "@/services/ownedDragons";
 import { useCallback, useEffect, useMemo, useState } from "react";

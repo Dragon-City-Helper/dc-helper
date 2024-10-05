@@ -3,46 +3,17 @@ import Image from "next/image";
 import { FC, useEffect, useState } from "react";
 import RatingDropdown from "./RatingDropdown";
 import { dragonsWithRating, putRatings } from "@/services/dragons";
+import {
+  rarityBasedOffset,
+  RatingKeys,
+  RatingKeysToText,
+} from "@/constants/Rating";
 
 interface IRateDragonsTableProps {
   dragons: dragonsWithRating;
 }
 
-const rarityBasedOffset: { [key in Rarity]: number } = {
-  H: 200,
-  M: 170,
-  L: 150,
-  E: 100,
-  V: 80,
-  R: 60,
-  C: 50,
-};
 const RateDragonsTable: FC<IRateDragonsTableProps> = ({ dragons }) => {
-  const keys: Exclude<keyof Rating, "id" | "dragonsId" | "score">[] = [
-    "cooldown",
-    "value",
-    "versatility",
-    "potency",
-    "primary",
-    "coverage",
-    "rarity",
-    "usability",
-    "extra",
-  ] as const;
-  type AllowedKey = (typeof keys)[number];
-
-  const keysText: { [key in AllowedKey]: string } = {
-    cooldown: "Cooldown",
-    value: "Value",
-    versatility: "Versatility",
-    potency: "Potency",
-    primary: "Primary",
-    coverage: " Coverage",
-    rarity: "Stat Boost",
-    usability: "Usability",
-    extra: "Extra",
-  };
-
   const [localRatings, setLocalRatings] = useState<Record<string, Rating>>({});
   const [dirty, setDirty] = useState<{ [key: string]: boolean }>({});
   const [loading, setLoading] = useState<{ [key: string]: boolean }>({});
@@ -203,10 +174,10 @@ const RateDragonsTable: FC<IRateDragonsTableProps> = ({ dragons }) => {
               </div>
             </div>
             <div className="flex flex-wrap items-center justify-between gap-6">
-              {keys.map((key) => (
+              {RatingKeys.map((key) => (
                 <div key={key} className="flex flex-col gap-2">
                   <div>
-                    <b>{keysText[key]}</b>
+                    <b>{RatingKeysToText[key]}</b>
                   </div>
                   <RatingDropdown
                     dragon={dragon}
