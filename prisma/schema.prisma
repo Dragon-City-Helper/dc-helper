@@ -48,6 +48,7 @@ model Rating {
   usability   Int      @default(0) //  How many of it’s 4 masters arenas can you use it in
   extra       Int      @default(0) // extra adjustments
   score       Int      @default(0) // saved computed score
+  overall     Int      @default(0) // overall manual rating
   id          String   @id @default(auto()) @map("_id") @db.ObjectId
   dragons     dragons? @relation(fields: [dragonsId], references: [id])
   dragonsId   String?  @unique @db.ObjectId

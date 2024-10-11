@@ -80,6 +80,7 @@ export const RatingKeys: Exclude<keyof Rating, "id" | "dragonsId" | "score">[] =
     "rarity",
     "usability",
     "extra",
+    "overall",
   ] as const;
 export type AllowedRatingKeys = (typeof RatingKeys)[number];
 
@@ -93,4 +94,8 @@ export const RatingKeysToText: { [key in AllowedRatingKeys]: string } = {
   rarity: "Stat Boost",
   usability: "Usability",
   extra: "Extra",
+  overall: "Overall Rank",
 };
+
+export const getRatingText = (score: number) =>
+  ratings.find((rating) => rating.value === score)?.label ?? "NR";

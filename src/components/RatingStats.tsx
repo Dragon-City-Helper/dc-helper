@@ -3,6 +3,7 @@ import {
   RatingKeys,
   RatingKeysToText,
   ratings,
+  getRatingText,
 } from "@/constants/Rating";
 import { dragonsWithRating } from "@/services/dragons";
 import { FC, useCallback } from "react";
@@ -12,8 +13,6 @@ interface IRatingStats {
 }
 
 const RatingStats: FC<IRatingStats> = ({ dragons }) => {
-  const getRatingText = (score: number) =>
-    ratings.find((rating) => rating.value === score)?.label ?? "NR";
   const getRatingStats = useCallback(
     (ratingKey: AllowedRatingKeys) => {
       const dragonStats = dragons.reduce<{ [key in string]: number }>(
@@ -24,11 +23,11 @@ const RatingStats: FC<IRatingStats> = ({ dragons }) => {
             [scoreText]: acc[scoreText] ? acc[scoreText] + 1 : 1,
           };
         },
-        {}
+        {},
       );
       return dragonStats;
     },
-    [dragons]
+    [dragons],
   );
   return (
     <div className="flex flex-row flex-wrap gap-4">
