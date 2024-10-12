@@ -72,6 +72,7 @@ export const fetchSkinsForADragon = async (name: string) => {
         contains: name,
       },
       isSkin: true,
+      hasAllSkins: false,
     },
     include: {
       rating: true,
