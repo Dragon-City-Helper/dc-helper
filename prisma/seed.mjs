@@ -27,7 +27,7 @@ const skillsScore = {
   "Arcana Absorption": 3.5,
   "Impaling Outrage": 3.5,
   "Leech Fang": 3.5,
-
+  "Impaling Inferno": 3.5,
   /// ss
   Ephixia: 3,
   "Hex-agony": 3,
@@ -53,6 +53,7 @@ const skillsScore = {
   "Claw Cutter": 2,
   Bunker: 2,
   Guard: 2,
+  "Spiked Pit": 2,
 
   /// aa
   Ignition: 1.5,
@@ -165,9 +166,9 @@ export const RarityScores = {
   C: 1,
 };
 export const weights = {
-  rarity: 3,
-  skills: 2,
-  elements: 3,
+  rarity: 2,
+  skills: 1,
+  elements: 1,
   speed: 1,
   damage: 1,
 };
@@ -185,7 +186,7 @@ export const dragonDamageScore = (dragon, min, max) => {
 
 export const dragonElementsScores = (dragon) => {
   const [primary, ...rest] = dragon.elements;
-  const primaryElementScore = ElementsScores[primary] * 2;
+  const primaryElementScore = ElementsScores[primary] * 3;
   const otherElementsScore = rest.reduce((acc, curr) => {
     return acc + ElementsScores[curr] ?? 0;
   }, 0);
@@ -236,7 +237,7 @@ const fetchDragons = async ({
       headers: {
         "Content-Type": "application/json",
       },
-    }
+    },
   );
 
   const dcMetaResponse = await axios.get(
@@ -245,7 +246,7 @@ const fetchDragons = async ({
       headers: {
         "Content-Type": "application/json",
       },
-    }
+    },
   );
 
   const nameCorrections = {
@@ -263,8 +264,8 @@ const fetchDragons = async ({
     .filter(
       ({ id }) =>
         ![1145, 1146, 1144, 1410, 1882, 1911, 1920, 1921, 1852, 1114].includes(
-          id
-        )
+          id,
+        ),
     )
     .filter(({ name }) => !!dcMetaResponseByName[name.trim()])
     .map(
@@ -308,7 +309,7 @@ const fetchDragons = async ({
           isSkin: false,
           hasAllSkins: false,
         };
-      }
+      },
     );
   const metadata = getMetadata(ditlepResponse.data.items);
   return { dragons, metadata };
@@ -396,12 +397,12 @@ const addRankToDragon = (dragons, metadata) => {
       speedScore: dragonSpeedScore(
         dragon,
         metadata.minSpeed,
-        metadata.maxSpeed
+        metadata.maxSpeed,
       ),
       damageScore: dragonDamageScore(
         dragon,
         metadata.minDamage,
-        metadata.maxDamage
+        metadata.maxDamage,
       ),
       elementsScore: dragonElementsScores(dragon),
       rarityScore: RarityScores[dragon.rarity],
@@ -414,8 +415,8 @@ const addRankToDragon = (dragons, metadata) => {
       dragonScore: dragon.hasAllSkins
         ? dragonTotalScore(dragon) * 1.5
         : dragon.isSkin
-        ? dragonTotalScore(dragon) * 1.25
-        : dragonTotalScore(dragon),
+          ? dragonTotalScore(dragon) * 1.25
+          : dragonTotalScore(dragon),
     };
   });
   const dragonsWithRank = dragonsWithFinalScore
@@ -465,7 +466,7 @@ async function seedDragons(dragons) {
   }
   const dragonsLength = dragons.filter((dragon) => !dragon.isSkin).length;
   const skinsLength = dragons.filter(
-    (dragon) => dragon.isSkin && !dragon.hasAllSkins
+    (dragon) => dragon.isSkin && !dragon.hasAllSkins,
   ).length;
   const allSkinsLength = dragons.filter((dragon) => dragon.hasAllSkins).length;
   console.log(`Seeding finished.
@@ -507,16 +508,6 @@ async function main() {
     return [...acc, curr];
   }, []);
   const dragonsWithRank = addRankToDragon(dragonsAndSkins, metadata);
-
-  // const familyNames = dragonsWithRank
-  //   .map((dragon) => dragon.familyName)
-  //   .filter(Boolean);
-  // console.log(familyNames);
-  // const uniqueFamilyNames = new Set(familyNames);
-  // const images = [...uniqueFamilyNames].map(
-  //   (family) => `https://dragoncitymeta.com/img/icon-${family}.png`
-  // );
-  // console.log(images);
   seedDragons(dragonsWithRank);
 }
 

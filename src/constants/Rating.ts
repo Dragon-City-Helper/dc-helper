@@ -97,5 +97,17 @@ export const RatingKeysToText: { [key in AllowedRatingKeys]: string } = {
   overall: "Overall Rank",
 };
 
+export const skillRatingKeys: Partial<AllowedRatingKeys>[] = [
+  "cooldown",
+  "value",
+  "versatility",
+  "potency",
+];
+export const elementRatingKeys: Partial<AllowedRatingKeys>[] = [
+  "primary",
+  "coverage",
+  "usability",
+];
+
 export const getRatingText = (score: number) =>
   ratings.find((rating) => rating.value === score)?.label ?? "NR";

@@ -13,7 +13,7 @@ export default function App({
     <>
       <SessionProvider session={session}>
         <NavBar />
-        <div className="m-2">
+        <div className="m-6">
           <Component {...pageProps} />
         </div>
       </SessionProvider>

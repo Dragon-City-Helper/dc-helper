@@ -8,6 +8,7 @@ import {
   RatingKeys,
   RatingKeysToText,
 } from "@/constants/Rating";
+import Link from "next/link";
 
 interface IRateDragonsTableProps {
   dragons: dragonsWithRating;
@@ -73,7 +74,7 @@ const RateDragonsTable: FC<IRateDragonsTableProps> = ({ dragons }) => {
   const onRatingChange = (
     dragon: dragonsWithRating[number],
     ratingKey: string,
-    value: number
+    value: number,
   ) => {
     setDirty({
       ...dirty,
@@ -134,44 +135,45 @@ const RateDragonsTable: FC<IRateDragonsTableProps> = ({ dragons }) => {
             className=" w-full border-gray-700 border-2 mt-2 p-6"
           >
             <div className="flex flex-row gap-5 items-center">
-              <div className="p-4">
-                <Image
-                  className="rounded-full border-2 border-gray-200"
-                  src={dragon.thumbnail}
-                  alt={dragon.name}
-                  width={100}
-                  height={100}
-                />
-              </div>
-              <div className="flex flex-col justify-between items-start flex-grow">
-                <div className="flex flex-row gap-2 items-start">
-                  {dragon.elements.map((element, index) => (
-                    <Image
-                      key={`${dragon.id}-${element}-${index}`}
-                      src={`/images/elements/${element}.png`}
-                      alt={element}
-                      width={15}
-                      height={31}
-                    />
-                  ))}
-
+              <Link href={`/dragons/${dragon.id}`}>
+                <div className="p-4">
                   <Image
-                    src={`/images/rarity/${dragon.rarity}.png`}
-                    alt={dragon.rarity}
-                    width={32}
-                    height={32}
+                    className="rounded-full border-2 border-gray-200"
+                    src={dragon.thumbnail}
+                    alt={dragon.name}
+                    width={100}
+                    height={100}
                   />
-                  {dragon.familyName && (
+                </div>
+                <div className="flex flex-col justify-between items-start flex-grow">
+                  <div className="flex flex-row gap-2 items-start">
+                    {dragon.elements.map((element, index) => (
+                      <Image
+                        key={`${dragon.id}-${element}-${index}`}
+                        src={`/images/elements/${element}.png`}
+                        alt={element}
+                        width={15}
+                        height={31}
+                      />
+                    ))}
                     <Image
-                      src={`/images/family/icon-${dragon.familyName}.png`}
-                      alt={dragon.familyName}
+                      src={`/images/rarity/${dragon.rarity}.png`}
+                      alt={dragon.rarity}
                       width={32}
                       height={32}
                     />
-                  )}
+                    {dragon.familyName && (
+                      <Image
+                        src={`/images/family/icon-${dragon.familyName}.png`}
+                        alt={dragon.familyName}
+                        width={32}
+                        height={32}
+                      />
+                    )}
+                  </div>
+                  <div className="text-left">{dragon.name}</div>
                 </div>
-                <div className="text-left">{dragon.name}</div>
-              </div>
+              </Link>
             </div>
             <div className="flex flex-wrap items-center justify-between gap-6">
               {RatingKeys.map((key) => (

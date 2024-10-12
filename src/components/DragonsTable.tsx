@@ -2,6 +2,7 @@ import ArrowDown from "@/icons/arrow-down";
 import ArrowUp from "@/icons/arrow-up";
 import { dragons } from "@prisma/client";
 import Image from "next/image";
+import Link from "next/link";
 import { FC, useCallback, useMemo, useState } from "react";
 
 interface IDragonsTableProps {
@@ -58,7 +59,7 @@ const DragonsTable: FC<IDragonsTableProps> = ({
       };
       setSortOptions(getSortOptions());
     },
-    [sortOptions]
+    [sortOptions],
   );
   const getSortOptionIndicator = useCallback(
     (key: ISortOptions["sortBy"]) => {
@@ -67,7 +68,7 @@ const DragonsTable: FC<IDragonsTableProps> = ({
       }
       return null;
     },
-    [sortOptions?.sortBy, sortOptions?.sortOrder]
+    [sortOptions?.sortBy, sortOptions?.sortOrder],
   );
 
   const sortedDragons = useMemo(() => {
@@ -150,14 +151,18 @@ const DragonsTable: FC<IDragonsTableProps> = ({
                     )}
                   </td>
                 )}
-                <td className="flex flex-row gap-2 items-center">
-                  <Image
-                    src={dragon.image}
-                    alt={dragon.name}
-                    width={100}
-                    height={100}
-                  />
-                  <div>{dragon.name}</div>
+                <td>
+                  <Link href={`/dragons/${dragon.id}`}>
+                    <div className="flex flex-row gap-2 items-center">
+                      <Image
+                        src={dragon.image}
+                        alt={dragon.name}
+                        width={100}
+                        height={100}
+                      />
+                      <div>{dragon.name}</div>
+                    </div>
+                  </Link>
                 </td>
                 <td>{`${dragon.baseSpeed} - ${dragon.maxSpeed}`}</td>
                 <td>{dragon.rank}</td>
