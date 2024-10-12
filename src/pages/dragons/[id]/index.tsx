@@ -9,15 +9,15 @@ import {
 } from "@/services/dragons";
 import { GetStaticPropsContext } from "next";
 
-export async function getStaticPaths() {
-  const dragonIds = await fetchAllDragonIds();
-  const paths = dragonIds.map((id) => ({
-    params: { id },
-  }));
-  return { paths, fallback: false };
-}
+// export async function getStaticPaths() {
+//   const dragonIds = await fetchAllDragonIds();
+//   const paths = dragonIds.map((id) => ({
+//     params: { id },
+//   }));
+//   return { paths, fallback: false };
+// }
 
-export async function getStaticProps(context: GetStaticPropsContext) {
+export async function getServerSideProps(context: GetStaticPropsContext) {
   const dragonId = context.params?.id as string;
   if (!dragonId) {
     return {
@@ -34,7 +34,7 @@ export async function getStaticProps(context: GetStaticPropsContext) {
     const skinsData = await fetchSkinsForADragon(dragonData.name);
     return {
       props: { dragon: dragonData, skins: skinsData },
-      revalidate: 12 * 60 * 60,
+      // revalidate: 12 * 60 * 60,
     };
   } catch (err) {
     console.log(err);
