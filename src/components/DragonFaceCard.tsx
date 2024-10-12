@@ -50,11 +50,6 @@ const DragonFaceCard: FC<IDragonFaceCardProps> = ({ dragon }) => {
             </div>
             <div className="avatar placeholder">
               <div className="bg-primary text-neutral-content w-8 rounded-full">
-                <span> {dragon?.rating?.score || 0}</span>
-              </div>
-            </div>
-            <div className="avatar placeholder">
-              <div className="bg-secondary text-neutral-content w-8 rounded-full">
                 <span> {getRatingText(dragon?.rating?.overall || 0)}</span>
               </div>
             </div>

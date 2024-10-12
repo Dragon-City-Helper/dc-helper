@@ -79,6 +79,7 @@ export const RatingKeys: Exclude<keyof Rating, "id" | "dragonsId" | "score">[] =
     "coverage",
     "rarity",
     "usability",
+    "viability",
     "extra",
     "overall",
   ] as const;
@@ -95,6 +96,7 @@ export const RatingKeysToText: { [key in AllowedRatingKeys]: string } = {
   usability: "Usability",
   extra: "Extra",
   overall: "Overall Rank",
+  viability: "Viability",
 };
 
 export const skillRatingKeys: Partial<AllowedRatingKeys>[] = [
@@ -107,6 +109,7 @@ export const elementRatingKeys: Partial<AllowedRatingKeys>[] = [
   "primary",
   "coverage",
   "usability",
+  "viability",
 ];
 
 export const getRatingText = (score: number) =>

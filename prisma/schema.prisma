@@ -46,6 +46,7 @@ model Rating {
   coverage    Int      @default(0) // Offensive capability (points deduced for elements that crit a primary that subsequently crits your own)
   rarity      Int      @default(0) // Rarity factor
   usability   Int      @default(0) //  How many of it’s 4 masters arenas can you use it in
+  viability   Int      @default(0) //  How many of it’s 4 masters arenas can you use it in
   extra       Int      @default(0) // extra adjustments
   score       Int      @default(0) // saved computed score
   overall     Int      @default(0) // overall manual rating
