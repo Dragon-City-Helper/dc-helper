@@ -8,7 +8,7 @@ import useDragonFilters from "@/hooks/useDragonFilters";
 import { useState } from "react";
 import {
   AllowedRatingKeys,
-  RatingKeys,
+  RateByKeys,
   RatingKeysToText,
 } from "@/constants/Rating";
 
@@ -29,7 +29,7 @@ export async function getServerSideProps() {
 }
 
 export default function Page({ dragons }: { dragons: dragonsWithRating }) {
-  const [ratingKey, setRatingKey] = useState<AllowedRatingKeys>("overall");
+  const [ratingKey, setRatingKey] = useState<AllowedRatingKeys>("overall"); // default filter is overall
   const { filteredDragons, onFilterChange, filters } =
     useDragonFilters(dragons);
   return (
@@ -49,7 +49,7 @@ export default function Page({ dragons }: { dragons: dragonsWithRating }) {
           className="select select-bordered"
           onChange={(e) => setRatingKey(e.target.value as AllowedRatingKeys)}
         >
-          {RatingKeys.map((rKey) => {
+          {RateByKeys.map((rKey) => {
             return (
               <option key={rKey} value={rKey}>
                 {RatingKeysToText[rKey]}

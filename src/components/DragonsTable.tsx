@@ -1,98 +1,52 @@
-import ArrowDown from "@/icons/arrow-down";
-import ArrowUp from "@/icons/arrow-up";
+import { getRatingText } from "@/constants/Rating";
+import { dragonsWithRating } from "@/services/dragons";
 import { dragons } from "@prisma/client";
 import Image from "next/image";
 import Link from "next/link";
-import { FC, useCallback, useMemo, useState } from "react";
+import { FC, useMemo } from "react";
 
 interface IDragonsTableProps {
-  dragons: dragons[];
+  dragons: dragonsWithRating;
   viewOnly?: boolean;
   onOwned?: (dragon: dragons, checked: boolean) => void;
   ownedIdsMap: Map<string, boolean>;
   loading?: boolean | string;
 }
-interface ISortOptions {
-  sortBy: "name" | "speed" | "rank";
-  sortOrder: "asc" | "desc";
-}
 
 const DragonsTable: FC<IDragonsTableProps> = ({
-  dragons: Dragons,
+  dragons,
   viewOnly = false,
   onOwned,
   ownedIdsMap,
   loading,
 }) => {
-  const [sortOptions, setSortOptions] = useState<ISortOptions>({
-    sortBy: "rank",
-    sortOrder: "asc",
-  });
-
-  const sortOnclickHandler = useCallback(
-    (key: ISortOptions["sortBy"]) => {
-      const getSortOptions: () => ISortOptions = () => {
-        if (sortOptions) {
-          if (sortOptions.sortBy !== key) {
-            return {
-              sortBy: key,
-              sortOrder: "asc",
-            };
-          } else if (sortOptions.sortOrder) {
-            switch (sortOptions.sortOrder) {
-              case "asc":
-                return {
-                  ...sortOptions,
-                  sortOrder: "desc",
-                };
-              case "desc":
-                return { sortBy: "rank", sortOrder: "asc" };
-              default:
-                return { sortBy: "rank", sortOrder: "asc" };
-            }
-          }
-        }
-        return {
-          sortBy: key,
-          sortOrder: "asc",
-        };
-      };
-      setSortOptions(getSortOptions());
-    },
-    [sortOptions],
-  );
-  const getSortOptionIndicator = useCallback(
-    (key: ISortOptions["sortBy"]) => {
-      if (key === sortOptions?.sortBy) {
-        return sortOptions?.sortOrder === "asc" ? <ArrowUp /> : <ArrowDown />;
-      }
-      return null;
-    },
-    [sortOptions?.sortBy, sortOptions?.sortOrder],
-  );
-
   const sortedDragons = useMemo(() => {
-    const { sortBy, sortOrder } = sortOptions || {};
-    const sortByMapping: Record<
-      ISortOptions["sortBy"],
-      "name" | "maxSpeed" | "rank"
-    > = {
-      name: "name",
-      speed: "maxSpeed",
-      rank: "rank",
-    };
-    if (sortBy) {
-      const sortByKey = sortByMapping[sortBy];
-      return Dragons.sort((a, b) => {
-        if (sortOrder === "asc") {
-          return a[sortByKey] > b[sortByKey] ? 1 : -1;
-        } else {
-          return a[sortByKey] > b[sortByKey] ? -1 : 1;
-        }
-      });
-    }
-    return Dragons;
-  }, [sortOptions, Dragons]);
+    const rarityOrder = ["H", "M", "L", "E", "V", "R", "C"];
+    return dragons.sort((a, b) => {
+      // Sort by dragon.rating.overall (descending)
+      if (b.rating?.overall !== a.rating?.overall) {
+        return (b.rating?.overall ?? 0) - (a.rating?.overall ?? 0);
+      }
+
+      // Sort by dragon.rating.score (descending)
+      if (b.rating?.score !== a.rating?.score) {
+        return (b.rating?.score ?? 0) - (a.rating?.score ?? 0);
+      }
+
+      // Sort by dragon.isSkin (true values come first)
+      if (a.isSkin !== b.isSkin) {
+        return a.isSkin ? -1 : 1;
+      }
+
+      // Sort by dragon.hasSkills (true values come first)
+      if (a.hasSkills !== b.hasSkills) {
+        return a.hasSkills ? -1 : 1;
+      }
+
+      // Sort by dragon.rarity according to the specified order
+      return rarityOrder.indexOf(a.rarity) - rarityOrder.indexOf(b.rarity);
+    });
+  }, [dragons]);
 
   return (
     <div className="overflow-x-auto ">
@@ -100,37 +54,14 @@ const DragonsTable: FC<IDragonsTableProps> = ({
         <thead className="text-center">
           <tr>
             {!viewOnly && onOwned && <th>Owned ?</th>}
-            <th>
-              <div
-                onClick={() => sortOnclickHandler("name")}
-                className="hover:cursor-pointer flex gap-2"
-              >
-                Name {getSortOptionIndicator("name")}
-              </div>
-            </th>
-            <th>
-              <div
-                onClick={() => sortOnclickHandler("speed")}
-                className="hover:cursor-pointer flex gap-2"
-              >
-                Speed {getSortOptionIndicator("speed")}
-              </div>
-            </th>
-            <th>
-              <div
-                onClick={() => sortOnclickHandler("rank")}
-                className="hover:cursor-pointer flex gap-2"
-              >
-                Rank {getSortOptionIndicator("rank")}
-              </div>
-            </th>
-            <th>Rarity</th>
-            <th>Family</th>
-            <th>Elements</th>
+            <th>Name</th>
+            <th>Speed</th>
+            <th>Overall Rating</th>
+            <th>Tags</th>
           </tr>
         </thead>
         <tbody>
-          {sortedDragons.map((dragon: dragons) => {
+          {sortedDragons.map((dragon: dragonsWithRating[number]) => {
             return (
               <tr key={dragon.id} className="hover">
                 {!viewOnly && onOwned && (
@@ -165,33 +96,15 @@ const DragonsTable: FC<IDragonsTableProps> = ({
                   </Link>
                 </td>
                 <td>{`${dragon.baseSpeed} - ${dragon.maxSpeed}`}</td>
-                <td>{dragon.rank}</td>
                 <td>
-                  <div className="flex items-center justify-center">
-                    <Image
-                      src={`/images/rarity/${dragon.rarity}.png`}
-                      alt={dragon.rarity}
-                      width={64}
-                      height={64}
-                    />
+                  <div className="flex flex-row gap-2 items-center">
+                    {dragon.rating?.overall
+                      ? getRatingText(dragon.rating?.overall)
+                      : "Unrated"}
                   </div>
                 </td>
                 <td>
-                  <div className="flex items-center justify-center">
-                    {dragon.familyName ? (
-                      <Image
-                        src={`/images/family/icon-${dragon.familyName}.png`}
-                        alt={dragon.familyName}
-                        width={64}
-                        height={64}
-                      />
-                    ) : (
-                      <div className="text-center">NA</div>
-                    )}
-                  </div>
-                </td>
-                <td>
-                  <div className="flex flex-row gap-2 items-center justify-center">
+                  <div className="flex flex-row gap-2 items-center justify-start">
                     {dragon.elements.map((element, index) => (
                       <Image
                         key={`${dragon.id}-${element}-${index}`}
@@ -201,6 +114,30 @@ const DragonsTable: FC<IDragonsTableProps> = ({
                         height={76}
                       />
                     ))}
+                  </div>
+                  <div className="flex items-center justify-start">
+                    <Image
+                      src={`/images/rarity/${dragon.rarity}.png`}
+                      alt={dragon.rarity}
+                      width={64}
+                      height={64}
+                    />
+                    {dragon.familyName ? (
+                      <Image
+                        src={`/images/family/icon-${dragon.familyName}.png`}
+                        alt={dragon.familyName}
+                        width={64}
+                        height={64}
+                      />
+                    ) : null}
+                    {dragon.isSkin ? (
+                      <Image
+                        src={`/images/skin.png`}
+                        alt={dragon.rarity}
+                        width={64}
+                        height={64}
+                      />
+                    ) : null}
                   </div>
                 </td>
               </tr>

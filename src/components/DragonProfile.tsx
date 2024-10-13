@@ -10,7 +10,7 @@ const DragonProfile: FC<IDragonProfileProps> = ({ dragon }) => {
   return (
     <div className="flex flex-col gap-6 w-full">
       <div className="flex justify-between items-center border border-gray-200 p-2 rounded-box">
-        <div>{dragon.name}</div>
+        <div>{dragon.isSkin ? dragon.skinName : dragon.name}</div>
         {dragon.familyName && (
           <Image
             src={`/images/family/icon-${dragon.familyName}.png`}
@@ -38,6 +38,14 @@ const DragonProfile: FC<IDragonProfileProps> = ({ dragon }) => {
             />
           ))}
         </div>
+        {dragon.isSkin && (
+          <Image
+            src={`/images/skin.png`}
+            alt={dragon.rarity}
+            width={64}
+            height={64}
+          />
+        )}
       </div>
       <figure className="flex justify-center items-center">
         <Image src={dragon.image} alt={dragon.name} width={300} height={300} />

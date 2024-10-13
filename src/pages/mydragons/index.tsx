@@ -1,5 +1,5 @@
 import TopDragonsCard from "@/components/TopDragonsCard";
-import { fetchDragons } from "@/services/dragons";
+import { dragonsWithRating, fetchDragonsWithRatings } from "@/services/dragons";
 import { getOwned } from "@/services/ownedDragons";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { dragons } from "@prisma/client";
@@ -8,7 +8,7 @@ import { useRouter } from "next/router";
 
 export async function getStaticProps() {
   try {
-    const dragons = await fetchDragons();
+    const dragons = await fetchDragonsWithRatings();
     return {
       props: {
         dragons,
@@ -20,7 +20,7 @@ export async function getStaticProps() {
   }
 }
 
-export default function Page({ dragons }: { dragons: dragons[] }) {
+export default function Page({ dragons }: { dragons: dragonsWithRating }) {
   const [ownedIds, setOwned] = useState<string[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const session = useSession();
@@ -46,49 +46,18 @@ export default function Page({ dragons }: { dragons: dragons[] }) {
     }, new Map<string, boolean>());
   }, [ownedIds]);
 
-  const totalOwnedBelowX = useCallback(
-    (x: number) => {
-      return dragons.filter(
-        (dragon) => ownedIdsMap.has(dragon.id) && dragon.rank <= x
-      ).length;
-    },
-    [dragons, ownedIdsMap]
-  );
-
   return (
     <div className="flex flex-col gap-4">
       <div className="stats stats-vertical lg:stats-horizontal shadow">
         <div className="stat">
-          <div className="stat-title">Total</div>
+          <div className="stat-title">Total Dragons and Skins</div>
           <div className="stat-value">
             {loading ? (
-              <span className="loading loading-spinner loading-md"></span>
+              <span className="loading loading-spinner loading-md" />
             ) : (
               ownedIds.length
             )}
             /{dragons.length}
-          </div>
-        </div>
-
-        <div className="stat">
-          <div className="stat-title">Total Below 100</div>
-          <div className="stat-value">
-            {loading ? (
-              <span className="loading loading-spinner loading-md"></span>
-            ) : (
-              totalOwnedBelowX(100)
-            )}
-          </div>
-        </div>
-
-        <div className="stat">
-          <div className="stat-title">Total Below 500</div>
-          <div className="stat-value">
-            {loading ? (
-              <span className="loading loading-spinner loading-md"></span>
-            ) : (
-              totalOwnedBelowX(500)
-            )}
           </div>
         </div>
       </div>

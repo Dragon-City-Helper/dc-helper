@@ -8,33 +8,28 @@ generator client {
 }
 
 model dragons {
-  id            String     @id @default(auto()) @map("_id") @db.ObjectId
-  name          String     @unique
-  rarity        Rarity
-  familyName    String?
-  breedable     Boolean
-  elements      Elements[]
-  image         String
-  thumbnail     String
-  baseSpeed     Int
-  maxSpeed      Int
-  maxDamage     Int
-  category      Int
-  skills        Skill[]    @relation(fields: [skillsId], references: [id])
-  skillsId      String[]   @db.ObjectId
-  speedScore    Float
-  damageScore   Float
-  elementsScore Int
-  rarityScore   Int
-  skillsScore   Int
-  dragonScore   Float
-  rank          Int
-  rating        Rating?
-  isVip         Boolean
-  hasSkills     Boolean
-  skillType     Int
-  isSkin        Boolean
-  hasAllSkins   Boolean
+  id                 String     @id @default(auto()) @map("_id") @db.ObjectId
+  name               String     @unique
+  rarity             Rarity
+  familyName         String?
+  breedable          Boolean
+  elements           Elements[]
+  image              String
+  thumbnail          String
+  baseSpeed          Int
+  maxSpeed           Int
+  maxDamage          Int
+  category           Int
+  skills             Skill[]    @relation(fields: [skillsId], references: [id])
+  skillsId           String[]   @db.ObjectId
+  rating             Rating?
+  isVip              Boolean
+  hasSkills          Boolean
+  skillType          Int
+  skinName           String?
+  originalDragonName String?
+  isSkin             Boolean
+  hasAllSkins        Boolean
 }
 
 model Rating {
@@ -44,10 +39,10 @@ model Rating {
   potency     Int      @default(0) // Damage potential
   primary     Int      @default(0) // Defensive capability (excluding guards, twds)
   coverage    Int      @default(0) // Offensive capability (points deduced for elements that crit a primary that subsequently crits your own)
-  rarity      Int      @default(0) // Rarity factor
+  rarity      Int      @default(0) // statboost // useless for now
   usability   Int      @default(0) //  How many of it’s 4 masters arenas can you use it in
   viability   Int      @default(0) //  How many of it’s 4 masters arenas can you use it in
-  extra       Int      @default(0) // extra adjustments
+  extra       Int      @default(0) // extra adjustments // useless for now
   score       Int      @default(0) // saved computed score
   overall     Int      @default(0) // overall manual rating
   id          String   @id @default(auto()) @map("_id") @db.ObjectId

@@ -1,4 +1,3 @@
-import { getRatingText, ratingStyles } from "@/constants/Rating";
 import { dragonsWithRating } from "@/services/dragons";
 import Image from "next/image";
 import Link from "next/link";
@@ -21,7 +20,18 @@ const DragonFaceCard: FC<IDragonFaceCardProps> = ({ dragon }) => {
           />
         </figure>
         <div className="text-center items-center">
-          <div className="flex flex-row gap-2 items-start justify-between">
+          <div className="flex flex-row gap-1 justify-evenly">
+            {dragon.elements.map((element, index) => (
+              <Image
+                key={`${dragon.id}-${element}-${index}`}
+                src={`/images/elements/${element}.png`}
+                alt={element}
+                width={15}
+                height={31}
+              />
+            ))}
+          </div>
+          <div className="flex flex-row gap-2 items-start justify-start">
             <Image
               src={`/images/rarity/${dragon.rarity}.png`}
               alt={dragon.rarity}
@@ -37,17 +47,14 @@ const DragonFaceCard: FC<IDragonFaceCardProps> = ({ dragon }) => {
                 height={32}
               />
             )}
-          </div>
-          <div className="flex flex-row gap-1 justify-evenly">
-            {dragon.elements.map((element, index) => (
+            {dragon.isSkin && (
               <Image
-                key={`${dragon.id}-${element}-${index}`}
-                src={`/images/elements/${element}.png`}
-                alt={element}
-                width={15}
-                height={31}
+                src="/images/skin.png"
+                alt={dragon.name}
+                width={32}
+                height={32}
               />
-            ))}
+            )}
           </div>
         </div>
       </Link>

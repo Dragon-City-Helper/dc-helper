@@ -1,6 +1,6 @@
 import TopDragonsCard from "@/components/TopDragonsCard";
 import { elements, ElementsNames } from "@/constants/Dragon";
-import { fetchDragons } from "@/services/dragons";
+import { dragonsWithRating, fetchDragonsWithRatings } from "@/services/dragons";
 import { getOwned } from "@/services/ownedDragons";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { dragons, Elements } from "@prisma/client";
@@ -9,7 +9,7 @@ import { useRouter } from "next/router";
 
 export async function getStaticProps() {
   try {
-    const dragons = await fetchDragons();
+    const dragons = await fetchDragonsWithRatings();
 
     return {
       props: {
@@ -22,7 +22,7 @@ export async function getStaticProps() {
   }
 }
 
-export default function Page({ dragons }: { dragons: dragons[] }) {
+export default function Page({ dragons }: { dragons: dragonsWithRating }) {
   const [ownedIds, setOwned] = useState<string[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const session = useSession();
@@ -53,17 +53,17 @@ export default function Page({ dragons }: { dragons: dragons[] }) {
       return dragons.filter((dragon) => dragon.elements.includes(element))
         .length;
     },
-    [dragons]
+    [dragons],
   );
 
   const getTotalElementDragonsOwned = useCallback(
     (element: Elements) => {
       return dragons.filter(
         (dragon) =>
-          dragon.elements.includes(element) && ownedIdsMap.has(dragon.id)
+          dragon.elements.includes(element) && ownedIdsMap.has(dragon.id),
       ).length;
     },
-    [dragons, ownedIdsMap]
+    [dragons, ownedIdsMap],
   );
 
   return (

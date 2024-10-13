@@ -86,6 +86,18 @@ export const RatingKeys: Exclude<keyof Rating, "id" | "dragonsId" | "score">[] =
   ] as const;
 export type AllowedRatingKeys = (typeof RatingKeys)[number];
 
+export const RateByKeys: Exclude<AllowedRatingKeys, "extra" | "rarity">[] = [
+  "overall",
+  "cooldown",
+  "value",
+  "versatility",
+  "potency",
+  "primary",
+  "coverage",
+  "usability",
+  "viability",
+];
+
 export const RatingKeysToText: { [key in AllowedRatingKeys]: string } = {
   cooldown: "Cooldown",
   value: "Value",

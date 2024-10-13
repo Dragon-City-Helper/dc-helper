@@ -1,15 +1,15 @@
 import TopDragonsCard from "@/components/TopDragonsCard";
 import { rarities, RarityNames } from "@/constants/Dragon";
-import { fetchDragons } from "@/services/dragons";
+import { dragonsWithRating, fetchDragonsWithRatings } from "@/services/dragons";
 import { getOwned } from "@/services/ownedDragons";
 import { useCallback, useMemo, useEffect, useState } from "react";
-import { dragons, Rarity } from "@prisma/client";
+import { Rarity } from "@prisma/client";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/router";
 
 export async function getStaticProps() {
   try {
-    const dragons = await fetchDragons();
+    const dragons = await fetchDragonsWithRatings();
 
     return {
       props: {
@@ -22,7 +22,7 @@ export async function getStaticProps() {
   }
 }
 
-export default function Page({ dragons }: { dragons: dragons[] }) {
+export default function Page({ dragons }: { dragons: dragonsWithRating }) {
   const [ownedIds, setOwned] = useState<string[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const session = useSession();
@@ -52,15 +52,15 @@ export default function Page({ dragons }: { dragons: dragons[] }) {
     (rarity: Rarity) => {
       return dragons.filter((dragon) => dragon.rarity === rarity).length;
     },
-    [dragons]
+    [dragons],
   );
   const getTotalRarityDragonsOwned = useCallback(
     (rarity: Rarity) => {
       return dragons.filter(
-        (dragon) => dragon.rarity === rarity && ownedIdsMap.has(dragon.id)
+        (dragon) => dragon.rarity === rarity && ownedIdsMap.has(dragon.id),
       ).length;
     },
-    [dragons, ownedIdsMap]
+    [dragons, ownedIdsMap],
   );
   return (
     <div className="flex flex-col gap-6">

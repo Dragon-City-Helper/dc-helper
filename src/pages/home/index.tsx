@@ -1,5 +1,9 @@
 import DragonsTable from "@/components/DragonsTable";
-import { fetchDragons } from "@/services/dragons";
+import {
+  dragonsWithRating,
+  fetchDragons,
+  fetchDragonsWithRatings,
+} from "@/services/dragons";
 import { getOwned, postOwned } from "@/services/ownedDragons";
 import { useEffect, useMemo, useState } from "react";
 import { dragons } from "@prisma/client";
@@ -10,7 +14,7 @@ import useDragonFilters from "@/hooks/useDragonFilters";
 
 export async function getStaticProps() {
   try {
-    const dragons = await fetchDragons();
+    const dragons = await fetchDragonsWithRatings();
     return {
       props: {
         dragons,
@@ -22,9 +26,9 @@ export async function getStaticProps() {
   }
 }
 
-export default function Page({ dragons }: { dragons: dragons[] }) {
+export default function Page({ dragons }: { dragons: dragonsWithRating }) {
   const [owned, setOwned] = useState<string[]>([]);
-  const [allDragons] = useState<dragons[]>(dragons);
+  const [allDragons] = useState<dragonsWithRating>(dragons);
   const [loading, setLoading] = useState<boolean | string>(true);
 
   const session = useSession();
@@ -70,7 +74,7 @@ export default function Page({ dragons }: { dragons: dragons[] }) {
 
   const { filteredDragons, onFilterChange, filters } = useDragonFilters(
     dragons,
-    ownedIdsMap
+    ownedIdsMap,
   );
   return (
     <div className="flex flex-row w-100 h-100 overflow-auto">

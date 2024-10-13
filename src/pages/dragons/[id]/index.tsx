@@ -1,3 +1,4 @@
+import DragonDetails from "@/components/DragonDetails";
 import DragonProfile from "@/components/DragonProfile";
 import DragonRatings from "@/components/DragonRatings";
 import DragonSkills from "@/components/DragonSkills";
@@ -50,22 +51,14 @@ const Page = ({
 }) => {
   return (
     <div className="flex gap-6 container flex-col">
-      <div className="flex justify-between gap-6">
-        <div className="w-1/2">
-          <DragonProfile dragon={dragon} />
-        </div>
-        <div className="w-1/2 flex flex-col gap-6">
-          <DragonRatings dragon={dragon} />
-          <DragonSkills dragon={dragon} />
-        </div>
-      </div>
+      <DragonDetails dragon={dragon}></DragonDetails>
       {skins.length > 0 && (
         <div>
           <div className="flex justify-between items-center border border-gray-200 p-2 rounded-box">
             Skins
           </div>
           {skins.map((skin) => (
-            <Page key={skin.id} dragon={skin} skins={[]} />
+            <DragonDetails key={skin.id} dragon={skin} />
           ))}
         </div>
       )}

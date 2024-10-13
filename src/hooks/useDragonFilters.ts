@@ -1,43 +1,44 @@
 import { IFilters } from "@/components/DragonFilters";
+import { dragonsWithRating } from "@/services/dragons";
 import { dragons, Elements } from "@prisma/client";
 import { useMemo, useState } from "react";
 
 export default function useDragonFilters(
-  dragons: dragons[],
-  ownedIdsMap: Map<string, boolean> = new Map<string, boolean>()
+  dragons: dragonsWithRating,
+  ownedIdsMap: Map<string, boolean> = new Map<string, boolean>(),
 ) {
   const [filters, setFilters] = useState<IFilters>({});
   const filteredDragons = useMemo(() => {
     let finalDragons = dragons;
     if (filters.search) {
       finalDragons = finalDragons.filter((dragon) =>
-        new RegExp(`${filters.search}`, "gi").test(dragon.name)
+        new RegExp(`${filters.search}`, "gi").test(dragon.name),
       );
     }
     if (filters.rarity && filters.rarity !== "all") {
       finalDragons = finalDragons.filter(
-        (dragon) => dragon.rarity === filters.rarity
+        (dragon) => dragon.rarity === filters.rarity,
       );
     }
     if (filters.familyName && filters.familyName !== "all") {
       finalDragons = finalDragons.filter(
-        (dragon) => dragon.familyName === filters.familyName
+        (dragon) => dragon.familyName === filters.familyName,
       );
     }
     if (filters.element && filters.element !== "all") {
       finalDragons = finalDragons.filter((dragon) =>
-        dragon.elements.includes(filters.element as Elements)
+        dragon.elements.includes(filters.element as Elements),
       );
     }
     switch (filters.show) {
       case "owned":
         finalDragons = finalDragons.filter((dragon) =>
-          ownedIdsMap.has(dragon.id)
+          ownedIdsMap.has(dragon.id),
         );
         break;
       case "unowned":
         finalDragons = finalDragons.filter(
-          (dragon) => !ownedIdsMap.has(dragon.id)
+          (dragon) => !ownedIdsMap.has(dragon.id),
         );
       case "all":
       default:
@@ -56,12 +57,12 @@ export default function useDragonFilters(
     switch (filters.show) {
       case "owned":
         finalDragons = finalDragons.filter((dragon) =>
-          ownedIdsMap.has(dragon.id)
+          ownedIdsMap.has(dragon.id),
         );
         break;
       case "unowned":
         finalDragons = finalDragons.filter(
-          (dragon) => !ownedIdsMap.has(dragon.id)
+          (dragon) => !ownedIdsMap.has(dragon.id),
         );
       case "all":
       default:
