@@ -1,6 +1,5 @@
 import { getRatingText } from "@/constants/Rating";
 import { HomeDragons } from "@/services/dragons";
-import { dragons } from "@prisma/client";
 import Image from "next/image";
 import Link from "next/link";
 import { FC, useMemo } from "react";
@@ -11,6 +10,7 @@ interface IDragonsTableProps {
   onOwned?: (dragonId: string, checked: boolean) => void;
   ownedIdsMap: Map<string, boolean>;
   loading?: boolean | string;
+  size?: number;
 }
 
 const DragonsTable: FC<IDragonsTableProps> = ({
@@ -19,10 +19,11 @@ const DragonsTable: FC<IDragonsTableProps> = ({
   onOwned,
   ownedIdsMap,
   loading,
+  size,
 }) => {
   const sortedDragons = useMemo(() => {
     const rarityOrder = ["H", "M", "L", "E", "V", "R", "C"];
-    return dragons.sort((a, b) => {
+    const sortedDragons = dragons.sort((a, b) => {
       // Sort by dragon.rating.overall (descending)
       if (b.rating?.overall !== a.rating?.overall) {
         return (b.rating?.overall ?? 0) - (a.rating?.overall ?? 0);
@@ -46,7 +47,11 @@ const DragonsTable: FC<IDragonsTableProps> = ({
       // Sort by dragon.rarity according to the specified order
       return rarityOrder.indexOf(a.rarity) - rarityOrder.indexOf(b.rarity);
     });
-  }, [dragons]);
+    if (size) {
+      return sortedDragons.slice(0, size);
+    }
+    return sortedDragons;
+  }, [dragons, size]);
 
   return (
     <div className="overflow-x-auto ">

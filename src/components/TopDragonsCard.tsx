@@ -12,7 +12,7 @@ interface ITopDragonsCard {
     rarity?: Rarity;
     breedable?: boolean;
     owned?: boolean;
-    size?: number;
+    size: number;
     element?: Elements;
   };
 }
@@ -50,7 +50,11 @@ const TopDragonsCard: FC<ITopDragonsCard> = ({
   }, [dragons, ownedIdsMap, options]);
   return (
     <Card title={title}>
-      <DragonsTable dragons={filteredDragons} ownedIdsMap={ownedIdsMap} />
+      <DragonsTable
+        dragons={filteredDragons}
+        ownedIdsMap={ownedIdsMap}
+        size={options.size}
+      />
     </Card>
   );
 };
