@@ -1,15 +1,15 @@
 import { ratings } from "@/constants/Rating";
-import { dragonsWithRating } from "@/services/dragons";
+import { HomeDragons, RateDragons } from "@/services/dragons";
 import { FC } from "react";
 
 interface IRatingDropdown {
-  dragon: dragonsWithRating[number];
+  dragon: RateDragons[number];
   ratingKey: string;
   value?: number | null;
   onRatingChange: (
-    dragon: dragonsWithRating[number],
+    dragon: RateDragons[number],
     ratingKey: string,
-    value: number
+    value: number,
   ) => void;
 }
 

@@ -1,14 +1,14 @@
 import { getRatingText } from "@/constants/Rating";
-import { dragonsWithRating } from "@/services/dragons";
+import { HomeDragons } from "@/services/dragons";
 import { dragons } from "@prisma/client";
 import Image from "next/image";
 import Link from "next/link";
 import { FC, useMemo } from "react";
 
 interface IDragonsTableProps {
-  dragons: dragonsWithRating;
+  dragons: HomeDragons;
   viewOnly?: boolean;
-  onOwned?: (dragon: dragons, checked: boolean) => void;
+  onOwned?: (dragonId: string, checked: boolean) => void;
   ownedIdsMap: Map<string, boolean>;
   loading?: boolean | string;
 }
@@ -61,7 +61,7 @@ const DragonsTable: FC<IDragonsTableProps> = ({
           </tr>
         </thead>
         <tbody>
-          {sortedDragons.map((dragon: dragonsWithRating[number]) => {
+          {sortedDragons.map((dragon: HomeDragons[number]) => {
             return (
               <tr key={dragon.id} className="hover">
                 {!viewOnly && onOwned && (
@@ -75,7 +75,7 @@ const DragonsTable: FC<IDragonsTableProps> = ({
                           className="checkbox"
                           checked={ownedIdsMap.has(dragon.id)}
                           onChange={() =>
-                            onOwned(dragon, !ownedIdsMap.get(dragon.id))
+                            onOwned(dragon.id, !ownedIdsMap.get(dragon.id))
                           }
                         />
                       </label>
@@ -86,7 +86,7 @@ const DragonsTable: FC<IDragonsTableProps> = ({
                   <Link href={`/dragons/${dragon.id}`}>
                     <div className="flex flex-row gap-2 items-center">
                       <Image
-                        src={dragon.image}
+                        src={`https://dci-static-s1.socialpointgames.com/static/dragoncity/mobile/ui${dragon.image}`}
                         alt={dragon.name}
                         width={100}
                         height={100}
@@ -133,6 +133,14 @@ const DragonsTable: FC<IDragonsTableProps> = ({
                     {dragon.isSkin ? (
                       <Image
                         src={`/images/skin.png`}
+                        alt={dragon.rarity}
+                        width={64}
+                        height={64}
+                      />
+                    ) : null}
+                    {!dragon.isSkin && !dragon.isVip && dragon.hasSkills ? (
+                      <Image
+                        src={`/images/skilltype/${dragon.skillType}.png`}
                         alt={dragon.rarity}
                         width={64}
                         height={64}

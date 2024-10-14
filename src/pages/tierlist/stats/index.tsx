@@ -1,5 +1,5 @@
 import {
-  dragonsWithRating,
+  HomeDragons,
   fetchDragonsWithRatingsNotNull,
 } from "@/services/dragons";
 import DragonFilters from "@/components/DragonFilters";
@@ -14,7 +14,7 @@ export async function getServerSideProps() {
   try {
     const dragons = await fetchDragonsWithRatingsNotNull();
     const sortedDragons = dragons.sort(
-      (a, b) => (b.rating?.score || 0) - (a.rating?.score || 0)
+      (a, b) => (b.rating?.score || 0) - (a.rating?.score || 0),
     );
     return {
       props: {
@@ -26,7 +26,7 @@ export async function getServerSideProps() {
   }
 }
 
-export default function Page({ dragons }: { dragons: dragonsWithRating }) {
+export default function Page({ dragons }: { dragons: HomeDragons }) {
   const { filteredDragons, onFilterChange, filters } =
     useDragonFilters(dragons);
   const { status, data } = useSession();
@@ -57,7 +57,7 @@ export default function Page({ dragons }: { dragons: dragonsWithRating }) {
               filteredDragons.filter((d) => d.isSkin).length
             } of ${dragons.filter((d) => d.isSkin).length} Skins with rating`}
       </b>
-      <RatingStats dragons={filteredDragons as dragonsWithRating} />
+      <RatingStats dragons={filteredDragons as HomeDragons} />
     </div>
   );
 }

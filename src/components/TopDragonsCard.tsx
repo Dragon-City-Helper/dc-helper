@@ -2,11 +2,11 @@ import { FC, useMemo } from "react";
 import Card from "./Card";
 import DragonsTable from "./DragonsTable";
 import { dragons, Elements, Rarity } from "@prisma/client";
-import { dragonsWithRating } from "@/services/dragons";
+import { HomeDragons } from "@/services/dragons";
 
 interface ITopDragonsCard {
   title: string;
-  dragons: dragonsWithRating;
+  dragons: HomeDragons;
   ownedIdsMap: Map<string, boolean>;
   options: {
     rarity?: Rarity;
@@ -14,7 +14,6 @@ interface ITopDragonsCard {
     owned?: boolean;
     size?: number;
     element?: Elements;
-    offset?: number;
   };
 }
 
@@ -47,10 +46,7 @@ const TopDragonsCard: FC<ITopDragonsCard> = ({
         ElementsMatcher
       );
     });
-    return dragonsFilter.slice(
-      options.offset ?? 0,
-      options.offset ? options.offset + (options.size || 0) : options.size,
-    );
+    return dragonsFilter;
   }, [dragons, ownedIdsMap, options]);
   return (
     <Card title={title}>

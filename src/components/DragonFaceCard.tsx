@@ -1,10 +1,10 @@
-import { dragonsWithRating } from "@/services/dragons";
+import { RateDragons } from "@/services/dragons";
 import Image from "next/image";
 import Link from "next/link";
 import { FC } from "react";
 
 interface IDragonFaceCardProps {
-  dragon: dragonsWithRating[number];
+  dragon: RateDragons[number];
 }
 const DragonFaceCard: FC<IDragonFaceCardProps> = ({ dragon }) => {
   return (
@@ -12,7 +12,7 @@ const DragonFaceCard: FC<IDragonFaceCardProps> = ({ dragon }) => {
       <Link href={`/dragons/${dragon.id}`}>
         <figure>
           <Image
-            src={dragon.thumbnail}
+            src={`https://dci-static-s1.socialpointgames.com/static/dragoncity/mobile/ui${dragon.thumbnail}`}
             alt={dragon.name}
             width={100}
             height={100}

@@ -1,10 +1,9 @@
-import { dragonsWithRating, fetchDragonsWithRatings } from "@/services/dragons";
+import { RateDragons, fetchRateDragons } from "@/services/dragons";
 import { useEffect } from "react";
 import { Rarity, Role } from "@prisma/client";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/router";
 import RateDragonsTable from "@/components/RateDragonsTable";
-import { NextRequest } from "next/server";
 import { GetServerSidePropsContext } from "next";
 import DragonFilters from "@/components/DragonFilters";
 import useDragonFilters from "@/hooks/useDragonFilters";
@@ -27,7 +26,7 @@ export async function getServerSideProps(context: GetServerSidePropsContext) {
     };
   }
   try {
-    const dragons = await fetchDragonsWithRatings({
+    const dragons = await fetchRateDragons({
       rarity,
     });
     return {
@@ -40,7 +39,7 @@ export async function getServerSideProps(context: GetServerSidePropsContext) {
   }
 }
 
-export default function Page({ dragons }: { dragons: dragonsWithRating }) {
+export default function Page({ dragons }: { dragons: RateDragons }) {
   const { status, data } = useSession();
   const router = useRouter();
   useEffect(() => {
@@ -65,7 +64,7 @@ export default function Page({ dragons }: { dragons: dragonsWithRating }) {
           allowedFilters={["search", "element", "familyName", "skins"]}
         />
       </div>
-      <RateDragonsTable dragons={filteredDragons as dragonsWithRating} />
+      <RateDragonsTable dragons={filteredDragons as RateDragons} />
     </div>
   );
 }

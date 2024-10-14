@@ -2,7 +2,7 @@ import { Rarity, Rating } from "@prisma/client";
 import Image from "next/image";
 import { FC, useEffect, useState } from "react";
 import RatingDropdown from "./RatingDropdown";
-import { dragonsWithRating, putRatings } from "@/services/dragons";
+import { putRatings, RateDragons } from "@/services/dragons";
 import {
   rarityBasedOffset,
   RatingKeys,
@@ -11,7 +11,7 @@ import {
 import Link from "next/link";
 
 interface IRateDragonsTableProps {
-  dragons: dragonsWithRating;
+  dragons: RateDragons;
 }
 
 const RateDragonsTable: FC<IRateDragonsTableProps> = ({ dragons }) => {
@@ -72,7 +72,7 @@ const RateDragonsTable: FC<IRateDragonsTableProps> = ({ dragons }) => {
   //   });
   // };
   const onRatingChange = (
-    dragon: dragonsWithRating[number],
+    dragon: RateDragons[number],
     ratingKey: string,
     value: number,
   ) => {
@@ -132,14 +132,13 @@ const RateDragonsTable: FC<IRateDragonsTableProps> = ({ dragons }) => {
         return (
           <div
             key={dragon.id}
-            className=" w-full border-gray-700 border-2 mt-2 p-6"
+            className=" w-full border-gray-700 border-2 mt-2 p-6 flex gap-6 xl:flex-row flex-col"
           >
             <div className="flex flex-row gap-5 items-center">
               <Link href={`/dragons/${dragon.id}`}>
                 <div className="p-4">
                   <Image
-                    className="rounded-full border-2 border-gray-200"
-                    src={dragon.thumbnail}
+                    src={`https://dci-static-s1.socialpointgames.com/static/dragoncity/mobile/ui${dragon.thumbnail}`}
                     alt={dragon.name}
                     width={100}
                     height={100}

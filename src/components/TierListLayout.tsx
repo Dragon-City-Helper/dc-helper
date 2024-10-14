@@ -1,4 +1,4 @@
-import { dragonsWithRating } from "@/services/dragons";
+import { RateDragons } from "@/services/dragons";
 import { FC, useMemo } from "react";
 import DragonFaceCard from "./DragonFaceCard";
 import {
@@ -9,25 +9,22 @@ import {
 } from "@/constants/Rating";
 
 interface ITierListLayoutProps {
-  dragons: dragonsWithRating;
+  dragons: RateDragons;
   ratingKey: AllowedRatingKeys;
 }
 const TierListLayout: FC<ITierListLayoutProps> = ({ dragons, ratingKey }) => {
   const dragonsByRating = useMemo(() => {
-    return dragons.reduce(
-      (acc: { [key in string]: dragonsWithRating }, dragon) => {
-        const rating = dragon.rating?.[ratingKey] ?? 0;
-        const ratingText = getRatingText(rating);
-        // Initialize array for the rating if it doesn't exist
-        if (!acc[ratingText]) {
-          acc[ratingText] = [];
-        }
-        // Add the dragon to the appropriate rating array
-        acc[ratingText].push(dragon);
-        return acc;
-      },
-      {},
-    );
+    return dragons.reduce((acc: { [key in string]: RateDragons }, dragon) => {
+      const rating = dragon.rating?.[ratingKey] ?? 0;
+      const ratingText = getRatingText(rating);
+      // Initialize array for the rating if it doesn't exist
+      if (!acc[ratingText]) {
+        acc[ratingText] = [];
+      }
+      // Add the dragon to the appropriate rating array
+      acc[ratingText].push(dragon);
+      return acc;
+    }, {});
   }, [dragons, ratingKey]);
   return (
     <div className="flex flex-wrap flex-col">

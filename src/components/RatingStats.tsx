@@ -5,11 +5,11 @@ import {
   ratings,
   getRatingText,
 } from "@/constants/Rating";
-import { dragonsWithRating } from "@/services/dragons";
+import { HomeDragons } from "@/services/dragons";
 import { FC, useCallback } from "react";
 import Card from "./Card";
 interface IRatingStats {
-  dragons: dragonsWithRating;
+  dragons: HomeDragons;
 }
 
 const RatingStats: FC<IRatingStats> = ({ dragons }) => {

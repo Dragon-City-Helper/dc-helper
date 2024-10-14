@@ -4,12 +4,12 @@ import { PrismaClient } from "@prisma/client";
 const prisma = new PrismaClient();
 
 const getImageUrl = ({ image, isThumbnail }) => {
-  const host =
-    "https://dci-static-s1.socialpointgames.com/static/dragoncity/mobile/ui";
+  // const host =
+  //   "https://dci-static-s1.socialpointgames.com/static/dragoncity/mobile/ui";
   if (isThumbnail) {
-    return `${host}/${image.replace("/ui_", "/HD/thumb_")}_3.png`;
+    return `/${image.replace("/ui_", "/HD/thumb_")}_3.png`;
   }
-  return `${host}/${image}_3@2x.png`;
+  return `/${image}_3@2x.png`;
 };
 
 function convertToThumbnailUrl(imageUrl) {
@@ -17,6 +17,13 @@ function convertToThumbnailUrl(imageUrl) {
   return imageUrl
     .replace("/ui/dragons/ui_", "/ui/dragons/HD/thumb_")
     .replace("@2x.png", ".png");
+}
+
+function filterHostUrl(image) {
+  return image.replace(
+    "https://dci-static-s1.socialpointgames.com/static/dragoncity/mobile/ui",
+    "",
+  );
 }
 
 const fetchDragons = async ({
@@ -106,10 +113,14 @@ const fetchDragons = async ({
       }) => {
         const trimmedName = name.trim();
         const { dragon } = dcMetaResponseByName[trimmedName];
+        const dragonFamily =
+          familyNameCorrections[dragon.family] !== undefined
+            ? familyNameCorrections[dragon.family]
+            : dragon.family;
         return {
           name: trimmedName,
           rarity,
-          familyName: familyNameCorrections[dragon.family] ?? dragon.family,
+          familyName: dragonFamily,
           breedable,
           elements,
           baseSpeed,
@@ -122,9 +133,9 @@ const fetchDragons = async ({
             description: skill.descriptionKey,
           })),
           skins: dragon.skins,
-          image: dragon.image,
+          image: filterHostUrl(dragon.image),
           thumbnail: getImageUrl({ image, isThumbnail: true }),
-          isVip: !!dragon.family && (skills?.length ?? 0) > 0,
+          isVip: !!dragonFamily && (skills?.length ?? 0) > 0,
           hasSkills: hasSKill,
           skillType,
           isSkin: false,
@@ -190,9 +201,9 @@ async function main() {
         return {
           ...curr,
           name: `${curr.name} (${skin.skinname})`,
-          image: skin.img,
+          image: filterHostUrl(skin.img),
           isSkin: true,
-          thumbnail: convertToThumbnailUrl(skin.img),
+          thumbnail: filterHostUrl(convertToThumbnailUrl(skin.img)),
           skinName: skin.skinname,
           originalDragonName: curr.name,
         };

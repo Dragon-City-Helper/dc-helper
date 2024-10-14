@@ -1,5 +1,6 @@
 import {
-  dragonsWithRating,
+  HomeDragons,
+  RateDragons,
   fetchDragonsWithRatingsNotNull,
 } from "@/services/dragons";
 import TierListLayout from "@/components/TierListLayout";
@@ -28,7 +29,7 @@ export async function getServerSideProps() {
   }
 }
 
-export default function Page({ dragons }: { dragons: dragonsWithRating }) {
+export default function Page({ dragons }: { dragons: RateDragons }) {
   const [ratingKey, setRatingKey] = useState<AllowedRatingKeys>("overall"); // default filter is overall
   const { filteredDragons, onFilterChange, filters } =
     useDragonFilters(dragons);
@@ -59,7 +60,7 @@ export default function Page({ dragons }: { dragons: dragonsWithRating }) {
         </select>
       </label>
       <TierListLayout
-        dragons={filteredDragons as dragonsWithRating}
+        dragons={filteredDragons as RateDragons}
         ratingKey={ratingKey}
       />
     </div>

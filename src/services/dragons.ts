@@ -10,22 +10,56 @@ export const fetchDragons = async (options?: { rarity: Rarity }) => {
   });
 };
 
-export const fetchDragonsWithRatings = async (options?: { rarity: Rarity }) => {
+export const fetchHomeDragons = async (options?: { rarity: Rarity }) => {
   return await prisma.dragons.findMany({
     where: {
       rarity: options?.rarity,
     },
-    include: {
+    select: {
+      id: true,
+      name: true,
+      familyName: true,
+      elements: true,
+      rarity: true,
+      isSkin: true,
+      hasAllSkins: true,
+      isVip: true,
+      hasSkills: true,
+      skillType: true,
+      maxSpeed: true,
+      baseSpeed: true,
       rating: true,
+      image: true,
+      breedable: true,
+    },
+  });
+};
+
+export const fetchRateDragons = async (options?: { rarity: Rarity }) => {
+  return await prisma.dragons.findMany({
+    where: {
+      rarity: options?.rarity,
+    },
+    select: {
+      id: true,
+      name: true,
+      familyName: true,
+      elements: true,
+      rarity: true,
+      isSkin: true,
+      isVip: true,
+      hasSkills: true,
+      skillType: true,
+      rating: true,
+      thumbnail: true,
     },
   });
 };
 
 type ThenArg<T> = T extends PromiseLike<infer U> ? U : T;
 
-export type dragonsWithRating = ThenArg<
-  ReturnType<typeof fetchDragonsWithRatings>
->;
+export type HomeDragons = ThenArg<ReturnType<typeof fetchHomeDragons>>;
+export type RateDragons = ThenArg<ReturnType<typeof fetchRateDragons>>;
 
 export const fetchDragonsWithRatingsNotNull = async (options?: {
   rarity: Rarity;
@@ -37,8 +71,18 @@ export const fetchDragonsWithRatingsNotNull = async (options?: {
         rating: null,
       },
     },
-    include: {
+    select: {
+      id: true,
+      name: true,
+      familyName: true,
+      elements: true,
+      rarity: true,
+      isSkin: true,
+      isVip: true,
+      hasSkills: true,
+      skillType: true,
       rating: true,
+      thumbnail: true,
     },
   });
 };

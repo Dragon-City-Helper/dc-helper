@@ -4,7 +4,7 @@ import {
   rarities,
   RarityNames,
 } from "@/constants/Dragon";
-import { dragonsWithRating } from "@/services/dragons";
+import { HomeDragons, RateDragons } from "@/services/dragons";
 import { Elements, Rarity } from "@prisma/client";
 import { FC } from "react";
 
@@ -21,7 +21,7 @@ interface DragonFilters {
   onFilterChange: (key: keyof IFilters, e: any) => void;
   filters: IFilters;
   allowedFilters?: (keyof IFilters)[];
-  dragons: dragonsWithRating;
+  dragons: HomeDragons | RateDragons;
 }
 
 const SearchFilter: FC<DragonFilters> = ({ filters, onFilterChange }) => {
@@ -177,6 +177,7 @@ const DragonFilters: FC<DragonFilters> = ({
         const Component = filterToComponent[filter];
         return Component ? (
           <Component
+            key={filter}
             onFilterChange={onFilterChange}
             filters={filters}
             dragons={dragons}

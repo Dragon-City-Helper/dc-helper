@@ -1,14 +1,13 @@
 import TopDragonsCard from "@/components/TopDragonsCard";
-import { dragonsWithRating, fetchDragonsWithRatings } from "@/services/dragons";
+import { HomeDragons, fetchHomeDragons } from "@/services/dragons";
 import { getOwned } from "@/services/ownedDragons";
-import { useCallback, useEffect, useMemo, useState } from "react";
-import { dragons } from "@prisma/client";
+import { useEffect, useMemo, useState } from "react";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/router";
 
 export async function getStaticProps() {
   try {
-    const dragons = await fetchDragonsWithRatings();
+    const dragons = await fetchHomeDragons();
     return {
       props: {
         dragons,
@@ -20,7 +19,7 @@ export async function getStaticProps() {
   }
 }
 
-export default function Page({ dragons }: { dragons: dragonsWithRating }) {
+export default function Page({ dragons }: { dragons: HomeDragons }) {
   const [ownedIds, setOwned] = useState<string[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const session = useSession();
@@ -68,12 +67,6 @@ export default function Page({ dragons }: { dragons: dragonsWithRating }) {
             dragons={dragons}
             ownedIdsMap={ownedIdsMap}
             options={{ owned: true, size: 25 }}
-          />
-          <TopDragonsCard
-            title="My Top Dragons Continued"
-            dragons={dragons}
-            ownedIdsMap={ownedIdsMap}
-            options={{ owned: true, size: 25, offset: 25 }}
           />
           <TopDragonsCard
             title=" Top Dragons to breed"

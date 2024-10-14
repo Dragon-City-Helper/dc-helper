@@ -48,7 +48,12 @@ const DragonProfile: FC<IDragonProfileProps> = ({ dragon }) => {
         )}
       </div>
       <figure className="flex justify-center items-center">
-        <Image src={dragon.image} alt={dragon.name} width={300} height={300} />
+        <Image
+          src={`https://dci-static-s1.socialpointgames.com/static/dragoncity/mobile/ui${dragon.image}`}
+          alt={dragon.name}
+          width={300}
+          height={300}
+        />
       </figure>
       <div className="flex justify-between items-center">
         Overall Rating:

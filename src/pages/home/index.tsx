@@ -1,9 +1,5 @@
 import DragonsTable from "@/components/DragonsTable";
-import {
-  dragonsWithRating,
-  fetchDragons,
-  fetchDragonsWithRatings,
-} from "@/services/dragons";
+import { HomeDragons, fetchHomeDragons } from "@/services/dragons";
 import { getOwned, postOwned } from "@/services/ownedDragons";
 import { useEffect, useMemo, useState } from "react";
 import { dragons } from "@prisma/client";
@@ -14,7 +10,7 @@ import useDragonFilters from "@/hooks/useDragonFilters";
 
 export async function getStaticProps() {
   try {
-    const dragons = await fetchDragonsWithRatings();
+    const dragons = await fetchHomeDragons();
     return {
       props: {
         dragons,
@@ -26,9 +22,9 @@ export async function getStaticProps() {
   }
 }
 
-export default function Page({ dragons }: { dragons: dragonsWithRating }) {
+export default function Page({ dragons }: { dragons: HomeDragons }) {
   const [owned, setOwned] = useState<string[]>([]);
-  const [allDragons] = useState<dragonsWithRating>(dragons);
+  const [allDragons] = useState<HomeDragons>(dragons);
   const [loading, setLoading] = useState<boolean | string>(true);
 
   const session = useSession();
@@ -54,15 +50,15 @@ export default function Page({ dragons }: { dragons: dragonsWithRating }) {
     }, new Map<string, boolean>());
   }, [owned]);
 
-  const onOwned = async (dragon: dragons, checked: boolean) => {
+  const onOwned = async (dragonId: string, checked: boolean) => {
     try {
       let newOwned = owned;
       if (checked) {
-        newOwned = [...owned, dragon.id];
+        newOwned = [...owned, dragonId];
       } else {
-        newOwned = owned.filter((id) => id != dragon.id);
+        newOwned = owned.filter((id) => id != dragonId);
       }
-      setLoading(dragon.id);
+      setLoading(dragonId);
       await postOwned(session.data?.user?.id || "", newOwned);
       setOwned(newOwned);
       setLoading(false);
@@ -95,7 +91,7 @@ export default function Page({ dragons }: { dragons: dragonsWithRating }) {
                 } of ${dragons.filter((d) => d.isSkin).length} Skins`}
           </b>
           <DragonsTable
-            dragons={filteredDragons}
+            dragons={filteredDragons as HomeDragons}
             onOwned={onOwned}
             ownedIdsMap={ownedIdsMap}
             loading={loading}

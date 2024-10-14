@@ -1,6 +1,6 @@
 import TopDragonsCard from "@/components/TopDragonsCard";
 import { elements, ElementsNames } from "@/constants/Dragon";
-import { dragonsWithRating, fetchDragonsWithRatings } from "@/services/dragons";
+import { HomeDragons, fetchHomeDragons } from "@/services/dragons";
 import { getOwned } from "@/services/ownedDragons";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { dragons, Elements } from "@prisma/client";
@@ -9,7 +9,7 @@ import { useRouter } from "next/router";
 
 export async function getStaticProps() {
   try {
-    const dragons = await fetchDragonsWithRatings();
+    const dragons = await fetchHomeDragons();
 
     return {
       props: {
@@ -22,7 +22,7 @@ export async function getStaticProps() {
   }
 }
 
-export default function Page({ dragons }: { dragons: dragonsWithRating }) {
+export default function Page({ dragons }: { dragons: HomeDragons }) {
   const [ownedIds, setOwned] = useState<string[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const session = useSession();
@@ -106,7 +106,7 @@ export default function Page({ dragons }: { dragons: dragonsWithRating }) {
               title={`My Top ${ElementsNames[element]} Dragons`}
               dragons={dragons}
               ownedIdsMap={ownedIdsMap}
-              options={{ owned: true, size: 10, element }}
+              options={{ owned: true, size: 5, element }}
             />
           ))}
         </div>
