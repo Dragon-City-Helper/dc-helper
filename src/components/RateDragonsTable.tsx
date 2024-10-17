@@ -134,52 +134,64 @@ const RateDragonsTable: FC<IRateDragonsTableProps> = ({ dragons }) => {
             key={dragon.id}
             className=" w-full border-gray-700 border-2 mt-2 p-6 flex gap-6 xl:flex-row flex-col"
           >
-            <div className="flex flex-row gap-5 items-center">
-              <Link href={`/dragons/${dragon.id}`}>
-                <div className="p-4">
-                  <Image
-                    src={`https://dci-static-s1.socialpointgames.com/static/dragoncity/mobile/ui${dragon.thumbnail}`}
-                    alt={dragon.name}
-                    width={100}
-                    height={100}
-                  />
-                </div>
-                <div className="flex flex-col justify-between items-start flex-grow">
-                  <div className="flex flex-row gap-2 items-start">
-                    {dragon.elements.map((element, index) => (
-                      <Image
-                        key={`${dragon.id}-${element}-${index}`}
-                        src={`/images/elements/${element}.png`}
-                        alt={element}
-                        width={15}
-                        height={31}
-                      />
-                    ))}
+            <Link href={`/dragons/${dragon.id}`}>
+              <div className="p-4">
+                <Image
+                  src={`https://dci-static-s1.socialpointgames.com/static/dragoncity/mobile/ui${dragon.thumbnail}`}
+                  alt={dragon.name}
+                  width={100}
+                  height={100}
+                />
+              </div>
+              <div className="flex flex-col justify-between items-start flex-wrap">
+                <div className="flex flex-row gap-2 items-start">
+                  {dragon.elements.map((element, index) => (
                     <Image
-                      src={`/images/rarity/${dragon.rarity}.png`}
+                      key={`${dragon.id}-${element}-${index}`}
+                      src={`/images/elements/${element}.png`}
+                      alt={element}
+                      width={15}
+                      height={31}
+                    />
+                  ))}
+                  <Image
+                    src={`/images/rarity/${dragon.rarity}.png`}
+                    alt={dragon.rarity}
+                    width={32}
+                    height={32}
+                  />
+                  {dragon.familyName && (
+                    <Image
+                      src={`/images/family/icon-${dragon.familyName}.png`}
+                      alt={dragon.familyName}
+                      width={32}
+                      height={32}
+                    />
+                  )}
+                  {dragon.isSkin ? (
+                    <Image
+                      src={`/images/skin.png`}
                       alt={dragon.rarity}
                       width={32}
                       height={32}
                     />
-                    {dragon.familyName && (
-                      <Image
-                        src={`/images/family/icon-${dragon.familyName}.png`}
-                        alt={dragon.familyName}
-                        width={32}
-                        height={32}
-                      />
-                    )}
-                  </div>
-                  <div className="text-left">{dragon.name}</div>
+                  ) : null}
+                  {!dragon.isSkin && !dragon.isVip && dragon.hasSkills ? (
+                    <Image
+                      src={`/images/skilltype/${dragon.skillType}.png`}
+                      alt={dragon.rarity}
+                      width={32}
+                      height={32}
+                    />
+                  ) : null}
                 </div>
-              </Link>
-            </div>
+                <div className="text-left">{dragon.name}</div>
+              </div>
+            </Link>
             <div className="flex flex-wrap items-center justify-between gap-6">
               {RatingKeys.map((key) => (
                 <div key={key} className="flex flex-col gap-2">
-                  <div>
-                    <b>{RatingKeysToText[key]}</b>
-                  </div>
+                  <b>{RatingKeysToText[key]}</b>
                   <RatingDropdown
                     dragon={dragon}
                     ratingKey={key}
@@ -189,24 +201,21 @@ const RateDragonsTable: FC<IRateDragonsTableProps> = ({ dragons }) => {
                 </div>
               ))}
               <div className="flex flex-col gap-2">
-                <div>
-                  <b>Score</b>
-                </div>
+                <b>Score</b>
                 <div> {localRatings[dragon.id]?.score ?? 0}</div>
               </div>
-              <div className="flex flex-col gap-2">
-                {loading[dragon.id] ? (
-                  <span className="loading loading-spinner loading-md"></span>
-                ) : (
-                  <button
-                    className="btn btn-primary"
-                    onClick={() => updateDragonRating(dragon.id)}
-                    disabled={!dirty[dragon.id]}
-                  >
-                    Save
-                  </button>
-                )}
-              </div>
+
+              {loading[dragon.id] ? (
+                <span className="loading loading-spinner loading-md"></span>
+              ) : (
+                <button
+                  className="btn btn-primary"
+                  onClick={() => updateDragonRating(dragon.id)}
+                  disabled={!dirty[dragon.id]}
+                >
+                  Save
+                </button>
+              )}
             </div>
           </div>
         );

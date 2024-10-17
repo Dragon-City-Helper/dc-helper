@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { FC } from "react";
 import { useSession, signOut } from "next-auth/react";
+import Image from "next/image";
 
 const NavBar: FC = () => {
   const session = useSession();
@@ -32,15 +33,7 @@ const NavBar: FC = () => {
               <Link href="/home">Home</Link>
             </li>
             <li>
-              <Link href="/mydragons">My Top Dragons</Link>
-              <ul className="p-2">
-                <li>
-                  <Link href="/mydragons/rarity">By Rarity</Link>
-                </li>
-                <li>
-                  <Link href="/mydragons/elements">By Element</Link>
-                </li>
-              </ul>
+              <Link href="/tierlist">Tierlist</Link>
             </li>
           </ul>
         </div>
@@ -54,14 +47,18 @@ const NavBar: FC = () => {
             <Link href="/home">Home</Link>
           </li>
           <li>
-            <Link href="/mydragons">My Top Dragons</Link>
+            <Link href="/tierlist">Tierlist</Link>
           </li>
-          <li>
-            <Link href="/mydragons/rarity">By Rarity</Link>
-          </li>
-          <li>
-            <Link href="/mydragons/elements">By Element</Link>
-          </li>
+          {/* <li>
+            <a href="https://www.buymeacoffee.com/8oBtn6i2fC" target="_blank">
+              <Image
+                src="https://cdn.buymeacoffee.com/buttons/v2/default-yellow.png"
+                alt="Buy Me A Coffee"
+                width={217}
+                height={60}
+              />
+            </a>
+          </li> */}
           {session.status === "authenticated" && (
             <button onClick={() => signOut()}>Signout</button>
           )}

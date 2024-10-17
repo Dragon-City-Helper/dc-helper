@@ -53,111 +53,108 @@ const DragonsTable: FC<IDragonsTableProps> = ({
     return sortedDragons;
   }, [dragons, size]);
 
+  const showOwned = useMemo(() => !viewOnly && onOwned, [viewOnly, onOwned]);
+
   return (
-    <div className="overflow-x-auto ">
-      <table className="table">
-        <thead className="text-center">
-          <tr>
-            {!viewOnly && onOwned && <th>Owned ?</th>}
-            <th>Name</th>
-            <th>Speed</th>
-            <th>Overall Rating</th>
-            <th>Tags</th>
-          </tr>
-        </thead>
-        <tbody>
-          {sortedDragons.map((dragon: HomeDragons[number]) => {
-            return (
-              <tr key={dragon.id} className="hover">
-                {!viewOnly && onOwned && (
-                  <td>
-                    {loading === true || loading === dragon.id ? (
-                      <span className="loading loading-spinner loading-md"></span>
-                    ) : (
-                      <label>
-                        <input
-                          type="checkbox"
-                          className="checkbox"
-                          checked={ownedIdsMap.has(dragon.id)}
-                          onChange={() =>
-                            onOwned(dragon.id, !ownedIdsMap.get(dragon.id))
-                          }
-                        />
-                      </label>
-                    )}
-                  </td>
+    <div className="flex flex-col">
+      <div
+        className={`grid ${showOwned ? "grid-cols-5" : "grid-cols-4"} text-center`}
+      >
+        {showOwned && <div>Owned ?</div>}
+        <div className="col-span-2">Name</div>
+        <div>Speed</div>
+        <div>Overall Rating</div>
+      </div>
+
+      {sortedDragons.map((dragon: HomeDragons[number]) => {
+        return (
+          <div
+            key={dragon.id}
+            className={`grid ${showOwned ? "grid-cols-5" : "grid-cols-4"} border border-gray-500 items-center text-center p-6`}
+          >
+            {!viewOnly && onOwned && (
+              <div>
+                {loading === true || loading === dragon.id ? (
+                  <span className="loading loading-spinner loading-md"></span>
+                ) : (
+                  <label>
+                    <input
+                      type="checkbox"
+                      className="checkbox"
+                      checked={ownedIdsMap.has(dragon.id)}
+                      onChange={() =>
+                        onOwned(dragon.id, !ownedIdsMap.get(dragon.id))
+                      }
+                    />
+                  </label>
                 )}
-                <td>
-                  <Link href={`/dragons/${dragon.id}`}>
-                    <div className="flex flex-row gap-2 items-center">
-                      <Image
-                        src={`https://dci-static-s1.socialpointgames.com/static/dragoncity/mobile/ui${dragon.image}`}
-                        alt={dragon.name}
-                        width={100}
-                        height={100}
-                      />
-                      <div>{dragon.name}</div>
-                    </div>
-                  </Link>
-                </td>
-                <td>{`${dragon.baseSpeed} - ${dragon.maxSpeed}`}</td>
-                <td>
-                  <div className="flex flex-row gap-2 items-center">
-                    {dragon.rating?.overall
-                      ? getRatingText(dragon.rating?.overall)
-                      : "Unrated"}
-                  </div>
-                </td>
-                <td>
-                  <div className="flex flex-row gap-2 items-center justify-start">
+              </div>
+            )}
+            <div className="col-span-2 justify-items-center">
+              <Link href={`/dragons/${dragon.id}`}>
+                <div className="p-4">
+                  <Image
+                    src={`https://dci-static-s1.socialpointgames.com/static/dragoncity/mobile/ui${dragon.image}`}
+                    alt={dragon.name}
+                    width={120}
+                    height={120}
+                  />
+                </div>
+                <div className="flex flex-col justify-between items-start">
+                  <div className="flex flex-row gap-2 items-start flex-wrap w-full">
                     {dragon.elements.map((element, index) => (
                       <Image
                         key={`${dragon.id}-${element}-${index}`}
                         src={`/images/elements/${element}.png`}
                         alt={element}
-                        width={36}
-                        height={76}
+                        width={16}
+                        height={32}
                       />
                     ))}
-                  </div>
-                  <div className="flex items-center justify-start">
                     <Image
                       src={`/images/rarity/${dragon.rarity}.png`}
                       alt={dragon.rarity}
-                      width={64}
-                      height={64}
+                      width={32}
+                      height={32}
                     />
-                    {dragon.familyName ? (
+                    {dragon.familyName && (
                       <Image
                         src={`/images/family/icon-${dragon.familyName}.png`}
                         alt={dragon.familyName}
-                        width={64}
-                        height={64}
+                        width={32}
+                        height={32}
                       />
-                    ) : null}
+                    )}
                     {dragon.isSkin ? (
                       <Image
                         src={`/images/skin.png`}
                         alt={dragon.rarity}
-                        width={64}
-                        height={64}
+                        width={32}
+                        height={32}
                       />
                     ) : null}
                     {!dragon.isSkin && !dragon.isVip && dragon.hasSkills ? (
                       <Image
                         src={`/images/skilltype/${dragon.skillType}.png`}
                         alt={dragon.rarity}
-                        width={64}
-                        height={64}
+                        width={32}
+                        height={32}
                       />
                     ) : null}
                   </div>
-                </td>
-              </tr>
-            );
-          })}
-        </tbody>
-      </table>
+                  <div className="text-left">{dragon.name}</div>
+                </div>
+              </Link>
+            </div>
+            <div>{`${dragon.baseSpeed} - ${dragon.maxSpeed}`}</div>
+            <div>
+              {dragon.rating?.overall
+                ? getRatingText(dragon.rating?.overall)
+                : "Unrated"}
+            </div>
+          </div>
+        );
+      })}
     </div>
   );
 };
