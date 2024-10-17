@@ -1,6 +1,6 @@
 import TopDragonsCard from "@/components/TopDragonsCard";
 import { HomeDragons, fetchHomeDragons } from "@/services/dragons";
-import { getOwned } from "@/services/ownedDragons";
+import { getOwned } from "@/services/owned";
 import { useEffect, useMemo, useState } from "react";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/router";
@@ -29,8 +29,8 @@ export default function Page({ dragons }: { dragons: HomeDragons }) {
       setLoading(true);
     } else if (session.status === "authenticated") {
       setLoading(true);
-      getOwned(session.data?.user?.id || "").then((res) => {
-        setOwned(res.data.dragons);
+      getOwned().then((res) => {
+        setOwned(res.data);
         setLoading(false);
       });
     } else {

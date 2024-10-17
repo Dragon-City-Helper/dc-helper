@@ -1,6 +1,6 @@
 import DragonsTable from "@/components/DragonsTable";
 import { HomeDragons, fetchHomeDragons } from "@/services/dragons";
-import { getOwned, postOwned } from "@/services/ownedDragons";
+import { getOwned, postOwned } from "@/services/owned";
 import { useEffect, useMemo, useState } from "react";
 import { dragons } from "@prisma/client";
 import DragonFilters from "@/components/DragonFilters";
@@ -34,8 +34,8 @@ export default function Page({ dragons }: { dragons: HomeDragons }) {
       setLoading(true);
     } else if (session.status === "authenticated") {
       setLoading(true);
-      getOwned(session.data?.user?.id || "").then((res) => {
-        setOwned(res.data.dragons);
+      getOwned().then((res) => {
+        setOwned(res.data);
         setLoading(false);
       });
     } else {
@@ -59,7 +59,7 @@ export default function Page({ dragons }: { dragons: HomeDragons }) {
         newOwned = owned.filter((id) => id != dragonId);
       }
       setLoading(dragonId);
-      await postOwned(session.data?.user?.id || "", newOwned);
+      await postOwned(newOwned);
       setOwned(newOwned);
       setLoading(false);
     } catch (error) {

@@ -1,7 +1,7 @@
 import TopDragonsCard from "@/components/TopDragonsCard";
 import { rarities, RarityNames } from "@/constants/Dragon";
 import { HomeDragons, fetchHomeDragons } from "@/services/dragons";
-import { getOwned } from "@/services/ownedDragons";
+import { getOwned } from "@/services/owned";
 import { useCallback, useMemo, useEffect, useState } from "react";
 import { Rarity } from "@prisma/client";
 import { useSession } from "next-auth/react";
@@ -32,8 +32,8 @@ export default function Page({ dragons }: { dragons: HomeDragons }) {
       setLoading(true);
     } else if (session.status === "authenticated") {
       setLoading(true);
-      getOwned(session.data?.user?.id || "").then((res) => {
-        setOwned(res.data.dragons);
+      getOwned().then((res) => {
+        setOwned(res.data);
         setLoading(false);
       });
     } else {

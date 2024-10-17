@@ -1,4 +1,5 @@
 import prisma from "@/lib/prisma";
+import { ApiResponse } from "@/types/apiResponse";
 import { Rarity, Rating } from "@prisma/client";
 import axios from "axios";
 
@@ -162,7 +163,11 @@ export const saveDragonRatings = async (dragonsId: string, rating: Rating) => {
 };
 
 export const putRatings = async (dragonsId: string, rating: Rating) => {
-  return axios.put<Rating>(`/api/dragons/${dragonsId}/rating`, {
-    rating,
-  });
+  const response = await axios.put<ApiResponse<Rating>>(
+    `/api/dragons/${dragonsId}/rating`,
+    {
+      rating,
+    },
+  );
+  return response.data;
 };
