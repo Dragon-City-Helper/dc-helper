@@ -3,14 +3,6 @@ import { ApiResponse } from "@/types/apiResponse";
 import { Rarity, Rating } from "@prisma/client";
 import axios from "axios";
 
-export const fetchDragons = async (options?: { rarity: Rarity }) => {
-  return await prisma.dragons.findMany({
-    where: {
-      rarity: options?.rarity,
-    },
-  });
-};
-
 export const fetchHomeDragons = async (options?: { rarity: Rarity }) => {
   return await prisma.dragons.findMany({
     where: {
@@ -65,6 +57,30 @@ export type RateDragons = ThenArg<ReturnType<typeof fetchRateDragons>>;
 export const fetchDragonsWithRatingsNotNull = async (options?: {
   rarity: Rarity;
 }) => {
+  return await prisma.dragons.findMany({
+    where: {
+      rarity: options?.rarity,
+      NOT: {
+        rating: null,
+      },
+    },
+    select: {
+      id: true,
+      name: true,
+      familyName: true,
+      elements: true,
+      rarity: true,
+      isSkin: true,
+      isVip: true,
+      hasSkills: true,
+      skillType: true,
+      rating: true,
+      thumbnail: true,
+    },
+  });
+};
+
+export const fetchRatedDragons = async (options?: { rarity: Rarity }) => {
   return await prisma.dragons.findMany({
     where: {
       rarity: options?.rarity,

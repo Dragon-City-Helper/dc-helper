@@ -190,7 +190,12 @@ async function seedDragons(dragons) {
     ${skinsLength} Combat Skins seeded.
     ${allSkinsLength} All Skin dragons seeded.`);
 }
-
+const dragonSkinThumbnailCorrections = {
+  "Norn Skill Skin":
+    "/dragons/HD/thumb_3109_dragon_highredemptionnorn_skin3_b_3.png",
+  "Blood Skill Skin":
+    "/dragons/HD/thumb_2788_dragon_highvoodoovampire_skin1_b_3.png",
+};
 async function main() {
   const dragons = await fetchDragons({});
   const dragonsAndSkins = dragons.reduce((acc, curr) => {
@@ -203,7 +208,9 @@ async function main() {
           name: `${curr.name} (${skin.skinname})`,
           image: filterHostUrl(skin.img),
           isSkin: true,
-          thumbnail: filterHostUrl(convertToThumbnailUrl(skin.img)),
+          thumbnail:
+            dragonSkinThumbnailCorrections[skin.skinName] ??
+            filterHostUrl(convertToThumbnailUrl(skin.img)),
           skinName: skin.skinname,
           originalDragonName: curr.name,
         };

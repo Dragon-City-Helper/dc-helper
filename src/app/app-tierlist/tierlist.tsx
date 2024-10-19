@@ -1,34 +1,17 @@
-import {
-  RateDragons,
-  fetchDragonsWithRatingsNotNull,
-} from "@/services/dragons";
-import TierListLayout from "@/components/TierListLayout";
+"use client";
+
 import DragonFilters from "@/components/DragonFilters";
-import useDragonFilters from "@/hooks/useDragonFilters";
-import { useState } from "react";
+import TierListLayout from "@/components/TierListLayout";
 import {
   AllowedRatingKeys,
   RateByKeys,
   RatingKeysToText,
 } from "@/constants/Rating";
+import useDragonFilters from "@/hooks/useDragonFilters";
+import { RateDragons } from "@/services/dragons";
+import { useState } from "react";
 
-export async function getServerSideProps() {
-  try {
-    const dragons = await fetchDragonsWithRatingsNotNull();
-    const sortedDragons = dragons.sort(
-      (a, b) => (b.rating?.score || 0) - (a.rating?.score || 0),
-    );
-    return {
-      props: {
-        dragons: sortedDragons,
-      },
-    };
-  } catch (error) {
-    console.log(error);
-  }
-}
-
-export default function Page({ dragons }: { dragons: RateDragons }) {
+export default function TierList({ dragons }: { dragons: RateDragons }) {
   const [ratingKey, setRatingKey] = useState<AllowedRatingKeys>("overall"); // default filter is overall
   const { filteredDragons, onFilterChange, filters } =
     useDragonFilters(dragons);

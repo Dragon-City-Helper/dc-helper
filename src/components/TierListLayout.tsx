@@ -26,6 +26,7 @@ const TierListLayout: FC<ITierListLayoutProps> = ({ dragons, ratingKey }) => {
       return acc;
     }, {});
   }, [dragons, ratingKey]);
+
   return (
     <div className="flex flex-wrap flex-col">
       {ratings.map((rating) => (

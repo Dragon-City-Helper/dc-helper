@@ -2,7 +2,6 @@ import DragonsTable from "@/components/DragonsTable";
 import { HomeDragons, fetchHomeDragons } from "@/services/dragons";
 import { getOwned, postOwned } from "@/services/owned";
 import { useEffect, useMemo, useState } from "react";
-import { dragons } from "@prisma/client";
 import DragonFilters from "@/components/DragonFilters";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/router";
