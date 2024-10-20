@@ -15,17 +15,17 @@ export default function useDragonFilters(
         new RegExp(`${filters.search}`, "gi").test(dragon.name),
       ) as HomeDragons | RateDragons;
     }
-    if (filters.rarity && filters.rarity !== "all") {
+    if (filters.rarity) {
       finalDragons = finalDragons.filter(
         (dragon) => dragon.rarity === filters.rarity,
       ) as HomeDragons | RateDragons;
     }
-    if (filters.familyName && filters.familyName !== "all") {
+    if (filters.familyName) {
       finalDragons = finalDragons.filter(
         (dragon) => dragon.familyName === filters.familyName,
       ) as HomeDragons | RateDragons;
     }
-    if (filters.element && filters.element !== "all") {
+    if (filters.element) {
       finalDragons = finalDragons.filter((dragon) =>
         dragon.elements.includes(filters.element as Elements),
       ) as HomeDragons | RateDragons;
@@ -40,7 +40,6 @@ export default function useDragonFilters(
         finalDragons = finalDragons.filter(
           (dragon) => !ownedIdsMap.has(dragon.id),
         ) as HomeDragons | RateDragons;
-      case "all":
       default:
         break;
     }
@@ -54,7 +53,6 @@ export default function useDragonFilters(
         finalDragons = finalDragons.filter((dragon) => dragon.isSkin) as
           | HomeDragons
           | RateDragons;
-      case "all":
       default:
         break;
     }
@@ -68,7 +66,6 @@ export default function useDragonFilters(
         finalDragons = finalDragons.filter(
           (dragon) => !ownedIdsMap.has(dragon.id),
         ) as HomeDragons | RateDragons;
-      case "all":
       default:
         break;
     }
@@ -84,10 +81,10 @@ export default function useDragonFilters(
     ownedIdsMap,
   ]);
 
-  const onFilterChange = (key: keyof IFilters, e: any) => {
+  const onFilterChange = (key: keyof IFilters, value: any) => {
     setFilters({
       ...filters,
-      [key]: e.target.value,
+      [key]: value,
     });
   };
 

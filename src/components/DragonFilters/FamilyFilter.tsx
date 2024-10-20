@@ -1,7 +1,9 @@
 import { FC } from "react";
 import { DragonFilters } from ".";
+import Select from "../Select";
+import FamilyImage from "../FamilyImage";
 
-export const FamilyFilter: FC<DragonFilters> = ({
+const FamilyFilter: FC<DragonFilters> = ({
   filters,
   onFilterChange,
   dragons,
@@ -10,24 +12,21 @@ export const FamilyFilter: FC<DragonFilters> = ({
     .map((dragon) => dragon.familyName || "")
     .filter((familyName) => !!familyName);
   const uniqueFamilyNames = new Set(familyNames);
-  const options = Array.from(uniqueFamilyNames).sort();
+  const options = Array.from(uniqueFamilyNames)
+    .sort()
+    .map((family) => ({ value: family, label: family }));
+
   return (
-    <label className="form-control w-full max-w-xs">
-      <div className="label">
-        <span className="label-text">Family</span>
-      </div>
-      <select
-        className="select select-bordered"
-        onChange={(e) => onFilterChange("familyName", e)}
-        value={filters.familyName}
-      >
-        <option value="all">All Dragons</option>
-        {options.map((option) => (
-          <option value={option} key={option}>
-            {option}
-          </option>
-        ))}
-      </select>
-    </label>
+    <Select
+      onChange={(value) => onFilterChange("familyName", value)}
+      label="Family"
+      placeholder="Select a family"
+      data={options}
+      value={filters.familyName}
+      allowDeselect
+      icon={(option) => <FamilyImage familyName={option.value} />}
+    />
   );
 };
+
+export default FamilyFilter;

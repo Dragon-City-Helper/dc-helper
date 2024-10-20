@@ -7,6 +7,7 @@ import {
   ratings,
   ratingStyles,
 } from "@/constants/Rating";
+import { SimpleGrid, Stack, Title } from "@mantine/core";
 
 interface ITierListLayoutProps {
   dragons: RateDragons;
@@ -28,27 +29,25 @@ const TierListLayout: FC<ITierListLayoutProps> = ({ dragons, ratingKey }) => {
   }, [dragons, ratingKey]);
 
   return (
-    <div className="flex flex-wrap flex-col">
+    <Stack gap={0}>
       {ratings.map((rating) => (
         <div
           key={rating.label}
-          className="flex items-center justify-center border-b-2 border-black min-h-44"
+          className="flex flex-col justify-between border-b-2 border-black min-h-44 p-1 md:p-6"
           style={{
             ...ratingStyles[rating.label],
           }}
         >
-          <div className="flex w-1/12 text-center h-full items-center justify-center">
-            {rating.label}
-          </div>
-          <div className="flex flex-wrap w-11/12 gap-4 p-2">
+          <Title order={3}>{rating.label}</Title>
+          <SimpleGrid cols={{ base: 2, sm: 4, lg: 6 }} my="sm">
             {dragonsByRating[rating.label]?.length > 0 &&
               dragonsByRating[rating.label].map((dragon) => (
                 <DragonFaceCard dragon={dragon} key={dragon.id} />
               ))}
-          </div>
+          </SimpleGrid>
         </div>
       ))}
-    </div>
+    </Stack>
   );
 };
 

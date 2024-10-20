@@ -1,20 +1,20 @@
 import { HomeDragons, RateDragons } from "@/services/dragons";
 import { Elements, Rarity } from "@prisma/client";
 import { FC } from "react";
-import { SearchFilter } from "./SearchFilter";
-import { RarityFilter } from "./RarityFilter";
-import { ElementFilter } from "./ElementFilter";
-import { ShowFilter } from "./ShowFilter";
-import { FamilyFilter } from "./FamilyFilter";
-import { SkinsFilter } from "./SkinsFilter";
+import SearchFilter from "./SearchFilter";
+import RarityFilter from "./RarityFilter";
+import ElementFilter from "./ElementFilter";
+import ShowFilter from "./ShowFilter";
+import FamilyFilter from "./FamilyFilter";
+import SkinsFilter from "./SkinsFilter";
 
 export interface IFilters {
   search?: string;
-  show?: "all" | "owned" | "unowned";
-  rarity?: Rarity | "all";
-  element?: Elements | "all";
+  show?: "owned" | "unowned";
+  rarity?: Rarity;
+  element?: Elements;
   familyName?: string;
-  skins?: "all" | "skins" | "dragons";
+  skins?: "skins" | "dragons";
 }
 
 export interface DragonFilters {

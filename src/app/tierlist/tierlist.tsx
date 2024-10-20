@@ -1,6 +1,7 @@
 "use client";
 
 import DragonFilters from "@/components/DragonFilters";
+import Select from "@/components/Select";
 import TierListLayout from "@/components/TierListLayout";
 import {
   AllowedRatingKeys,
@@ -15,32 +16,26 @@ export default function TierList({ dragons }: { dragons: RateDragons }) {
   const [ratingKey, setRatingKey] = useState<AllowedRatingKeys>("overall"); // default filter is overall
   const { filteredDragons, onFilterChange, filters } =
     useDragonFilters(dragons);
+  const rateByOptions = RateByKeys.map((rKey) => ({
+    value: rKey,
+    label: RatingKeysToText[rKey],
+  }));
   return (
-    <div className="flex flex-col w-100 h-100 overflow-auto m-6 gap-6">
+    <div className="flex flex-col w-100 h-100 overflow-auto gap-6">
+      <Select
+        label="Rate By"
+        width="sm"
+        value={ratingKey}
+        data={rateByOptions}
+        allowDeselect={false}
+        onChange={(value) => setRatingKey(value as AllowedRatingKeys)}
+      />
       <DragonFilters
         dragons={dragons}
         onFilterChange={onFilterChange}
         filters={filters}
         allowedFilters={["search", "element", "familyName", "rarity", "skins"]}
       />
-      <label className="form-control w-full max-w-xs">
-        <div className="label">
-          <span className="label-text">Rate By</span>
-        </div>
-        <select
-          value={ratingKey}
-          className="select select-bordered"
-          onChange={(e) => setRatingKey(e.target.value as AllowedRatingKeys)}
-        >
-          {RateByKeys.map((rKey) => {
-            return (
-              <option key={rKey} value={rKey}>
-                {RatingKeysToText[rKey]}
-              </option>
-            );
-          })}
-        </select>
-      </label>
       <TierListLayout
         dragons={filteredDragons as RateDragons}
         ratingKey={ratingKey}
