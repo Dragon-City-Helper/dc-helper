@@ -1,8 +1,8 @@
 import { FC } from "react";
-import { DragonFilters } from ".";
 import Select from "../Select";
+import { IDragonFilters } from "@/types/filters";
 
-const ShowFilter: FC<DragonFilters> = ({ filters, onFilterChange }) => {
+const ShowFilter: FC<IDragonFilters> = ({ filters, onFilterChange }) => {
   const options = [
     {
       value: "owned",
@@ -17,6 +17,7 @@ const ShowFilter: FC<DragonFilters> = ({ filters, onFilterChange }) => {
     <Select
       value={filters.show}
       label="Show"
+      placeholder="Owned or Unowned"
       data={options}
       onChange={(value) => onFilterChange("show", value)}
     />

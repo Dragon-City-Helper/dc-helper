@@ -1,19 +1,34 @@
 "use client";
 
-import { AppShell, Burger, Center, Group, NavLink, Text } from "@mantine/core";
+import {
+  AppShell,
+  Burger,
+  Group,
+  NavLink,
+  Text,
+  UnstyledButton,
+} from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
 import Link from "next/link";
 import Logo from "./Logo";
 import { FC, PropsWithChildren } from "react";
+import { signIn, signOut, useSession } from "next-auth/react";
+import { usePathname } from "next/navigation";
+import { IconLogin2, IconLogout2 } from "@tabler/icons-react";
 
-const BasicAppShell: FC<PropsWithChildren> = ({ children }) => {
+interface IBasicAppShellProps {}
+const BasicAppShell: FC<PropsWithChildren<IBasicAppShellProps>> = ({
+  children,
+}) => {
   const [opened, { toggle }] = useDisclosure(false);
+  const pathname = usePathname();
+  const { status } = useSession();
 
   return (
     <AppShell
       header={{ height: 60 }}
       navbar={{
-        width: 300,
+        width: 200,
         breakpoint: "sm",
         collapsed: { desktop: !opened, mobile: !opened },
       }}
@@ -26,8 +41,37 @@ const BasicAppShell: FC<PropsWithChildren> = ({ children }) => {
         </Group>
       </AppShell.Header>
       <AppShell.Navbar p="md">
-        <NavLink component={Link} label="Home" href="/home" />
-        <NavLink component={Link} label="Tierlist" href="/tierlist" />
+        <AppShell.Section grow my="md">
+          <NavLink
+            component={Link}
+            label="Home"
+            href="/"
+            active={pathname === "/"}
+          />
+          <NavLink
+            component={Link}
+            label="Tierlist"
+            href="/tierlist"
+            active={pathname === "/tierlist"}
+          />
+        </AppShell.Section>
+        <AppShell.Section>
+          {status === "authenticated" ? (
+            <NavLink
+              component={UnstyledButton}
+              label="Logout"
+              leftSection={<IconLogout2 />}
+              onClick={() => signOut()}
+            />
+          ) : (
+            <NavLink
+              component={UnstyledButton}
+              label="Login"
+              leftSection={<IconLogin2 />}
+              onClick={() => signIn()}
+            />
+          )}
+        </AppShell.Section>
       </AppShell.Navbar>
       <AppShell.Main>{children}</AppShell.Main>
       <AppShell.Footer>

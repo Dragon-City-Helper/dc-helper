@@ -1,53 +1,30 @@
+"use client";
+
 import DragonsTable from "@/components/DragonsTable";
-import { HomeDragons, fetchHomeDragons } from "@/services/dragons";
-import { getOwned, postOwned } from "@/services/owned";
-import { useEffect, useMemo, useState } from "react";
+import { HomeDragons } from "@/services/dragons";
+import { useMemo, useOptimistic, useState } from "react";
 import DragonFilters from "@/components/DragonFilters";
-import { useSession } from "next-auth/react";
-import { useRouter } from "next/router";
 import useDragonFilters from "@/hooks/useDragonFilters";
+import { IFilters } from "@/types/filters";
+import { setOwnedIds } from "@/services/owned";
+import { captureException } from "@sentry/nextjs";
 
-export async function getStaticProps() {
-  try {
-    const dragons = await fetchHomeDragons();
-    return {
-      props: {
-        dragons,
-      },
-      revalidate: 24 * 60 * 60,
-    };
-  } catch (error) {
-    console.log(error);
-  }
-}
-
-export default function Page({ dragons }: { dragons: HomeDragons }) {
-  const [owned, setOwned] = useState<string[]>([]);
-  const [allDragons] = useState<HomeDragons>(dragons);
-  const [loading, setLoading] = useState<boolean | string>(true);
-
-  const session = useSession();
-  const router = useRouter();
-  useEffect(() => {
-    if (session.status === "loading") {
-      setLoading(true);
-    } else if (session.status === "authenticated") {
-      setLoading(true);
-      getOwned().then((res) => {
-        setOwned(res.data);
-        setLoading(false);
-      });
-    } else {
-      router.push("/api/auth/signin");
-    }
-  }, [router, session]);
+export default function Home({
+  dragons,
+  owned,
+}: {
+  dragons: HomeDragons;
+  owned: string[];
+}) {
+  const [loading, setLoading] = useState<boolean | string>(false);
+  const [ownedIds, setOwned] = useState<string[]>(owned);
 
   const ownedIdsMap = useMemo(() => {
-    return owned.reduce((acc, curr) => {
+    return ownedIds.reduce((acc, curr) => {
       acc.set(curr, true);
       return acc;
     }, new Map<string, boolean>());
-  }, [owned]);
+  }, [ownedIds]);
 
   const onOwned = async (dragonId: string, checked: boolean) => {
     try {
@@ -58,12 +35,12 @@ export default function Page({ dragons }: { dragons: HomeDragons }) {
         newOwned = owned.filter((id) => id != dragonId);
       }
       setLoading(dragonId);
-      await postOwned(newOwned);
+      await setOwnedIds(newOwned);
       setOwned(newOwned);
       setLoading(false);
     } catch (error) {
+      setOwned(owned);
       setLoading(false);
-      console.log(error);
     }
   };
 
@@ -71,6 +48,20 @@ export default function Page({ dragons }: { dragons: HomeDragons }) {
     dragons,
     ownedIdsMap,
   );
+
+  const allowedFilters: (keyof IFilters)[] = [
+    "search",
+    "element",
+    "familyName",
+    "rarity",
+    "skins",
+    "vip",
+    // "skill",
+  ];
+
+  if (owned.length > 0) {
+    allowedFilters.push("show");
+  }
   return (
     <div className="flex flex-row w-100 h-100 overflow-auto">
       <div className="flex-1 m-6">
@@ -78,7 +69,8 @@ export default function Page({ dragons }: { dragons: HomeDragons }) {
           <DragonFilters
             onFilterChange={onFilterChange}
             filters={filters}
-            dragons={allDragons}
+            dragons={dragons}
+            allowedFilters={allowedFilters}
           />
           <b>
             {filteredDragons.length === dragons.length
@@ -90,6 +82,7 @@ export default function Page({ dragons }: { dragons: HomeDragons }) {
                 } of ${dragons.filter((d) => d.isSkin).length} Skins`}
           </b>
           <DragonsTable
+            viewOnly={owned.length <= 0}
             dragons={filteredDragons as HomeDragons}
             onOwned={onOwned}
             ownedIdsMap={ownedIdsMap}

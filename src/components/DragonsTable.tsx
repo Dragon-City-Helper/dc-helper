@@ -1,5 +1,6 @@
 import { getRatingText } from "@/constants/Rating";
 import { HomeDragons } from "@/services/dragons";
+import { Center, Checkbox, Loader } from "@mantine/core";
 import Image from "next/image";
 import Link from "next/link";
 import { FC, useMemo } from "react";
@@ -60,10 +61,10 @@ const DragonsTable: FC<IDragonsTableProps> = ({
       <div
         className={`grid ${showOwned ? "grid-cols-5" : "grid-cols-4"} text-center`}
       >
-        {showOwned && <div>Owned ?</div>}
         <div className="col-span-2">Name</div>
         <div>Speed</div>
         <div>Overall Rating</div>
+        {showOwned && <div>Owned ?</div>}
       </div>
 
       {sortedDragons.map((dragon: HomeDragons[number]) => {
@@ -72,24 +73,6 @@ const DragonsTable: FC<IDragonsTableProps> = ({
             key={dragon.id}
             className={`grid ${showOwned ? "grid-cols-5" : "grid-cols-4"} border border-gray-500 items-center text-center p-6`}
           >
-            {!viewOnly && onOwned && (
-              <div>
-                {loading === true || loading === dragon.id ? (
-                  <span className="loading loading-spinner loading-md"></span>
-                ) : (
-                  <label>
-                    <input
-                      type="checkbox"
-                      className="checkbox"
-                      checked={ownedIdsMap.has(dragon.id)}
-                      onChange={() =>
-                        onOwned(dragon.id, !ownedIdsMap.get(dragon.id))
-                      }
-                    />
-                  </label>
-                )}
-              </div>
-            )}
             <div className="col-span-2 justify-items-center">
               <Link href={`/dragons/${dragon.id}`}>
                 <div className="p-4">
@@ -152,6 +135,20 @@ const DragonsTable: FC<IDragonsTableProps> = ({
                 ? getRatingText(dragon.rating?.overall)
                 : "Unrated"}
             </div>
+            {!viewOnly && onOwned && (
+              <Center>
+                {loading === true || loading === dragon.id ? (
+                  <Loader />
+                ) : (
+                  <Checkbox
+                    checked={ownedIdsMap.has(dragon.id)}
+                    onChange={() =>
+                      onOwned(dragon.id, !ownedIdsMap.get(dragon.id))
+                    }
+                  />
+                )}
+              </Center>
+            )}
           </div>
         );
       })}

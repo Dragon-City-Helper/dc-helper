@@ -4,7 +4,7 @@ import { Rarity, Rating } from "@prisma/client";
 import axios from "axios";
 import { cache } from "react";
 
-export const fetchHomeDragons = async (options?: { rarity: Rarity }) => {
+export const fetchHomeDragons = cache(async (options?: { rarity: Rarity }) => {
   return await prisma.dragons.findMany({
     where: {
       rarity: options?.rarity,
@@ -27,7 +27,7 @@ export const fetchHomeDragons = async (options?: { rarity: Rarity }) => {
       breedable: true,
     },
   });
-};
+});
 
 export const fetchRateDragons = cache(async (options?: { rarity: Rarity }) => {
   return await prisma.dragons.findMany({

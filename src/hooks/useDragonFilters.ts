@@ -1,5 +1,5 @@
-import { IFilters } from "@/components/DragonFilters";
 import { HomeDragons, RateDragons } from "@/services/dragons";
+import { IFilters } from "@/types/filters";
 import { Elements } from "@prisma/client";
 import { useMemo, useState } from "react";
 
@@ -40,6 +40,7 @@ export default function useDragonFilters(
         finalDragons = finalDragons.filter(
           (dragon) => !ownedIdsMap.has(dragon.id),
         ) as HomeDragons | RateDragons;
+        break;
       default:
         break;
     }
@@ -53,6 +54,7 @@ export default function useDragonFilters(
         finalDragons = finalDragons.filter((dragon) => dragon.isSkin) as
           | HomeDragons
           | RateDragons;
+        break;
       default:
         break;
     }
@@ -66,6 +68,50 @@ export default function useDragonFilters(
         finalDragons = finalDragons.filter(
           (dragon) => !ownedIdsMap.has(dragon.id),
         ) as HomeDragons | RateDragons;
+        break;
+      default:
+        break;
+    }
+    switch (filters.vip) {
+      case "vip":
+        finalDragons = finalDragons.filter((dragon) => dragon.isVip) as
+          | HomeDragons
+          | RateDragons;
+        break;
+      case "normal":
+        finalDragons = finalDragons.filter((dragon) => !dragon.isVip) as
+          | HomeDragons
+          | RateDragons;
+        break;
+      default:
+        break;
+    }
+    switch (filters.skill) {
+      case "any":
+        finalDragons = finalDragons.filter((dragon) => dragon.hasSkills) as
+          | HomeDragons
+          | RateDragons;
+        break;
+      case "no":
+        finalDragons = finalDragons.filter((dragon) => !dragon.hasSkills) as
+          | HomeDragons
+          | RateDragons;
+        break;
+      case "ps":
+        finalDragons = finalDragons.filter(
+          (dragon) => dragon.skillType === 0,
+        ) as HomeDragons | RateDragons;
+        break;
+      case "as":
+        finalDragons = finalDragons.filter(
+          (dragon) => dragon.skillType === 1,
+        ) as HomeDragons | RateDragons;
+        break;
+      case "aps":
+        finalDragons = finalDragons.filter(
+          (dragon) => dragon.skillType === 2,
+        ) as HomeDragons | RateDragons;
+        break;
       default:
         break;
     }
@@ -77,7 +123,9 @@ export default function useDragonFilters(
     filters.rarity,
     filters.search,
     filters.show,
+    filters.skill,
     filters.skins,
+    filters.vip,
     ownedIdsMap,
   ]);
 

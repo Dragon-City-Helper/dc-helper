@@ -1,10 +1,10 @@
 import { rarities, RarityNames } from "@/constants/Dragon";
 import { FC } from "react";
-import { DragonFilters } from ".";
 import Select from "../Select";
 import RarityImage from "../RarityImage";
+import { IDragonFilters } from "@/types/filters";
 
-const RarityFilter: FC<DragonFilters> = ({ filters, onFilterChange }) => {
+const RarityFilter: FC<IDragonFilters> = ({ filters, onFilterChange }) => {
   const options = rarities.map((rarity) => ({
     value: rarity,
     label: RarityNames[rarity],

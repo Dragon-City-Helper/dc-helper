@@ -1,5 +1,3 @@
-import { HomeDragons, RateDragons } from "@/services/dragons";
-import { Elements, Rarity } from "@prisma/client";
 import { FC } from "react";
 import SearchFilter from "./SearchFilter";
 import RarityFilter from "./RarityFilter";
@@ -7,33 +5,23 @@ import ElementFilter from "./ElementFilter";
 import ShowFilter from "./ShowFilter";
 import FamilyFilter from "./FamilyFilter";
 import SkinsFilter from "./SkinsFilter";
+import { IDragonFilters, IFilters } from "@/types/filters";
+import { SimpleGrid } from "@mantine/core";
+import VipFilter from "./VipFilter";
+// import SkillFilter from "./SkillFilter";
 
-export interface IFilters {
-  search?: string;
-  show?: "owned" | "unowned";
-  rarity?: Rarity;
-  element?: Elements;
-  familyName?: string;
-  skins?: "skins" | "dragons";
-}
-
-export interface DragonFilters {
-  onFilterChange: (key: keyof IFilters, e: any) => void;
-  filters: IFilters;
-  allowedFilters?: (keyof IFilters)[];
-  dragons: HomeDragons | RateDragons;
-}
-
-const filterToComponent: { [key in keyof IFilters]: FC<DragonFilters> } = {
+const filterToComponent: { [key in keyof IFilters]: FC<IDragonFilters> } = {
   search: SearchFilter,
   show: ShowFilter,
   rarity: RarityFilter,
   element: ElementFilter,
   familyName: FamilyFilter,
   skins: SkinsFilter,
+  vip: VipFilter,
+  // skill: SkillFilter,
 };
 
-export const DragonFilters: FC<DragonFilters> = ({
+export const DragonFilters: FC<IDragonFilters> = ({
   onFilterChange,
   filters,
   allowedFilters = [
@@ -42,12 +30,12 @@ export const DragonFilters: FC<DragonFilters> = ({
     "familyName",
     "rarity",
     "skins",
-    "show",
+    "vip",
   ],
   dragons,
 }) => {
   return (
-    <div className="flex items-start flex-wrap gap-8 w-full">
+    <SimpleGrid cols={{ xs: 1, sm: 3 }}>
       {allowedFilters.map((filter) => {
         const Component = filterToComponent[filter];
         return Component ? (
@@ -61,7 +49,7 @@ export const DragonFilters: FC<DragonFilters> = ({
           ""
         );
       })}
-    </div>
+    </SimpleGrid>
   );
 };
 

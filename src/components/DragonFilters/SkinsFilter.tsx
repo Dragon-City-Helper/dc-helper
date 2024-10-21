@@ -1,11 +1,8 @@
 import { FC } from "react";
-import { DragonFilters } from ".";
 import Select from "../Select";
+import { IDragonFilters } from "@/types/filters";
 
-const SkinsFilter: FC<DragonFilters> = ({ filters, onFilterChange }) => {
-  // <option value="all">All</option>
-  // <option value="skins">Skins</option>
-  // <option value="dragons">Skinless</option>
+const SkinsFilter: FC<IDragonFilters> = ({ filters, onFilterChange }) => {
   const options = [
     {
       value: "skins",

@@ -1,8 +1,8 @@
 import { FC } from "react";
-import { DragonFilters } from ".";
 import { CloseButton, TextInput } from "@mantine/core";
+import { IDragonFilters } from "@/types/filters";
 
-const SearchFilter: FC<DragonFilters> = ({ filters, onFilterChange }) => {
+const SearchFilter: FC<IDragonFilters> = ({ filters, onFilterChange }) => {
   return (
     <TextInput
       label="Search"

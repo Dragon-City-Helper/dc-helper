@@ -1,9 +1,9 @@
 import { FC } from "react";
-import { DragonFilters } from ".";
 import Select from "../Select";
 import FamilyImage from "../FamilyImage";
+import { IDragonFilters } from "@/types/filters";
 
-const FamilyFilter: FC<DragonFilters> = ({
+const FamilyFilter: FC<IDragonFilters> = ({
   filters,
   onFilterChange,
   dragons,

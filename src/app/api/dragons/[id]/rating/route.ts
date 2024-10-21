@@ -1,6 +1,6 @@
 import { saveDragonRatings } from "@/services/dragons";
 import { Role } from "@prisma/client";
-import { auth } from "@/../auth";
+import { auth } from "@/auth";
 import { HttpStatusCode } from "axios";
 import { captureException, captureMessage } from "@sentry/nextjs";
 

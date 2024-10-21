@@ -1,11 +1,11 @@
 import { FC } from "react";
 import { Elements } from "@prisma/client";
-import { DragonFilters } from ".";
 import Select from "../Select";
 import ElementImage from "../ElementImage";
 import { elements, ElementsNames } from "@/constants/Dragon";
+import { IDragonFilters } from "@/types/filters";
 
-const ElementFilter: FC<DragonFilters> = ({ filters, onFilterChange }) => {
+const ElementFilter: FC<IDragonFilters> = ({ filters, onFilterChange }) => {
   const options = elements.map((element) => ({
     value: element,
     label: ElementsNames[element],
