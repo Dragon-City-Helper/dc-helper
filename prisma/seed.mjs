@@ -101,6 +101,26 @@ const fetchDragons = async ({
       [name]: curr,
     };
   }, {});
+  // const familyToTags = {
+  //   Arcana: [],
+  //   Ascended: [],
+  //   Berserker: ["Offense", "Ramp up"],
+  //   Corrupted: ["Hybrid", "Specialist", "Self Heal", "Shielder"],
+  //   Dual: ["Utility"],
+  //   Eternal: ["Offense", "Specialist", "Utility"],
+  //   Evader: ["Defense", "Support", "Gambler"],
+  //   Extractor: [],
+  //   Guardian: ["Defense", "Support", "Damage Mitigator"],
+  //   Karma: ["Hybrid", "Specialist", "Gambler"],
+  //   "Plasma Colony": ["Hybrid", "Specialist", "Debuffer"],
+  //   Quantum: ["Offense", "Specialist", "Debuffer"],
+  //   Redemption: ["Support", "Sacrificial"],
+  //   Spiked: ["Hybrid", "Specialist", "Utility", "Shielder"],
+  //   Strategist: ["Offense", "Specialist", "Utility", "AoE Damage"],
+  //   Titan: ["Defense", "Shielder"],
+  //   Vampire: ["Hybrid", "Specialist", "Self Heal"],
+  //   "Walking Dead": ["Defense", "Support", "Damage Mitigator"],
+  // };
 
   const dragons = ditlepResponse.data.items
     .filter(
@@ -143,7 +163,7 @@ const fetchDragons = async ({
           category,
           skills: skills.map((skill) => ({
             name: skill.name === "" ? "Produce Food" : skill.name,
-            skillType: skill.skillType,
+            skillType: skill.skillType === 0 ? 3 : skill.skillType,
             description: skill.descriptionKey,
           })),
           skins: dragon.skins,
@@ -154,6 +174,7 @@ const fetchDragons = async ({
           skillType,
           isSkin: false,
           hasAllSkins: false,
+          // tags: familyToTags[dragonFamily] ?? [],
         };
       },
     );

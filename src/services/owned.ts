@@ -2,7 +2,7 @@
 
 import { auth } from "@/auth";
 import prisma from "@/lib/prisma";
-import { captureException, captureMessage } from "@sentry/nextjs";
+import { captureException } from "@sentry/nextjs";
 
 export const fetchOwned = async () => {
   const session = await auth();
@@ -13,17 +13,6 @@ export const fetchOwned = async () => {
           userId: session.user.id,
         },
       });
-      if (!ownedDragons) {
-        captureMessage(
-          `Owned Dragons not found for user: ${session.user.email}`,
-          {
-            level: "warning",
-            tags: {
-              serverAction: "fetchOwned",
-            },
-          },
-        );
-      }
       return ownedDragons?.dragons ?? [];
     } catch (err) {
       captureException(err, {
@@ -34,12 +23,6 @@ export const fetchOwned = async () => {
       });
     }
   }
-  captureMessage(`user not loggedin`, {
-    level: "info",
-    tags: {
-      serverAction: "fetchOwned",
-    },
-  });
   return [];
 };
 
@@ -70,12 +53,6 @@ export const setOwnedIds = async (ownedIds: string[]) => {
       throw err;
     }
   } else {
-    captureMessage(`user not loggedin`, {
-      level: "fatal",
-      tags: {
-        serverAction: "setOwnedIds",
-      },
-    });
     throw new Error("No User logged in");
   }
 };

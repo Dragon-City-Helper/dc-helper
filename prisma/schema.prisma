@@ -30,6 +30,7 @@ model dragons {
   originalDragonName String?
   isSkin             Boolean
   hasAllSkins        Boolean
+  tags               String[]
 }
 
 model Rating {

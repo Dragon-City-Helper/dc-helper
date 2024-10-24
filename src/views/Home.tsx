@@ -1,13 +1,12 @@
 "use client";
 
-import DragonsTable from "@/components/DragonsTable";
+import DragonsGrid from "@/components/DragonGrid";
 import { HomeDragons } from "@/services/dragons";
-import { useMemo, useOptimistic, useState } from "react";
+import { useMemo, useState } from "react";
 import DragonFilters from "@/components/DragonFilters";
 import useDragonFilters from "@/hooks/useDragonFilters";
 import { IFilters } from "@/types/filters";
 import { setOwnedIds } from "@/services/owned";
-import { captureException } from "@sentry/nextjs";
 
 export default function Home({
   dragons,
@@ -81,10 +80,9 @@ export default function Home({
                   filteredDragons.filter((d) => d.isSkin).length
                 } of ${dragons.filter((d) => d.isSkin).length} Skins`}
           </b>
-          <DragonsTable
-            viewOnly={owned.length <= 0}
+          <DragonsGrid
             dragons={filteredDragons as HomeDragons}
-            onOwned={onOwned}
+            onOwned={owned.length > 0 ? onOwned : undefined}
             ownedIdsMap={ownedIdsMap}
             loading={loading}
           />

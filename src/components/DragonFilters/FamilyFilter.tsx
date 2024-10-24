@@ -12,6 +12,7 @@ const FamilyFilter: FC<IDragonFilters> = ({
     .map((dragon) => dragon.familyName || "")
     .filter((familyName) => !!familyName);
   const uniqueFamilyNames = new Set(familyNames);
+
   const options = Array.from(uniqueFamilyNames)
     .sort()
     .map((family) => ({ value: family, label: family }));

@@ -1,5 +1,5 @@
 import { RateDragons } from "@/services/dragons";
-import { Card, Group, Image } from "@mantine/core";
+import { Card, Group, Image, Text } from "@mantine/core";
 import NextImage from "next/image";
 import Link from "next/link";
 import { FC } from "react";

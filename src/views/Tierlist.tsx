@@ -52,6 +52,12 @@ export default function TierList({
   }
   return (
     <div className="flex flex-col w-100 h-100 overflow-auto gap-6">
+      <DragonFilters
+        dragons={dragons}
+        onFilterChange={onFilterChange}
+        filters={filters}
+        allowedFilters={allowedFilters}
+      />
       <Select
         label="Rate By"
         width="sm"
@@ -59,12 +65,6 @@ export default function TierList({
         data={rateByOptions}
         allowDeselect={false}
         onChange={(value) => setRatingKey(value as AllowedRatingKeys)}
-      />
-      <DragonFilters
-        dragons={dragons}
-        onFilterChange={onFilterChange}
-        filters={filters}
-        allowedFilters={allowedFilters}
       />
       <TierListLayout
         dragons={filteredDragons as RateDragons}

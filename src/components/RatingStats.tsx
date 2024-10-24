@@ -6,8 +6,8 @@ import {
   getRatingText,
 } from "@/constants/Rating";
 import { HomeDragons } from "@/services/dragons";
+import { Card } from "@mantine/core";
 import { FC, useCallback } from "react";
-import Card from "./Card";
 interface IRatingStats {
   dragons: HomeDragons;
 }
