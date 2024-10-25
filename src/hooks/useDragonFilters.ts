@@ -1,5 +1,5 @@
-import { IFilters } from "@/components/DragonFilters";
 import { HomeDragons, RateDragons } from "@/services/dragons";
+import { IFilters } from "@/types/filters";
 import { Elements } from "@prisma/client";
 import { useMemo, useState } from "react";
 
@@ -15,17 +15,17 @@ export default function useDragonFilters(
         new RegExp(`${filters.search}`, "gi").test(dragon.name),
       ) as HomeDragons | RateDragons;
     }
-    if (filters.rarity && filters.rarity !== "all") {
+    if (filters.rarity) {
       finalDragons = finalDragons.filter(
         (dragon) => dragon.rarity === filters.rarity,
       ) as HomeDragons | RateDragons;
     }
-    if (filters.familyName && filters.familyName !== "all") {
+    if (filters.familyName) {
       finalDragons = finalDragons.filter(
         (dragon) => dragon.familyName === filters.familyName,
       ) as HomeDragons | RateDragons;
     }
-    if (filters.element && filters.element !== "all") {
+    if (filters.element) {
       finalDragons = finalDragons.filter((dragon) =>
         dragon.elements.includes(filters.element as Elements),
       ) as HomeDragons | RateDragons;
@@ -40,7 +40,7 @@ export default function useDragonFilters(
         finalDragons = finalDragons.filter(
           (dragon) => !ownedIdsMap.has(dragon.id),
         ) as HomeDragons | RateDragons;
-      case "all":
+        break;
       default:
         break;
     }
@@ -54,7 +54,7 @@ export default function useDragonFilters(
         finalDragons = finalDragons.filter((dragon) => dragon.isSkin) as
           | HomeDragons
           | RateDragons;
-      case "all":
+        break;
       default:
         break;
     }
@@ -68,7 +68,50 @@ export default function useDragonFilters(
         finalDragons = finalDragons.filter(
           (dragon) => !ownedIdsMap.has(dragon.id),
         ) as HomeDragons | RateDragons;
-      case "all":
+        break;
+      default:
+        break;
+    }
+    switch (filters.vip) {
+      case "vip":
+        finalDragons = finalDragons.filter((dragon) => dragon.isVip) as
+          | HomeDragons
+          | RateDragons;
+        break;
+      case "normal":
+        finalDragons = finalDragons.filter((dragon) => !dragon.isVip) as
+          | HomeDragons
+          | RateDragons;
+        break;
+      default:
+        break;
+    }
+    switch (filters.skill) {
+      case "any":
+        finalDragons = finalDragons.filter((dragon) => dragon.hasSkills) as
+          | HomeDragons
+          | RateDragons;
+        break;
+      case "no":
+        finalDragons = finalDragons.filter((dragon) => !dragon.hasSkills) as
+          | HomeDragons
+          | RateDragons;
+        break;
+      case "ps":
+        finalDragons = finalDragons.filter(
+          (dragon) => dragon.skillType === 0,
+        ) as HomeDragons | RateDragons;
+        break;
+      case "as":
+        finalDragons = finalDragons.filter(
+          (dragon) => dragon.skillType === 1,
+        ) as HomeDragons | RateDragons;
+        break;
+      case "aps":
+        finalDragons = finalDragons.filter(
+          (dragon) => dragon.skillType === 2,
+        ) as HomeDragons | RateDragons;
+        break;
       default:
         break;
     }
@@ -80,20 +123,27 @@ export default function useDragonFilters(
     filters.rarity,
     filters.search,
     filters.show,
+    filters.skill,
     filters.skins,
+    filters.vip,
     ownedIdsMap,
   ]);
 
-  const onFilterChange = (key: keyof IFilters, e: any) => {
+  const onFilterChange = (key: keyof IFilters, value: any) => {
     setFilters({
       ...filters,
-      [key]: e.target.value,
+      [key]: value,
     });
+  };
+
+  const isClientOnlyFilter = (key: keyof IFilters) => {
+    return ["show"].includes(key);
   };
 
   return {
     filteredDragons,
     filters,
     onFilterChange,
+    isClientOnlyFilter,
   };
 }

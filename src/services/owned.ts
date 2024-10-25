@@ -1,39 +1,58 @@
+"use server";
+
+import { auth } from "@/auth";
 import prisma from "@/lib/prisma";
-import { ApiResponse } from "@/types/apiResponse";
-import { ownedDragons } from "@prisma/client";
-import axios from "axios";
+import { captureException } from "@sentry/nextjs";
 
-export const fetchOwned = async (userId: string) => {
-  return await prisma.ownedDragons.findUnique({
-    where: {
-      userId,
-    },
-  });
+export const fetchOwned = async () => {
+  const session = await auth();
+  if (session?.user.id) {
+    try {
+      const ownedDragons = await prisma.ownedDragons.findUnique({
+        where: {
+          userId: session.user.id,
+        },
+      });
+      return ownedDragons?.dragons ?? [];
+    } catch (err) {
+      captureException(err, {
+        level: "fatal",
+        tags: {
+          serverAction: "fetchOwned",
+        },
+      });
+    }
+  }
+  return [];
 };
 
-export const setOwnedIds = async (userId: string, ownedIds: string[]) => {
-  return await prisma.ownedDragons.update({
-    where: {
-      userId,
-    },
-    data: {
-      dragons: ownedIds,
-    },
-  });
-};
-
-export const postOwned = async (ownedIds: string[]) => {
-  const response = await axios.post<ApiResponse<ownedDragons["dragons"]>>(
-    `/api/owned`,
-    {
-      ownedIds,
-    },
-  );
-  return response.data;
-};
-
-export const getOwned = async () => {
-  const response =
-    await axios.get<ApiResponse<ownedDragons["dragons"]>>(`/api/owned`);
-  return response.data;
+export const setOwnedIds = async (ownedIds: string[]) => {
+  const session = await auth();
+  if (session?.user.id) {
+    try {
+      const ownedDragons = await prisma.ownedDragons.upsert({
+        where: {
+          userId: session.user.id,
+        },
+        create: {
+          userId: session.user.id,
+          dragons: ownedIds,
+        },
+        update: {
+          dragons: ownedIds,
+        },
+      });
+      return ownedDragons.dragons;
+    } catch (err) {
+      captureException(err, {
+        level: "fatal",
+        tags: {
+          serverAction: "setOwnedIds",
+        },
+      });
+      throw err;
+    }
+  } else {
+    throw new Error("No User logged in");
+  }
 };

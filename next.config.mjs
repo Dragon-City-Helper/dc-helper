@@ -4,11 +4,6 @@ const nextConfig = {
   async redirects() {
     return [
       {
-        source: "/",
-        destination: "/home",
-        permanent: true,
-      },
-      {
         source: "/rate",
         destination: "/rate/heroic",
         permanent: true,
@@ -22,6 +17,14 @@ const nextConfig = {
         hostname: "dci-static-s1.socialpointgames.com",
         port: "",
       },
+    ],
+  },
+  experimental: {
+    optimizePackageImports: [
+      "@mantine/core",
+      "@mantine/hooks",
+      "@mantine/notifications",
+      "@mantine/charts",
     ],
   },
 };

@@ -1,64 +1,58 @@
 import { RateDragons } from "@/services/dragons";
-import Image from "next/image";
+import { Card, Group, Image, Text } from "@mantine/core";
+import NextImage from "next/image";
 import Link from "next/link";
 import { FC } from "react";
+import ElementImage from "./ElementImage";
+import RarityImage from "./RarityImage";
+import FamilyImage from "./FamilyImage";
+import SkinImage from "./SkinImage";
 
 interface IDragonFaceCardProps {
   dragon: RateDragons[number];
 }
 const DragonFaceCard: FC<IDragonFaceCardProps> = ({ dragon }) => {
   return (
-    <div className="h-full border-2 border-gray-100">
-      <Link href={`/dragons/${dragon.id}`}>
-        <figure>
+    <Card shadow="sm" padding="sm" radius="md" withBorder>
+      <Link href={`/dragon/${dragon.id}`}>
+        <Card.Section>
           <Image
+            component={NextImage}
             src={`https://dci-static-s1.socialpointgames.com/static/dragoncity/mobile/ui${dragon.thumbnail}`}
             alt={dragon.name}
             width={100}
             height={100}
+            h={100}
             title={dragon.name}
           />
-        </figure>
-        <div className="text-center items-center">
-          <div className="flex flex-row gap-1 justify-evenly">
+        </Card.Section>
+        <Card.Section inheritPadding>
+          <Group justify="space-evenly" gap={4} py={4}>
             {dragon.elements.map((element, index) => (
-              <Image
+              <ElementImage
+                element={element}
                 key={`${dragon.id}-${element}-${index}`}
-                src={`/images/elements/${element}.png`}
-                alt={element}
-                width={15}
-                height={31}
               />
             ))}
-          </div>
-          <div className="flex flex-row gap-2 items-start justify-start">
-            <Image
-              src={`/images/rarity/${dragon.rarity}.png`}
-              alt={dragon.rarity}
-              width={32}
-              height={32}
-            />
-
+          </Group>
+          <Group justify="space-evenly" gap={4}>
+            <RarityImage rarity={dragon.rarity} />
             {dragon.familyName && (
-              <Image
-                src={`/images/family/icon-${dragon.familyName}.png`}
-                alt={dragon.familyName}
+              <FamilyImage familyName={dragon.familyName} />
+            )}
+            {dragon.isSkin && <SkinImage hasAllSkins={dragon.hasAllSkins} />}
+            {!dragon.isSkin && !dragon.isVip && dragon.hasSkills ? (
+              <NextImage
+                src={`/images/skilltype/${dragon.skillType}.png`}
+                alt={dragon.rarity}
                 width={32}
                 height={32}
               />
-            )}
-            {dragon.isSkin && (
-              <Image
-                src="/images/skin.png"
-                alt={dragon.name}
-                width={32}
-                height={32}
-              />
-            )}
-          </div>
-        </div>
+            ) : null}
+          </Group>
+        </Card.Section>
       </Link>
-    </div>
+    </Card>
   );
 };
 

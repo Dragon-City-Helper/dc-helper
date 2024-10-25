@@ -1,5 +1,4 @@
 import { Rarity, Rating } from "@prisma/client";
-import Image from "next/image";
 import { FC, useEffect, useState } from "react";
 import RatingDropdown from "./RatingDropdown";
 import { putRatings, RateDragons } from "@/services/dragons";
@@ -8,7 +7,8 @@ import {
   RatingKeys,
   RatingKeysToText,
 } from "@/constants/Rating";
-import Link from "next/link";
+import { Box, Button, Loader, SimpleGrid, Text } from "@mantine/core";
+import DragonFaceCard from "./DragonFaceCard";
 
 interface IRateDragonsTableProps {
   dragons: RateDragons;
@@ -132,91 +132,44 @@ const RateDragonsTable: FC<IRateDragonsTableProps> = ({ dragons }) => {
         return (
           <div
             key={dragon.id}
-            className=" w-full border-gray-700 border-2 mt-2 p-6 flex gap-6 xl:flex-row flex-col"
+            className="w-full border-gray-700 border mt-2 p-6"
           >
-            <Link href={`/dragons/${dragon.id}`}>
-              <div className="p-4">
-                <Image
-                  src={`https://dci-static-s1.socialpointgames.com/static/dragoncity/mobile/ui${dragon.thumbnail}`}
-                  alt={dragon.name}
-                  width={100}
-                  height={100}
-                />
-              </div>
-              <div className="flex flex-col justify-between items-start flex-wrap">
-                <div className="flex flex-row gap-2 items-start">
-                  {dragon.elements.map((element, index) => (
-                    <Image
-                      key={`${dragon.id}-${element}-${index}`}
-                      src={`/images/elements/${element}.png`}
-                      alt={element}
-                      width={15}
-                      height={31}
+            <SimpleGrid cols={{ sm: 2, xs: 1 }}>
+              <Box>
+                <DragonFaceCard dragon={dragon} />
+                <Text>
+                  <b>{dragon.name}</b>
+                </Text>
+              </Box>
+              <SimpleGrid cols={{ lg: 3, xs: 2 }}>
+                {RatingKeys.map((key) => (
+                  <div key={key} className="flex flex-col gap-2">
+                    <b>{RatingKeysToText[key]}</b>
+                    <RatingDropdown
+                      dragon={dragon}
+                      ratingKey={key}
+                      value={localRatings?.[dragon.id]?.[key]}
+                      onRatingChange={onRatingChange}
                     />
-                  ))}
-                  <Image
-                    src={`/images/rarity/${dragon.rarity}.png`}
-                    alt={dragon.rarity}
-                    width={32}
-                    height={32}
-                  />
-                  {dragon.familyName && (
-                    <Image
-                      src={`/images/family/icon-${dragon.familyName}.png`}
-                      alt={dragon.familyName}
-                      width={32}
-                      height={32}
-                    />
-                  )}
-                  {dragon.isSkin ? (
-                    <Image
-                      src={`/images/skin.png`}
-                      alt={dragon.rarity}
-                      width={32}
-                      height={32}
-                    />
-                  ) : null}
-                  {!dragon.isSkin && !dragon.isVip && dragon.hasSkills ? (
-                    <Image
-                      src={`/images/skilltype/${dragon.skillType}.png`}
-                      alt={dragon.rarity}
-                      width={32}
-                      height={32}
-                    />
-                  ) : null}
+                  </div>
+                ))}
+                <div className="flex flex-col gap-2">
+                  <b>Score</b>
+                  <div> {localRatings[dragon.id]?.score ?? 0}</div>
                 </div>
-                <div className="text-left">{dragon.name}</div>
-              </div>
-            </Link>
-            <div className="flex flex-wrap items-center justify-between gap-6">
-              {RatingKeys.map((key) => (
-                <div key={key} className="flex flex-col gap-2">
-                  <b>{RatingKeysToText[key]}</b>
-                  <RatingDropdown
-                    dragon={dragon}
-                    ratingKey={key}
-                    value={localRatings?.[dragon.id]?.[key]}
-                    onRatingChange={onRatingChange}
-                  />
-                </div>
-              ))}
-              <div className="flex flex-col gap-2">
-                <b>Score</b>
-                <div> {localRatings[dragon.id]?.score ?? 0}</div>
-              </div>
 
-              {loading[dragon.id] ? (
-                <span className="loading loading-spinner loading-md"></span>
-              ) : (
-                <button
-                  className="btn btn-primary"
-                  onClick={() => updateDragonRating(dragon.id)}
-                  disabled={!dirty[dragon.id]}
-                >
-                  Save
-                </button>
-              )}
-            </div>
+                {loading[dragon.id] ? (
+                  <Loader />
+                ) : (
+                  <Button
+                    onClick={() => updateDragonRating(dragon.id)}
+                    disabled={!dirty[dragon.id]}
+                  >
+                    Save
+                  </Button>
+                )}
+              </SimpleGrid>
+            </SimpleGrid>
           </div>
         );
       })}

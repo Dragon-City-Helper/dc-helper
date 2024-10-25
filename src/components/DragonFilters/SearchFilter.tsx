@@ -1,22 +1,24 @@
 import { FC } from "react";
-import { DragonFilters } from ".";
+import { CloseButton, TextInput } from "@mantine/core";
+import { IDragonFilters } from "@/types/filters";
 
-export const SearchFilter: FC<DragonFilters> = ({
-  filters,
-  onFilterChange,
-}) => {
+const SearchFilter: FC<IDragonFilters> = ({ filters, onFilterChange }) => {
   return (
-    <label className="form-control w-full max-w-xs">
-      <div className="label">
-        <span className="label-text">Search</span>
-      </div>
-      <input
-        type="text"
-        className="input input-bordered"
-        placeholder="Search by name"
-        value={filters.search}
-        onChange={(e) => onFilterChange("search", e)}
-      />
-    </label>
+    <TextInput
+      label="Search"
+      placeholder="Search by name"
+      value={filters.search}
+      rightSectionPointerEvents="all"
+      onChange={(e) => onFilterChange("search", e.target.value)}
+      rightSection={
+        <CloseButton
+          aria-label="Clear input"
+          onClick={() => onFilterChange("search", "")}
+          style={{ display: filters.search ? undefined : "none" }}
+        />
+      }
+    />
   );
 };
+
+export default SearchFilter;

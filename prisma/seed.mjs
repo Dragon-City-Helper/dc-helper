@@ -26,6 +26,34 @@ function filterHostUrl(image) {
   );
 }
 
+const nameCorrections = {
+  "Spiked Ghoul Dragon": "Spiky Ghoul Dragon",
+};
+
+const dragonSkinThumbnailCorrections = {
+  "Norn Skill Skin":
+    "/dragons/HD/thumb_3109_dragon_highredemptionnorn_skin3_b_3.png",
+  "Blood Skill Skin":
+    "/dragons/HD/thumb_2788_dragon_highvoodoovampire_skin1_b_3.png",
+};
+
+const dragonSkinImageCorrections = {
+  "Blood Skill Skin":
+    "/dragons/ui_2788_dragon_highvoodoovampire_skin1_b_3@2x.png",
+};
+
+const familyNameCorrections = {
+  ability: null,
+  abilityy: null,
+  abilityyskin: null,
+  skin: null,
+  "skin-vampire": null,
+  Redemption1: "Redemption",
+  Redemption2: "Redemption",
+  PlasmaR: "Plasma Colony",
+  Plasma: "Plasma Colony",
+};
+
 const fetchDragons = async ({
   dragonName = "",
   rarities = [],
@@ -66,20 +94,6 @@ const fetchDragons = async ({
     },
   );
 
-  const nameCorrections = {
-    "Spiked Ghoul Dragon": "Spiky Ghoul Dragon",
-  };
-  const familyNameCorrections = {
-    ability: null,
-    abilityy: null,
-    abilityyskin: null,
-    skin: null,
-    "skin-vampire": null,
-    Redemption1: "Redemption",
-    Redemption2: "Redemption",
-    PlasmaR: "Plasma Colony",
-    Plasma: "Plasma Colony",
-  };
   const dcMetaResponseByName = dcMetaResponse.data.reduce((acc, curr) => {
     const name = (nameCorrections[curr.dragon.name] ?? curr.dragon.name).trim();
     return {
@@ -87,6 +101,26 @@ const fetchDragons = async ({
       [name]: curr,
     };
   }, {});
+  // const familyToTags = {
+  //   Arcana: [],
+  //   Ascended: [],
+  //   Berserker: ["Offense", "Ramp up"],
+  //   Corrupted: ["Hybrid", "Specialist", "Self Heal", "Shielder"],
+  //   Dual: ["Utility"],
+  //   Eternal: ["Offense", "Specialist", "Utility"],
+  //   Evader: ["Defense", "Support", "Gambler"],
+  //   Extractor: [],
+  //   Guardian: ["Defense", "Support", "Damage Mitigator"],
+  //   Karma: ["Hybrid", "Specialist", "Gambler"],
+  //   "Plasma Colony": ["Hybrid", "Specialist", "Debuffer"],
+  //   Quantum: ["Offense", "Specialist", "Debuffer"],
+  //   Redemption: ["Support", "Sacrificial"],
+  //   Spiked: ["Hybrid", "Specialist", "Utility", "Shielder"],
+  //   Strategist: ["Offense", "Specialist", "Utility", "AoE Damage"],
+  //   Titan: ["Defense", "Shielder"],
+  //   Vampire: ["Hybrid", "Specialist", "Self Heal"],
+  //   "Walking Dead": ["Defense", "Support", "Damage Mitigator"],
+  // };
 
   const dragons = ditlepResponse.data.items
     .filter(
@@ -129,7 +163,7 @@ const fetchDragons = async ({
           category,
           skills: skills.map((skill) => ({
             name: skill.name === "" ? "Produce Food" : skill.name,
-            skillType: skill.skillType,
+            skillType: skill.skillType === 0 ? 3 : skill.skillType,
             description: skill.descriptionKey,
           })),
           skins: dragon.skins,
@@ -140,6 +174,7 @@ const fetchDragons = async ({
           skillType,
           isSkin: false,
           hasAllSkins: false,
+          // tags: familyToTags[dragonFamily] ?? [],
         };
       },
     );
@@ -190,12 +225,7 @@ async function seedDragons(dragons) {
     ${skinsLength} Combat Skins seeded.
     ${allSkinsLength} All Skin dragons seeded.`);
 }
-const dragonSkinThumbnailCorrections = {
-  "Norn Skill Skin":
-    "/dragons/HD/thumb_3109_dragon_highredemptionnorn_skin3_b_3.png",
-  "Blood Skill Skin":
-    "/dragons/HD/thumb_2788_dragon_highvoodoovampire_skin1_b_3.png",
-};
+
 async function main() {
   const dragons = await fetchDragons({});
   const dragonsAndSkins = dragons.reduce((acc, curr) => {
@@ -206,10 +236,12 @@ async function main() {
         return {
           ...curr,
           name: `${curr.name} (${skin.skinname})`,
-          image: filterHostUrl(skin.img),
+          image:
+            dragonSkinImageCorrections[skin.skinname] ??
+            filterHostUrl(skin.img),
           isSkin: true,
           thumbnail:
-            dragonSkinThumbnailCorrections[skin.skinName] ??
+            dragonSkinThumbnailCorrections[skin.skinname] ??
             filterHostUrl(convertToThumbnailUrl(skin.img)),
           skinName: skin.skinname,
           originalDragonName: curr.name,

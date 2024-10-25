@@ -3,59 +3,59 @@ import { CSSProperties } from "react";
 
 export const ratings = [
   {
-    value: 52,
+    value: "52",
     label: "OP",
   },
   {
-    value: 48,
+    value: "48",
     label: "SS",
   },
   {
-    value: 44,
+    value: "44",
     label: "S++",
   },
   {
-    value: 40,
+    value: "40",
     label: "S+",
   },
   {
-    value: 36,
+    value: "36",
     label: "S",
   },
   {
-    value: 32,
+    value: "32",
     label: "S-",
   },
   {
-    value: 28,
+    value: "28",
     label: "A+",
   },
   {
-    value: 24,
+    value: "24",
     label: "A",
   },
   {
-    value: 20,
+    value: "20",
     label: "A-",
   },
   {
-    value: 16,
+    value: "16",
     label: "B+",
   },
   {
-    value: 12,
+    value: "12",
     label: "B",
   },
   {
-    value: 8,
+    value: "8",
     label: "B-",
   },
   {
-    value: 4,
+    value: "4",
     label: "C+",
   },
   {
-    value: 0,
+    value: "0",
     label: "C",
   },
 ];
@@ -126,7 +126,7 @@ export const elementRatingKeys: Partial<AllowedRatingKeys>[] = [
 ];
 
 export const getRatingText = (score?: number) =>
-  ratings.find((rating) => rating.value === score)?.label ?? "NR";
+  ratings.find((rating) => parseInt(rating.value, 10) === score)?.label ?? "NR";
 
 export const ratingStyles: {
   [key in (typeof ratings)[number]["label"]]: CSSProperties;

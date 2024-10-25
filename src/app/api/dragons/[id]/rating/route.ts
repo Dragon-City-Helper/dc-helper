@@ -1,8 +1,8 @@
 import { saveDragonRatings } from "@/services/dragons";
 import { Role } from "@prisma/client";
-import { auth } from "@/../auth";
+import { auth } from "@/auth";
 import { HttpStatusCode } from "axios";
-import { captureException, captureMessage } from "@sentry/nextjs";
+import { captureException } from "@sentry/nextjs";
 
 export const PUT = auth(async (req, { params }) => {
   if (req.auth) {
@@ -28,7 +28,6 @@ export const PUT = auth(async (req, { params }) => {
             });
           }
         }
-        captureMessage(`Cannot read dragonId from path`);
         return Response.json({
           status: HttpStatusCode.BadRequest,
           data: null,
@@ -43,14 +42,12 @@ export const PUT = auth(async (req, { params }) => {
         });
       }
     }
-    captureMessage("User not authorized to update ratings");
     return Response.json({
       status: HttpStatusCode.Forbidden,
       data: null,
       message: "User not authorized to update ratings",
     });
   }
-  captureMessage("User not logged in");
   return Response.json({
     status: HttpStatusCode.Unauthorized,
     data: null,

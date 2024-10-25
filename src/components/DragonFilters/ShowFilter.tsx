@@ -1,21 +1,27 @@
 import { FC } from "react";
-import { DragonFilters } from ".";
+import Select from "../Select";
+import { IDragonFilters } from "@/types/filters";
 
-export const ShowFilter: FC<DragonFilters> = ({ filters, onFilterChange }) => {
+const ShowFilter: FC<IDragonFilters> = ({ filters, onFilterChange }) => {
+  const options = [
+    {
+      value: "owned",
+      label: "Owned Dragons",
+    },
+    {
+      value: "unowned",
+      label: "Unowned Dragons",
+    },
+  ];
   return (
-    <label className="form-control w-full max-w-xs">
-      <div className="label">
-        <span className="label-text">Show</span>
-      </div>
-      <select
-        value={filters.show}
-        className="select select-bordered"
-        onChange={(e) => onFilterChange("show", e)}
-      >
-        <option value="all">All Dragons</option>
-        <option value="owned">Owned Dragons</option>
-        <option value="unowned">Unowned Dragons</option>
-      </select>
-    </label>
+    <Select
+      value={filters.show}
+      label="Show"
+      placeholder="Owned or Unowned"
+      data={options}
+      onChange={(value) => onFilterChange("show", value)}
+    />
   );
 };
+
+export default ShowFilter;

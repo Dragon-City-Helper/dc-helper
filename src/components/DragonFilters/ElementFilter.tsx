@@ -1,28 +1,25 @@
-import { elements, ElementsNames } from "@/constants/Dragon";
 import { FC } from "react";
-import { DragonFilters } from ".";
+import { Elements } from "@prisma/client";
+import Select from "../Select";
+import ElementImage from "../ElementImage";
+import { elements, ElementsNames } from "@/constants/Dragon";
+import { IDragonFilters } from "@/types/filters";
 
-export const ElementFilter: FC<DragonFilters> = ({
-  filters,
-  onFilterChange,
-}) => {
+const ElementFilter: FC<IDragonFilters> = ({ filters, onFilterChange }) => {
+  const options = elements.map((element) => ({
+    value: element,
+    label: ElementsNames[element],
+  }));
   return (
-    <label className="form-control w-full max-w-xs">
-      <div className="label">
-        <span className="label-text">Element</span>
-      </div>
-      <select
-        className="select select-bordered"
-        onChange={(e) => onFilterChange("element", e)}
-        value={filters.element}
-      >
-        <option value="all">All Dragons</option>
-        {elements.map((element) => (
-          <option value={element} key={element}>
-            {ElementsNames[element]}
-          </option>
-        ))}
-      </select>
-    </label>
+    <Select
+      onChange={(value) => onFilterChange("element", value)}
+      label="Element"
+      placeholder="Select an element"
+      data={options}
+      value={filters.element}
+      icon={(option) => <ElementImage element={option.value as Elements} />}
+    />
   );
 };
+
+export default ElementFilter;
