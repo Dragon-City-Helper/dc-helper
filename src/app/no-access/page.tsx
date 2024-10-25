@@ -1,6 +1,3 @@
-export function getStaticProps() {
-  return { props: {} };
-}
 export default function noAccess() {
   return (
     <h2 className="flex justify-center items-center text-2xl">

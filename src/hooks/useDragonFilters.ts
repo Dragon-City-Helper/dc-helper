@@ -136,9 +136,14 @@ export default function useDragonFilters(
     });
   };
 
+  const isClientOnlyFilter = (key: keyof IFilters) => {
+    return ["show"].includes(key);
+  };
+
   return {
     filteredDragons,
     filters,
     onFilterChange,
+    isClientOnlyFilter,
   };
 }

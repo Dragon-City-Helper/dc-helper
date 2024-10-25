@@ -14,7 +14,7 @@ interface IDragonFaceCardProps {
 const DragonFaceCard: FC<IDragonFaceCardProps> = ({ dragon }) => {
   return (
     <Card shadow="sm" padding="sm" radius="md" withBorder>
-      <Link href={`/dragons/${dragon.id}`}>
+      <Link href={`/dragon/${dragon.id}`}>
         <Card.Section>
           <Image
             component={NextImage}

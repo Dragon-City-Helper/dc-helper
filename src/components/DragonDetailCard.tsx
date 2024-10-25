@@ -19,7 +19,7 @@ const DragonDetailCard: FC<PropsWithChildren<IDragonDetailCardProps>> = ({
   return (
     <Card shadow="sm" padding="md" radius="md" withBorder>
       <Card.Section h={250}>
-        <Link href={`/dragons/${dragon.id}`}>
+        <Link href={`/dragon/${dragon.id}`}>
           <Text ta="center" mt="md" mb="xs" fz="sm" fw="bold" h={50}>
             {dragon.name}
           </Text>

@@ -15,14 +15,17 @@ import { FC, PropsWithChildren } from "react";
 import { signIn, signOut, useSession } from "next-auth/react";
 import { usePathname } from "next/navigation";
 import { IconLogin2, IconLogout2 } from "@tabler/icons-react";
+import { Session } from "next-auth";
 
-interface IBasicAppShellProps {}
+interface IBasicAppShellProps {
+  session: Session | null;
+}
 const BasicAppShell: FC<PropsWithChildren<IBasicAppShellProps>> = ({
   children,
+  session,
 }) => {
   const [opened, { toggle }] = useDisclosure(false);
   const pathname = usePathname();
-  const { status } = useSession();
 
   return (
     <AppShell
@@ -56,7 +59,7 @@ const BasicAppShell: FC<PropsWithChildren<IBasicAppShellProps>> = ({
           />
         </AppShell.Section>
         <AppShell.Section>
-          {status === "authenticated" ? (
+          {session ? (
             <NavLink
               component={UnstyledButton}
               label="Logout"

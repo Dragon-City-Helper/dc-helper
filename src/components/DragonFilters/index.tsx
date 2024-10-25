@@ -8,7 +8,7 @@ import SkinsFilter from "./SkinsFilter";
 import { IDragonFilters, IFilters } from "@/types/filters";
 import { Accordion, SimpleGrid } from "@mantine/core";
 import VipFilter from "./VipFilter";
-// import SkillFilter from "./SkillFilter";
+import SkillFilter from "./SkillFilter";
 
 const filterToComponent: { [key in keyof IFilters]: FC<IDragonFilters> } = {
   search: SearchFilter,
@@ -18,7 +18,7 @@ const filterToComponent: { [key in keyof IFilters]: FC<IDragonFilters> } = {
   familyName: FamilyFilter,
   skins: SkinsFilter,
   vip: VipFilter,
-  // skill: SkillFilter,
+  skill: SkillFilter,
 };
 
 export const DragonFilters: FC<IDragonFilters> = ({

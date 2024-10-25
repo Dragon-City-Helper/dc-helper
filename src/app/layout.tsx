@@ -6,12 +6,14 @@ import Theme from "@/components/Theme";
 import BasicAppShell from "@/components/BasicAppShell";
 import "@mantine/core/styles.css";
 import "../styles/globals.css";
+import { auth } from "@/auth";
 
 export default async function RootLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
+  const session = await auth();
   return (
     <html>
       <head>
@@ -20,7 +22,7 @@ export default async function RootLayout({
       <body>
         <Theme>
           <SessionProvider>
-            <BasicAppShell>
+            <BasicAppShell session={session}>
               <Container my="md">{children}</Container>
             </BasicAppShell>
           </SessionProvider>
