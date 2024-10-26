@@ -118,6 +118,7 @@ export default function Home({
     loadMoreDragons(true);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [filters]);
+
   useEffect(() => {
     const handleScroll = () => {
       if (

@@ -10,6 +10,7 @@ import {
 
 import { FC, useMemo } from "react";
 import DragonDetailCard from "./DragonDetailCard";
+import HomeLoadingSkeleton from "./HomeLoadingSkeleton";
 
 interface IDragonsGridProps {
   dragons: HomeDragons;
@@ -53,11 +54,7 @@ const DragonsGrid: FC<IDragonsGridProps> = ({
           );
         })}
       </SimpleGrid>
-      {infiniteLoading && (
-        <Center>
-          <Loader />
-        </Center>
-      )}
+      {infiniteLoading && <HomeLoadingSkeleton />}
     </>
   );
 };

@@ -7,7 +7,7 @@ import { Elements, Rarity } from "@prisma/client";
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
   const skip = Number(searchParams.get("skip")) || 0;
-  const take = Number(searchParams.get("take")) || 50;
+  const take = Number(searchParams.get("take")) || 48;
   const rarity = (searchParams.get("rarity") as Rarity) ?? undefined;
   const element = (searchParams.get("element") as Elements) ?? undefined;
   const familyName = searchParams.get("familyName") || undefined;
@@ -23,7 +23,7 @@ export async function GET(request: Request) {
   const search = searchParams.get("search") || undefined;
 
   // Fetch cached dragons
-  let dragons = await fetchHomeDragons();
+  let dragons = await fetchHomeDragons({ skip, take });
 
   // Apply filters
   dragons = dragons.filter((dragon) => {
@@ -54,39 +54,5 @@ export async function GET(request: Request) {
     return isMatch;
   });
 
-  // Apply sorting
-  const rarityOrder = ["H", "M", "L", "E", "V", "R", "C"];
-  dragons.sort((a, b) => {
-    // Sort by dragon.rating.overall (descending)
-    if ((b.rating?.overall ?? 0) !== (a.rating?.overall ?? 0)) {
-      return (b.rating?.overall ?? 0) - (a.rating?.overall ?? 0);
-    }
-
-    // Sort by dragon.rating.score (descending)
-    if ((b.rating?.score ?? 0) !== (a.rating?.score ?? 0)) {
-      return (b.rating?.score ?? 0) - (a.rating?.score ?? 0);
-    }
-
-    // Sort by dragon.isSkin (true values come first)
-    if (a.isSkin !== b.isSkin) {
-      return a.isSkin ? -1 : 1;
-    }
-
-    // Sort by dragon.rarity according to the specified order
-    if (rarityOrder.indexOf(a.rarity) !== rarityOrder.indexOf(b.rarity)) {
-      return rarityOrder.indexOf(a.rarity) - rarityOrder.indexOf(b.rarity);
-    }
-
-    // Sort by dragon.hasSkills (dragons with skills come first)
-    if (a.hasSkills !== b.hasSkills) {
-      return a.hasSkills ? -1 : 1;
-    }
-
-    return 0;
-  });
-
-  // Apply pagination
-  const paginatedDragons = dragons.slice(skip, skip + take);
-
-  return NextResponse.json(paginatedDragons);
+  return NextResponse.json(dragons);
 }
