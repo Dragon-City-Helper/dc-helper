@@ -78,10 +78,10 @@ const BasicAppShell: FC<PropsWithChildren<IBasicAppShellProps>> = ({
       </AppShell.Navbar>
       <AppShell.Main>{children}</AppShell.Main>
       <AppShell.Footer>
-        <Text fz="xs" ta="center">
-          This page is not affiliated with Dragon City, or SocialPoint SL.
-          Copyrights belong to their respective owners
-        </Text>
+        <Group fz="xs" justify="center">
+          <Link href="/terms">Terms & Conditions</Link>
+          <Link href="/privacy">Privacy Policy</Link>
+        </Group>
       </AppShell.Footer>
     </AppShell>
   );
