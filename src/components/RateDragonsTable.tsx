@@ -1,78 +1,104 @@
-import { Rarity, Rating } from "@prisma/client";
+import { Rarity, Rating, Prisma } from "@prisma/client";
 import { FC, useEffect, useState } from "react";
 import RatingDropdown from "./RatingDropdown";
-import { putRatings, RateDragons } from "@/services/dragons";
+import { RateScreenDragons, putDragonData } from "@/services/dragons";
 import {
   rarityBasedOffset,
   RatingKeys,
   RatingKeysToText,
 } from "@/constants/Rating";
-import { Box, Button, Loader, SimpleGrid, Text } from "@mantine/core";
+import {
+  Box,
+  Button,
+  Loader,
+  SimpleGrid,
+  TagsInput,
+  Text,
+} from "@mantine/core";
 import DragonFaceCard from "./DragonFaceCard";
 
 interface IRateDragonsTableProps {
-  dragons: RateDragons;
+  dragons: RateScreenDragons;
 }
 
 const RateDragonsTable: FC<IRateDragonsTableProps> = ({ dragons }) => {
   const [localRatings, setLocalRatings] = useState<Record<string, Rating>>({});
+  const [localTags, setLocalTags] = useState<Record<string, string[]>>({});
   const [dirty, setDirty] = useState<{ [key: string]: boolean }>({});
   const [loading, setLoading] = useState<{ [key: string]: boolean }>({});
+  const [availableTags, setAvailableTags] = useState<string[]>([]);
 
   useEffect(() => {
-    const initState = dragons.reduce((acc, curr) => {
+    const initRatings = dragons.reduce((acc, curr) => {
       return {
         ...acc,
         [curr.id]: curr.rating,
+        dragonsId: null,
       };
     }, {});
-    setLocalRatings(initState);
+    setLocalRatings(initRatings);
+
+    const initTags = dragons.reduce((acc, curr) => {
+      return {
+        ...acc,
+        [curr.id]: curr.tags || [],
+      };
+    }, {});
+    setLocalTags(initTags);
   }, [dragons]);
 
-  const updateDragonRating = async (id: string) => {
+  useEffect(() => {
+    const fetchTags = async () => {
+      try {
+        const response = await fetch("/api/tags");
+        const tags = await response.json();
+        setAvailableTags(tags);
+      } catch (error) {
+        console.error("Failed to fetch tags:", error);
+      }
+    };
+    fetchTags();
+  }, []);
+
+  const updateDragonData = async (id: string) => {
     setLoading({
       ...loading,
       [id]: true,
     });
-    const { data: newDragonRating } = await putRatings(id, localRatings[id]);
-    setLocalRatings((rating) => {
-      return {
-        ...rating,
-        [id]: newDragonRating,
-      };
-    });
-    setDirty({
-      ...dirty,
-      [id]: false,
-    });
-    setLoading({
-      ...loading,
-      [id]: false,
-    });
+
+    const updatedData = {
+      tags: localTags[id],
+      rating: localRatings[id],
+    };
+
+    try {
+      const updatedDragon = await putDragonData(id, updatedData);
+      if (updatedDragon?.rating) {
+        setLocalRatings((ratings) => ({
+          ...ratings,
+          [id]: localRatings[id],
+        }));
+      }
+      setLocalTags((tags) => ({
+        ...tags,
+        [id]: updatedDragon.tags,
+      }));
+      setDirty({
+        ...dirty,
+        [id]: false,
+      });
+    } catch (error) {
+      console.error("Failed to update dragon data:", error);
+    } finally {
+      setLoading({
+        ...loading,
+        [id]: false,
+      });
+    }
   };
 
-  // const updateAllDragonRatings = async (dragons: dragonsWithRating) => {
-  //   dragons.forEach(async (dragon) => {
-  //     if (dragon.rating) {
-  //       const { data: newDragonRating } = await putRatings(dragon.id, {
-  //         ...dragon.rating,
-  //         score: getScore(dragon.rating, dragon.rarity),
-  //       });
-  //       setLocalRatings((rating) => {
-  //         return {
-  //           ...rating,
-  //           [dragon.id]: newDragonRating,
-  //         };
-  //       });
-  //       setDirty({
-  //         ...dirty,
-  //         [dragon.id]: false,
-  //       });
-  //     }
-  //   });
-  // };
   const onRatingChange = (
-    dragon: RateDragons[number],
+    dragon: RateScreenDragons[number],
     ratingKey: string,
     value: number,
   ) => {
@@ -92,6 +118,18 @@ const RateDragonsTable: FC<IRateDragonsTableProps> = ({ dragons }) => {
       };
     });
   };
+
+  const onTagsChange = (dragonId: string, newTags: string[]) => {
+    setDirty({
+      ...dirty,
+      [dragonId]: true,
+    });
+    setLocalTags((prevTags) => ({
+      ...prevTags,
+      [dragonId]: newTags,
+    }));
+  };
+
   const getScore = (rating: Rating, dragonRarity: Rarity) => {
     const {
       cooldown,
@@ -117,17 +155,9 @@ const RateDragonsTable: FC<IRateDragonsTableProps> = ({ dragons }) => {
       rarityBasedOffset[dragonRarity]
     );
   };
+
   return (
     <div className="overflow-x-auto">
-      {/* <div className="flex justify-end">
-        <button
-          className="btn btn-primary"
-          onClick={() => updateAllDragonRatings(dragons)}
-        >
-          recalculate existing ratings
-        </button>
-      </div> */}
-
       {dragons.map((dragon) => {
         return (
           <div
@@ -140,6 +170,16 @@ const RateDragonsTable: FC<IRateDragonsTableProps> = ({ dragons }) => {
                 <Text>
                   <b>{dragon.name}</b>
                 </Text>
+                <div className="flex flex-col gap-2">
+                  <b>Tags</b>
+                  <TagsInput
+                    value={localTags[dragon.id]}
+                    onChange={(value) => onTagsChange(dragon.id, value)}
+                    placeholder="Add tags"
+                    maxTags={6}
+                    data={availableTags}
+                  />
+                </div>
               </Box>
               <SimpleGrid cols={{ lg: 3, xs: 2 }}>
                 {RatingKeys.map((key) => (
@@ -155,14 +195,14 @@ const RateDragonsTable: FC<IRateDragonsTableProps> = ({ dragons }) => {
                 ))}
                 <div className="flex flex-col gap-2">
                   <b>Score</b>
-                  <div> {localRatings[dragon.id]?.score ?? 0}</div>
+                  <div>{localRatings[dragon.id]?.score ?? 0}</div>
                 </div>
 
                 {loading[dragon.id] ? (
                   <Loader />
                 ) : (
                   <Button
-                    onClick={() => updateDragonRating(dragon.id)}
+                    onClick={() => updateDragonData(dragon.id)}
                     disabled={!dirty[dragon.id]}
                   >
                     Save

@@ -1,5 +1,5 @@
 // app/rate/[rarity]/page.tsx
-import { RateDragons, fetchRateDragons } from "@/services/dragons";
+import { RateScreenDragons, fetchRateScreenDragons } from "@/services/dragons";
 import { Rarity, Role } from "@prisma/client";
 import { redirect, notFound } from "next/navigation";
 import { auth } from "@/auth";
@@ -22,6 +22,7 @@ export default async function Page({ params }: { params: { rarity: string } }) {
     notFound();
   }
 
+  // Retrieve the session on the server side
   const session = await auth();
 
   if (!session) {
@@ -32,15 +33,14 @@ export default async function Page({ params }: { params: { rarity: string } }) {
     redirect("/no-access");
   }
 
-  // Fetch the dragons data
-  let dragons: RateDragons = [];
+  // Fetch the initial batch of dragons
+  let dragons: RateScreenDragons = [];
   try {
-    dragons = await fetchRateDragons({ rarity });
+    dragons = await fetchRateScreenDragons({ rarity, take: 30 }); // Fetch initial 50 dragons
   } catch (error) {
     console.error(error);
     notFound();
   }
-
   // Render the client component and pass the dragons data
-  return <RateDragonsView dragons={dragons} />;
+  return <RateDragonsView initialDragons={dragons} rarity={rarity} />;
 }

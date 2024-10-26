@@ -1,15 +1,14 @@
 import { ratings } from "@/constants/Rating";
-import { RateDragons } from "@/services/dragons";
-import { NativeSelect } from "@mantine/core";
+import { RateScreenDragons } from "@/services/dragons";
 import { FC } from "react";
 import Select from "./Select";
 
 interface IRatingDropdown {
-  dragon: RateDragons[number];
+  dragon: RateScreenDragons[number];
   ratingKey: string;
   value?: number | null;
   onRatingChange: (
-    dragon: RateDragons[number],
+    dragon: RateScreenDragons[number],
     ratingKey: string,
     value: number,
   ) => void;

@@ -1,6 +1,6 @@
 import prisma from "@/lib/prisma";
 import { ApiResponse } from "@/types/apiResponse";
-import { Rarity, Rating } from "@prisma/client";
+import { Rarity, Rating, Prisma, dragons } from "@prisma/client";
 import axios from "axios";
 
 import { cache } from "react";
@@ -81,10 +81,83 @@ export const fetchRateDragons = cache(async (options?: { rarity: Rarity }) => {
   });
 });
 
+export async function fetchRateScreenDragons(options: {
+  rarity: Rarity;
+  skip?: number;
+  take?: number;
+  search?: string;
+  element?: string;
+  familyName?: string;
+  skins?: string;
+}) {
+  const {
+    rarity,
+    skip = 0,
+    take = 50,
+    search,
+    element,
+    familyName,
+    skins,
+  } = options;
+
+  const where: any = {
+    rarity,
+  };
+
+  if (search) {
+    where.name = {
+      contains: search,
+      mode: "insensitive",
+    };
+  }
+
+  if (element) {
+    where.elements = {
+      has: element,
+    };
+  }
+
+  if (familyName) {
+    where.familyName = familyName;
+  }
+
+  if (skins === "skins") {
+    where.isSkin = true;
+  } else if (skins === "dragons") {
+    where.isSkin = false;
+  }
+
+  const dragons = await prisma.dragons.findMany({
+    where,
+    skip,
+    take,
+    select: {
+      id: true,
+      name: true,
+      familyName: true,
+      elements: true,
+      rarity: true,
+      isSkin: true,
+      hasAllSkins: true,
+      isVip: true,
+      hasSkills: true,
+      skillType: true,
+      rating: true,
+      thumbnail: true,
+      tags: true,
+    },
+  });
+
+  return dragons;
+}
+
 type ThenArg<T> = T extends PromiseLike<infer U> ? U : T;
 
 export type HomeDragons = ThenArg<ReturnType<typeof fetchHomeDragons>>;
 export type RateDragons = ThenArg<ReturnType<typeof fetchRateDragons>>;
+export type RateScreenDragons = ThenArg<
+  ReturnType<typeof fetchRateScreenDragons>
+>;
 
 export const fetchRatedDragons = async (options?: { rarity: Rarity }) => {
   return await prisma.dragons.findMany({
@@ -195,3 +268,91 @@ export const putRatings = async (dragonsId: string, rating: Rating) => {
   );
   return response.data;
 };
+
+export const fetchUniqueTags = cache(async () => {
+  const tags = await prisma.dragons.findMany({
+    select: {
+      tags: true,
+    },
+  });
+
+  // Flatten the tags arrays and get unique values
+  const uniqueTags = Array.from(
+    new Set(tags.flatMap((dragon) => dragon.tags)),
+  ).filter((tag): tag is string => tag !== null && tag.trim() !== "");
+
+  return uniqueTags;
+});
+
+export const fetchUniqueFamilyNames = cache(async () => {
+  const familyNames = await prisma.dragons.findMany({
+    where: {
+      familyName: {
+        not: null,
+      },
+    },
+    select: {
+      familyName: true,
+    },
+    distinct: ["familyName"],
+  });
+
+  // Extract family names and ensure they are non-null
+  const uniqueFamilyNames = familyNames
+    .map((dragon) => dragon.familyName)
+    .filter((name): name is string => name !== null);
+
+  return uniqueFamilyNames;
+});
+
+export async function updateDragon(
+  id: string,
+  data: Prisma.dragonsUpdateInput,
+) {
+  try {
+    const updatedDragon = await prisma.dragons.update({
+      where: { id },
+      data,
+      include: {
+        rating: true,
+      },
+    });
+    return updatedDragon;
+  } catch (error) {
+    console.error("Failed to update dragon:", error);
+    throw error;
+  }
+}
+
+export async function putDragonData(
+  id: string,
+  data: { tags: string[]; rating: Rating },
+) {
+  const { dragonsId, ...createRating } = data.rating ?? {};
+  const { id: ID, dragonsId: dID, ...updateRating } = data.rating ?? {};
+
+  const body: Prisma.dragonsUpdateInput = {
+    ...data,
+    rating: data.rating
+      ? {
+          upsert: {
+            where: {
+              dragonsId: id,
+            },
+            create: createRating,
+            update: updateRating,
+          },
+        }
+      : undefined,
+  };
+  try {
+    const response = await axios.put<RateScreenDragons[number]>(
+      `/api/dragons/${id}`,
+      body,
+    );
+    return response.data;
+  } catch (error) {
+    console.error("Failed to update dragon data:", error);
+    throw error;
+  }
+}

@@ -1,28 +1,27 @@
-import { FC } from "react";
+import { FC, useEffect, useState } from "react";
 import Select from "../Select";
 import FamilyImage from "../FamilyImage";
 import { IDragonFilters } from "@/types/filters";
 
-const FamilyFilter: FC<IDragonFilters> = ({
-  filters,
-  onFilterChange,
-  dragons,
-}) => {
-  const familyNames = dragons
-    .map((dragon) => dragon.familyName || "")
-    .filter((familyName) => !!familyName);
-  const uniqueFamilyNames = new Set(familyNames);
+const FamilyFilter: FC<IDragonFilters> = ({ filters, onFilterChange }) => {
+  const [familyNames, setFamilyNames] = useState<string[]>([]);
 
-  const options = Array.from(uniqueFamilyNames)
-    .sort()
-    .map((family) => ({ value: family, label: family }));
+  useEffect(() => {
+    const fetchFamilyNames = async () => {
+      const response = await fetch("/api/family-names");
+      const familyNames = await response.json();
+      setFamilyNames(familyNames);
+    };
+
+    fetchFamilyNames();
+  }, []);
 
   return (
     <Select
       onChange={(value) => onFilterChange("familyName", value)}
       label="Family"
       placeholder="Select a family"
-      data={options}
+      data={familyNames}
       value={filters.familyName}
       allowDeselect
       icon={(option) => <FamilyImage familyName={option.value} />}
