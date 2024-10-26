@@ -35,7 +35,7 @@ export const DragonFilters: FC<IDragonFilters> = ({
   dragons,
 }) => {
   return (
-    <Accordion variant="contained">
+    <Accordion variant="contained" my="lg">
       <Accordion.Item value="filters">
         <Accordion.Control value="filters">Filters</Accordion.Control>
         <Accordion.Panel>

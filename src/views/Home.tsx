@@ -174,7 +174,7 @@ export default function Home({
             dragons={dragons}
             allowedFilters={allowedFilters}
           />
-          <b>
+          {/* <b>
             {filteredDragons.length === dragons.length
               ? `Showing all Dragons and Skins`
               : `Showing ${
@@ -182,7 +182,7 @@ export default function Home({
                 } of ${dragons.filter((d) => !d.isSkin).length} dragons and ${
                   filteredDragons.filter((d) => d.isSkin).length
                 } of ${dragons.filter((d) => d.isSkin).length} Skins`}
-          </b>
+          </b> */}
           <DragonsGrid
             dragons={filteredDragons as HomeDragons}
             onOwned={owned.length > 0 ? onOwned : undefined}
