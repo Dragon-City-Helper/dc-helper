@@ -21,6 +21,7 @@ const ElementImage: FC<IElementImageProps> = ({ element, width, height }) => {
       height={height ?? 32}
       w={width ?? 16}
       h={height ?? 32}
+      fit="contain"
     />
   );
 };

@@ -7,11 +7,11 @@ export const revalidate = 43200; // revalidate every 12 hours
 
 const Page: FC = async () => {
   const [dragons, ownedDragons] = await Promise.all([
-    fetchHomeDragons({ skip: 0, take: 48 }),
+    fetchHomeDragons(),
     fetchOwned(),
   ]);
 
-  return <Home initialDragons={dragons} owned={ownedDragons} />;
+  return <Home initialDragons={dragons.slice(0, 48)} owned={ownedDragons} />;
 };
 
 export default Page;

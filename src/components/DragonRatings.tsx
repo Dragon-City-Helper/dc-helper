@@ -1,12 +1,13 @@
 import {
   AllowedRatingKeys,
   elementRatingKeys,
-  getRatingText,
   RatingKeysToText,
   skillRatingKeys,
 } from "@/constants/Rating";
 import { dragonWithSkillsAndRating } from "@/services/dragons";
 import { FC } from "react";
+import RatingBadge from "./RatingBadge";
+import { Text, Title, Stack, Group, Card, SimpleGrid } from "@mantine/core";
 
 interface IDragonRatingsProps {
   dragon: dragonWithSkillsAndRating;
@@ -14,41 +15,30 @@ interface IDragonRatingsProps {
 
 const DragonRatings: FC<IDragonRatingsProps> = ({ dragon }) => {
   return (
-    <div className="flex gap-6 w-full flex-col">
-      <div className="flex justify-between items-center border border-gray-200 p-2 rounded-box">
-        Ratings
-      </div>
-      <div className="flex gap-6 w-full">
-        <div className="flex flex-col gap-4 w-1/2">
-          <div>Skill Ratings</div>
+    <Card>
+      <Stack>
+        <Title order={3}>Ratings</Title>
+        <Group justify="space-between">
+          <Text fw="bold">Overall</Text>
+          <RatingBadge rating={dragon.rating?.overall} />
+        </Group>
+        <SimpleGrid cols={{ sm: 1, md: 2 }}>
           {skillRatingKeys.map((ratingKey: AllowedRatingKeys) => (
-            <div
-              key={`${dragon.id}-${ratingKey}`}
-              className="flex justify-between items-center"
-            >
-              {RatingKeysToText[ratingKey]} -
-              <b className="block">
-                {getRatingText(dragon.rating?.[ratingKey] || 0)}
-              </b>
-            </div>
+            <Group key={`${dragon.id}-${ratingKey}`} justify="space-between">
+              <Text fw="bold">{RatingKeysToText[ratingKey]}</Text>
+              <RatingBadge rating={dragon.rating?.[ratingKey]} />
+            </Group>
           ))}
-        </div>
-        <div className="flex flex-col gap-4 w-1/2">
-          <div>Element Ratings</div>
+
           {elementRatingKeys.map((ratingKey: AllowedRatingKeys) => (
-            <div
-              key={`${dragon.id}-${ratingKey}`}
-              className="flex justify-between items-center"
-            >
-              {RatingKeysToText[ratingKey]} -
-              <b className="block">
-                {getRatingText(dragon.rating?.[ratingKey] || 0)}
-              </b>
-            </div>
+            <Group key={`${dragon.id}-${ratingKey}`} justify="space-between">
+              <Text fw="bold">{RatingKeysToText[ratingKey]}</Text>
+              <RatingBadge rating={dragon.rating?.[ratingKey]} />
+            </Group>
           ))}
-        </div>
-      </div>
-    </div>
+        </SimpleGrid>
+      </Stack>
+    </Card>
   );
 };
 

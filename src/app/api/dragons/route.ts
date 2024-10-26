@@ -23,7 +23,7 @@ export async function GET(request: Request) {
   const search = searchParams.get("search") || undefined;
 
   // Fetch cached dragons
-  let dragons = await fetchHomeDragons({ skip, take });
+  let dragons = await fetchHomeDragons();
 
   // Apply filters
   dragons = dragons.filter((dragon) => {
@@ -54,5 +54,5 @@ export async function GET(request: Request) {
     return isMatch;
   });
 
-  return NextResponse.json(dragons);
+  return NextResponse.json(dragons.slice(skip, skip + take));
 }

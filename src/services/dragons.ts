@@ -4,60 +4,55 @@ import axios from "axios";
 
 import { cache } from "react";
 
-export const fetchHomeDragons = cache(
-  async (options?: { skip?: number; take?: number }) => {
-    const dragons = await prisma.dragons.findMany({
-      select: {
-        id: true,
-        name: true,
-        familyName: true,
-        elements: true,
-        rarity: true,
-        isSkin: true,
-        hasAllSkins: true,
-        isVip: true,
-        hasSkills: true,
-        skillType: true,
-        maxSpeed: true,
-        baseSpeed: true,
-        rating: true,
-        image: true,
-        breedable: true,
-        tags: true,
-      },
-    });
+export const fetchHomeDragons = cache(async () => {
+  const dragons = await prisma.dragons.findMany({
+    select: {
+      id: true,
+      name: true,
+      familyName: true,
+      elements: true,
+      rarity: true,
+      isSkin: true,
+      hasAllSkins: true,
+      isVip: true,
+      hasSkills: true,
+      skillType: true,
+      maxSpeed: true,
+      baseSpeed: true,
+      rating: true,
+      image: true,
+      breedable: true,
+      tags: true,
+    },
+  });
 
-    const rarityOrder = ["H", "M", "L", "E", "V", "R", "C"];
-    const sortedDragons = dragons.sort((a, b) => {
-      // Sort by dragon.rating.overall (descending)
-      if (b.rating?.overall !== a.rating?.overall) {
-        return (b.rating?.overall ?? 0) - (a.rating?.overall ?? 0);
-      }
+  const rarityOrder = ["H", "M", "L", "E", "V", "R", "C"];
+  const sortedDragons = dragons.sort((a, b) => {
+    // Sort by dragon.rating.overall (descending)
+    if (b.rating?.overall !== a.rating?.overall) {
+      return (b.rating?.overall ?? 0) - (a.rating?.overall ?? 0);
+    }
 
-      // Sort by dragon.rating.score (descending)
-      if (b.rating?.score !== a.rating?.score) {
-        return (b.rating?.score ?? 0) - (a.rating?.score ?? 0);
-      }
+    // Sort by dragon.rating.score (descending)
+    if (b.rating?.score !== a.rating?.score) {
+      return (b.rating?.score ?? 0) - (a.rating?.score ?? 0);
+    }
 
-      // Sort by dragon.isSkin (true values come first)
-      if (a.isSkin !== b.isSkin) {
-        return a.isSkin ? -1 : 1;
-      }
+    // Sort by dragon.isSkin (true values come first)
+    if (a.isSkin !== b.isSkin) {
+      return a.isSkin ? -1 : 1;
+    }
 
-      // Sort by dragon.rarity according to the specified order
-      if (rarityOrder.indexOf(a.rarity) !== rarityOrder.indexOf(a.rarity)) {
-        return rarityOrder.indexOf(b.rarity) - rarityOrder.indexOf(a.rarity);
-      }
+    // Sort by dragon.rarity according to the specified order
+    if (rarityOrder.indexOf(a.rarity) !== rarityOrder.indexOf(a.rarity)) {
+      return rarityOrder.indexOf(b.rarity) - rarityOrder.indexOf(a.rarity);
+    }
 
-      return a.hasSkills ? -1 : 1;
-    });
+    return a.hasSkills ? -1 : 1;
+  });
 
-    return sortedDragons.slice(
-      options?.skip ?? 0,
-      (options?.skip ?? 0) + (options?.take ?? 48),
-    );
-  },
-);
+  return sortedDragons;
+});
 
 export const fetchRateDragons = cache(async (options?: { rarity: Rarity }) => {
   return await prisma.dragons.findMany({
@@ -215,7 +210,6 @@ export const fetchSkinsForADragon = async (name: string) => {
         contains: name,
       },
       isSkin: true,
-      hasAllSkins: false,
     },
     include: {
       rating: true,
@@ -227,7 +221,26 @@ export const fetchSkinsForADragon = async (name: string) => {
 export const fetchDragon = async (id: string) => {
   return await prisma.dragons.findUniqueOrThrow({
     where: {
-      id: id,
+      id,
+    },
+    include: {
+      rating: true,
+      skills: {
+        select: {
+          id: true,
+          name: true,
+          skillType: true,
+          description: true,
+        },
+      },
+    },
+  });
+};
+
+export const fetchDragonByName = async (name: string) => {
+  return await prisma.dragons.findUniqueOrThrow({
+    where: {
+      name,
     },
     include: {
       rating: true,

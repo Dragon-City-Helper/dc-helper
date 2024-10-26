@@ -101,26 +101,6 @@ const fetchDragons = async ({
       [name]: curr,
     };
   }, {});
-  // const familyToTags = {
-  //   Arcana: [],
-  //   Ascended: [],
-  //   Berserker: ["Offense", "Ramp up"],
-  //   Corrupted: ["Hybrid", "Specialist", "Self Heal", "Shielder"],
-  //   Dual: ["Utility"],
-  //   Eternal: ["Offense", "Specialist", "Utility"],
-  //   Evader: ["Defense", "Support", "Gambler"],
-  //   Extractor: [],
-  //   Guardian: ["Defense", "Support", "Damage Mitigator"],
-  //   Karma: ["Hybrid", "Specialist", "Gambler"],
-  //   "Plasma Colony": ["Hybrid", "Specialist", "Debuffer"],
-  //   Quantum: ["Offense", "Specialist", "Debuffer"],
-  //   Redemption: ["Support", "Sacrificial"],
-  //   Spiked: ["Hybrid", "Specialist", "Utility", "Shielder"],
-  //   Strategist: ["Offense", "Specialist", "Utility", "AoE Damage"],
-  //   Titan: ["Defense", "Shielder"],
-  //   Vampire: ["Hybrid", "Specialist", "Self Heal"],
-  //   "Walking Dead": ["Defense", "Support", "Damage Mitigator"],
-  // };
 
   const dragons = ditlepResponse.data.items
     .filter(
@@ -174,7 +154,6 @@ const fetchDragons = async ({
           skillType,
           isSkin: false,
           hasAllSkins: false,
-          // tags: familyToTags[dragonFamily] ?? [],
         };
       },
     );
@@ -184,31 +163,34 @@ const fetchDragons = async ({
 async function seedDragons(dragons) {
   console.log(`Start seeding dragons...`);
   for (const dragon of dragons) {
-    await prisma.dragons.upsert({
-      where: { name: dragon.name },
-      create: {
-        ...dragon,
-        skills: {
-          connectOrCreate: dragon.skills.map((skill) => ({
-            where: {
-              name: skill.name,
-            },
-            create: skill,
-          })),
+    if (dragon.isSkin) {
+      await prisma.dragons.upsert({
+        where: { name: dragon.name },
+        create: {
+          ...dragon,
+          skills: {
+            connectOrCreate: dragon.skills.map((skill) => ({
+              where: {
+                name: skill.name,
+              },
+              create: skill,
+            })),
+          },
         },
-      },
-      update: {
-        ...dragon,
-        skills: {
-          connectOrCreate: dragon.skills.map((skill) => ({
-            where: {
-              name: skill.name,
-            },
-            create: skill,
-          })),
+        update: {
+          ...dragon,
+          skills: {
+            connectOrCreate: dragon.skills.map((skill) => ({
+              where: {
+                name: skill.name,
+              },
+              create: skill,
+            })),
+          },
         },
-      },
-    });
+      });
+    }
+
     if (dragon.isSkin) {
       console.log(`Created/Updated Skinned Dragon: ${dragon.name}`);
     } else {
@@ -228,11 +210,22 @@ async function seedDragons(dragons) {
 
 async function main() {
   const dragons = await fetchDragons({});
+
   const dragonsAndSkins = dragons.reduce((acc, curr) => {
     if (curr.skins) {
       const skinsWithAbilities = curr.skins.filter((skin) => !!skin.descr);
+
       delete curr.skins;
       const skinDragons = skinsWithAbilities.map((skin) => {
+        const parsedSkinDescr = skin.descr
+          .replace(/\s*<\/li>\s*|\s*\/li>\s*/g, "||") // Replace only </li> or /li> with "||" and remove surrounding whitespace
+          .replace(/\s*<li>\s*/g, "") // Remove <li> and surrounding whitespace
+          .replace(/\s*<\/?ul>\s*/g, "") // Remove <ul>, </ul>, and surrounding whitespace
+          .replace(/\s*-\s*/g, "") // Remove "- " and surrounding whitespace
+          .replace(/\|\|\s*$/, ""); // Remove the last "||" and any trailing whitespace
+        console.log("\n\n");
+        console.log(`${curr.name} (${skin.skinname})`);
+        console.log(parsedSkinDescr);
         return {
           ...curr,
           name: `${curr.name} (${skin.skinname})`,
@@ -244,10 +237,26 @@ async function main() {
             dragonSkinThumbnailCorrections[skin.skinname] ??
             filterHostUrl(convertToThumbnailUrl(skin.img)),
           skinName: skin.skinname,
+          skinPrice: skin.price,
+          skinDescription: parsedSkinDescr,
           originalDragonName: curr.name,
         };
       });
       if (skinDragons.length > 1) {
+        const allSkillsDescr = skinsWithAbilities
+          .map(
+            (skin) =>
+              skin.descr
+                .replace(/\s*<\/li>\s*|\s*\/li>\s*/g, "||") // Replace only </li> or /li> with "||" and remove surrounding whitespace
+                .replace(/\s*<li>\s*/g, "") // Remove <li> and surrounding whitespace
+                .replace(/\s*<\/?ul>\s*/g, "") // Remove <ul>, </ul>, and surrounding whitespace
+                .replace(/\s*-\s*/g, "") // Remove "- " and surrounding whitespace
+                .replace(/\|\|\s*$/, ""), // Remove the last "||" and any trailing whitespace
+          )
+          .join("||");
+        console.log("\n\n");
+        console.log(`${curr.name} (All Skins)`);
+        console.log(allSkillsDescr);
         return [
           ...acc,
           curr,
@@ -258,6 +267,8 @@ async function main() {
             skinName: "All Skins",
             isSkin: true,
             hasAllSkins: true,
+            skinPrice: "Obtain All Skins",
+            skinDescription: allSkillsDescr,
             originalDragonName: curr.name,
           },
         ];

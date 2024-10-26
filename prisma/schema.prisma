@@ -26,9 +26,11 @@ model dragons {
   isVip              Boolean
   hasSkills          Boolean
   skillType          Int
+  skinPrice          String?
   skinName           String?
   originalDragonName String?
   isSkin             Boolean
+  skinDescription    String?
   hasAllSkins        Boolean
   tags               String[]
 }

@@ -1,65 +1,48 @@
-import { getRatingText } from "@/constants/Rating";
 import { dragonWithSkillsAndRating } from "@/services/dragons";
 import Image from "next/image";
 import { FC } from "react";
+import { Badge, Center, Group, Card, Stack } from "@mantine/core";
+import RarityImage from "./RarityImage";
+import ElementImage from "./ElementImage";
+import SkinImage from "./SkinImage";
 
 interface IDragonProfileProps {
   dragon: dragonWithSkillsAndRating;
 }
 const DragonProfile: FC<IDragonProfileProps> = ({ dragon }) => {
   return (
-    <div className="flex flex-col gap-6 w-full">
-      <div className="flex justify-between items-center border border-gray-200 p-2 rounded-box">
-        <div>{dragon.isSkin ? dragon.skinName : dragon.name}</div>
-        {dragon.familyName && (
-          <Image
-            src={`/images/family/icon-${dragon.familyName}.png`}
-            alt={dragon.familyName}
-            width={32}
-            height={32}
-          />
-        )}
-      </div>
+    <Stack>
       <div className="flex flex-row gap-2 items-start justify-center">
-        <Image
-          src={`/images/rarity/${dragon.rarity}.png`}
-          alt={dragon.rarity}
-          width={64}
-          height={64}
-        />
+        <RarityImage rarity={dragon.rarity} height={40} />
         <div className="flex flex-row gap-1">
           {dragon.elements.map((element, index) => (
-            <Image
+            <ElementImage
+              element={element}
               key={`${dragon.id}-${element}-${index}`}
-              src={`/images/elements/${element}.png`}
-              alt={element}
-              width={30}
-              height={62}
+              height={40}
             />
           ))}
         </div>
         {dragon.isSkin && (
-          <Image
-            src={`/images/skin.png`}
-            alt={dragon.rarity}
-            width={64}
-            height={64}
-          />
+          <SkinImage hasAllSkins={dragon.hasAllSkins} height={40} />
         )}
       </div>
-      <figure className="flex justify-center items-center">
+      <Center>
         <Image
           src={`https://dci-static-s1.socialpointgames.com/static/dragoncity/mobile/ui${dragon.image}`}
           alt={dragon.name}
           width={300}
           height={300}
         />
-      </figure>
-      <div className="flex justify-between items-center">
-        Overall Rating:
-        <b className="block">{getRatingText(dragon.rating?.overall || 0)}</b>
-      </div>
-    </div>
+      </Center>
+      <Group my="md" wrap="wrap" justify="center">
+        {dragon.tags.map((tag) => (
+          <Badge key={`${dragon.id}-${tag}`} variant="light" size="sm">
+            {tag}
+          </Badge>
+        ))}
+      </Group>
+    </Stack>
   );
 };
 

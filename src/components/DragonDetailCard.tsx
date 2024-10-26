@@ -7,7 +7,7 @@ import ElementImage from "./ElementImage";
 import RarityImage from "./RarityImage";
 import FamilyImage from "./FamilyImage";
 import SkinImage from "./SkinImage";
-import { getRatingText, ratingStyles } from "@/constants/Rating";
+import RatingBadge from "./RatingBadge";
 
 interface IDragonDetailCardProps {
   dragon: HomeDragons[number];
@@ -59,19 +59,7 @@ const DragonDetailCard: FC<PropsWithChildren<IDragonDetailCardProps>> = ({
       </Group>
       <Group justify="space-between">
         <Text> Rating </Text>
-        {dragon.rating?.overall ? (
-          <Badge
-            style={{
-              ...ratingStyles[getRatingText(dragon.rating.overall)],
-            }}
-          >
-            {getRatingText(dragon.rating.overall)}
-          </Badge>
-        ) : (
-          <Badge variant="default" autoContrast>
-            Unrated
-          </Badge>
-        )}
+        <RatingBadge rating={dragon.rating?.overall} />
       </Group>
       <Group my="md" gap="sm" h={72}>
         {dragon.tags.map((tag) => (

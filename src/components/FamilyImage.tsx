@@ -19,6 +19,7 @@ const FamilyImage: FC<IElementImageProps> = ({ familyName, width, height }) => {
       height={height ?? 32}
       w={width ?? 32}
       h={height ?? 32}
+      fit="contain"
     />
   );
 };

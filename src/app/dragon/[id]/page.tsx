@@ -1,12 +1,14 @@
 // app/[id]/page.tsx
 
-import { notFound } from "next/navigation";
+import { notFound, redirect, RedirectType } from "next/navigation";
 import DragonDetails from "@/components/DragonDetails";
 import {
   fetchAllDragonIds,
   fetchDragon,
   fetchSkinsForADragon,
+  fetchDragonByName,
 } from "@/services/dragons";
+import { Title } from "@mantine/core";
 
 export const revalidate = 43200; // Revalidate every 12 hours
 
@@ -26,32 +28,39 @@ export default async function Page({ params }: { params: { id: string } }) {
     notFound();
   }
 
-  try {
-    const dragonData = await fetchDragon(dragonId);
+  const dragonData = await fetchDragon(dragonId);
 
-    if (!dragonData) {
-      notFound();
-    }
-
-    const skinsData = await fetchSkinsForADragon(dragonData.name);
-
-    return (
-      <div className="flex gap-6 container flex-col">
-        <DragonDetails dragon={dragonData} />
-        {skinsData.length > 0 && (
-          <div>
-            <div className="flex justify-between items-center border border-gray-200 p-2 rounded-box">
-              Skins
-            </div>
-            {skinsData.map((skin) => (
-              <DragonDetails key={skin.id} dragon={skin} />
-            ))}
-          </div>
-        )}
-      </div>
-    );
-  } catch (err) {
-    console.error(err);
+  if (!dragonData) {
+    console.log("dragon data not found");
     notFound();
   }
+  if (dragonData.isSkin) {
+    if (dragonData.originalDragonName) {
+      const originalDragon = await fetchDragonByName(
+        dragonData.originalDragonName,
+      );
+      redirect(`/dragon/${originalDragon.id}`, RedirectType.replace);
+    } else {
+      console.log("original dragon name not found");
+      notFound();
+    }
+  }
+
+  const skinsData = await fetchSkinsForADragon(dragonData.name);
+
+  return (
+    <div className="flex gap-6 container flex-col">
+      <DragonDetails dragon={dragonData} />
+      {skinsData.length > 0 && (
+        <div>
+          <Title order={2} my="lg">
+            Skins
+          </Title>
+          {skinsData.map((skin) => (
+            <DragonDetails key={skin.id} dragon={skin} />
+          ))}
+        </div>
+      )}
+    </div>
+  );
 }
