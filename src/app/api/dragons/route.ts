@@ -26,7 +26,7 @@ export async function GET(request: Request) {
   let dragons = await fetchHomeDragons();
 
   // Apply filters
-  dragons = dragons.filter((dragon) => {
+  const filteredDragons = dragons.filter((dragon) => {
     let isMatch = true;
 
     if (rarity && dragon.rarity !== rarity) {
@@ -54,5 +54,12 @@ export async function GET(request: Request) {
     return isMatch;
   });
 
-  return NextResponse.json(dragons.slice(skip, skip + take));
+  return NextResponse.json({
+    dragons: filteredDragons.slice(skip, skip + take),
+    filterDragonsCount: filteredDragons.filter((d) => !d.isSkin).length,
+    filterSkinsCount: filteredDragons.filter((d) => d.isSkin).length,
+    totalDragonsCount: dragons.filter((d) => !d.isSkin).length,
+    totalSkinsCount: dragons.filter((d) => d.isSkin).length,
+    showMore: filteredDragons.length > skip + take,
+  });
 }

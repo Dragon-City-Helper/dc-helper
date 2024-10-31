@@ -39,7 +39,7 @@ const TierListLayout: FC<ITierListLayoutProps> = ({ dragons, ratingKey }) => {
           }}
         >
           <Title order={3}>{rating.label}</Title>
-          <SimpleGrid cols={{ base: 2, sm: 4, lg: 6 }} my="sm">
+          <SimpleGrid cols={{ base: 4, lg: 6 }} my="sm">
             {dragonsByRating[rating.label]?.length > 0 &&
               dragonsByRating[rating.label].map((dragon) => (
                 <DragonFaceCard dragon={dragon} key={dragon.id} />

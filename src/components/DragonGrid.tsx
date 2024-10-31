@@ -30,7 +30,7 @@ const DragonsGrid: FC<IDragonsGridProps> = ({
 }) => {
   return (
     <>
-      <SimpleGrid cols={{ xs: 2, sm: 3, lg: 4 }}>
+      <SimpleGrid cols={{ base: 2, sm: 3, lg: 4 }}>
         {dragons.map((dragon) => {
           return (
             <DragonDetailCard key={dragon.id} dragon={dragon}>

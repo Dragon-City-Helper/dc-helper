@@ -1,5 +1,5 @@
 import { RateDragons } from "@/services/dragons";
-import { Card, Group, Image, Text } from "@mantine/core";
+import { Box, Card, Group, Image } from "@mantine/core";
 import NextImage from "next/image";
 import Link from "next/link";
 import { FC } from "react";
@@ -26,7 +26,7 @@ const DragonFaceCard: FC<IDragonFaceCardProps> = ({ dragon }) => {
             title={dragon.name}
           />
         </Card.Section>
-        <Card.Section inheritPadding>
+        <Card.Section inheritPadding visibleFrom="sm">
           <Group justify="space-evenly" gap={4} py={4}>
             {dragon.elements.map((element, index) => (
               <ElementImage

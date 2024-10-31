@@ -163,33 +163,31 @@ const fetchDragons = async ({
 async function seedDragons(dragons) {
   console.log(`Start seeding dragons...`);
   for (const dragon of dragons) {
-    if (dragon.isSkin) {
-      await prisma.dragons.upsert({
-        where: { name: dragon.name },
-        create: {
-          ...dragon,
-          skills: {
-            connectOrCreate: dragon.skills.map((skill) => ({
-              where: {
-                name: skill.name,
-              },
-              create: skill,
-            })),
-          },
+    await prisma.dragons.upsert({
+      where: { name: dragon.name },
+      create: {
+        ...dragon,
+        skills: {
+          connectOrCreate: dragon.skills.map((skill) => ({
+            where: {
+              name: skill.name,
+            },
+            create: skill,
+          })),
         },
-        update: {
-          ...dragon,
-          skills: {
-            connectOrCreate: dragon.skills.map((skill) => ({
-              where: {
-                name: skill.name,
-              },
-              create: skill,
-            })),
-          },
+      },
+      update: {
+        ...dragon,
+        skills: {
+          connectOrCreate: dragon.skills.map((skill) => ({
+            where: {
+              name: skill.name,
+            },
+            create: skill,
+          })),
         },
-      });
-    }
+      },
+    });
 
     if (dragon.isSkin) {
       console.log(`Created/Updated Skinned Dragon: ${dragon.name}`);

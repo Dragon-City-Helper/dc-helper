@@ -7,6 +7,7 @@ import DragonFilters from "@/components/DragonFilters";
 import useDragonFilters from "@/hooks/useDragonFilters";
 import { IFilters } from "@/types/filters";
 import { setOwnedIds } from "@/services/owned";
+import FilterMessage, { IFilterMessageProps } from "@/components/FilterMessage";
 
 const TAKE = 48; // Number of items to fetch each time
 export default function Home({
@@ -22,7 +23,7 @@ export default function Home({
   const [dragons, setDragons] = useState(initialDragons);
   const [hasMore, setHasMore] = useState(initialDragons.length === TAKE);
   const [filters, setFilters] = useState<IFilters>({});
-
+  const [metadata, setMetadata] = useState<IFilterMessageProps["metadata"]>();
   const ownedIdsMap = useMemo(() => {
     return ownedIds.reduce((acc, curr) => {
       acc.set(curr, true);
@@ -88,7 +89,21 @@ export default function Home({
       }
 
       const response = await fetch(`/api/dragons?${params.toString()}`);
-      const newDragons = await response.json();
+      const {
+        dragons: newDragons,
+        filterDragonsCount,
+        filterSkinsCount,
+        totalDragonsCount,
+        totalSkinsCount,
+        showMore,
+      } = await response.json();
+
+      setMetadata({
+        filterDragonsCount,
+        filterSkinsCount,
+        totalDragonsCount,
+        totalSkinsCount,
+      });
 
       if (reset) {
         setDragons(newDragons);
@@ -97,7 +112,7 @@ export default function Home({
       }
 
       // Update hasMore based on whether we received the full batch
-      setHasMore(newDragons.length === TAKE);
+      setHasMore(showMore);
       setInfiniteLoading(false);
     },
     [
@@ -165,33 +180,21 @@ export default function Home({
     allowedFilters.push("show");
   }
   return (
-    <div className="flex flex-row w-100 h-100 overflow-auto">
-      <div className="flex-1 m-6">
-        <div className="flex flex-col gap-4">
-          <DragonFilters
-            onFilterChange={onFilterChange}
-            filters={filters}
-            dragons={dragons}
-            allowedFilters={allowedFilters}
-          />
-          {/* <b>
-            {filteredDragons.length === dragons.length
-              ? `Showing all Dragons and Skins`
-              : `Showing ${
-                  filteredDragons.filter((d) => !d.isSkin).length
-                } of ${dragons.filter((d) => !d.isSkin).length} dragons and ${
-                  filteredDragons.filter((d) => d.isSkin).length
-                } of ${dragons.filter((d) => d.isSkin).length} Skins`}
-          </b> */}
-          <DragonsGrid
-            dragons={filteredDragons as HomeDragons}
-            onOwned={owned.length > 0 ? onOwned : undefined}
-            ownedIdsMap={ownedIdsMap}
-            loading={loading}
-            infiniteLoading={infiniteLoading}
-          />
-        </div>
-      </div>
+    <div className="flex flex-col gap-4">
+      <DragonFilters
+        onFilterChange={onFilterChange}
+        filters={filters}
+        dragons={dragons}
+        allowedFilters={allowedFilters}
+      />
+      <FilterMessage metadata={metadata} />
+      <DragonsGrid
+        dragons={filteredDragons as HomeDragons}
+        onOwned={owned.length > 0 ? onOwned : undefined}
+        ownedIdsMap={ownedIdsMap}
+        loading={loading}
+        infiniteLoading={infiniteLoading}
+      />
     </div>
   );
 }

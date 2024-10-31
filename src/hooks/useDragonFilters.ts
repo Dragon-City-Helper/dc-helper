@@ -1,3 +1,4 @@
+import { IFilterMessageProps } from "@/components/FilterMessage";
 import { HomeDragons, RateDragons } from "@/services/dragons";
 import { IFilters } from "@/types/filters";
 import { Elements } from "@prisma/client";
