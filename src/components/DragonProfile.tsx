@@ -1,20 +1,21 @@
 import { dragonWithSkillsAndRating } from "@/services/dragons";
 import Image from "next/image";
 import { FC } from "react";
-import { Badge, Center, Group, Card, Stack } from "@mantine/core";
+import { Badge, Center, Group, Box } from "@mantine/core";
 import RarityImage from "./RarityImage";
 import ElementImage from "./ElementImage";
 import SkinImage from "./SkinImage";
+import FamilyImage from "./FamilyImage";
 
 interface IDragonProfileProps {
   dragon: dragonWithSkillsAndRating;
 }
 const DragonProfile: FC<IDragonProfileProps> = ({ dragon }) => {
   return (
-    <Stack>
-      <div className="flex flex-row gap-2 items-start justify-center">
-        <RarityImage rarity={dragon.rarity} height={40} />
-        <div className="flex flex-row gap-1">
+    <Box>
+      <Center>
+        <Group>
+          <RarityImage rarity={dragon.rarity} height={40} />
           {dragon.elements.map((element, index) => (
             <ElementImage
               element={element}
@@ -22,11 +23,12 @@ const DragonProfile: FC<IDragonProfileProps> = ({ dragon }) => {
               height={40}
             />
           ))}
-        </div>
-        {dragon.isSkin && (
-          <SkinImage hasAllSkins={dragon.hasAllSkins} height={40} />
-        )}
-      </div>
+          {dragon.familyName && <FamilyImage familyName={dragon.familyName} />}
+          {dragon.isSkin && (
+            <SkinImage hasAllSkins={dragon.hasAllSkins} height={40} />
+          )}
+        </Group>
+      </Center>
       <Center>
         <Image
           src={`https://dci-static-s1.socialpointgames.com/static/dragoncity/mobile/ui${dragon.image}`}
@@ -42,7 +44,7 @@ const DragonProfile: FC<IDragonProfileProps> = ({ dragon }) => {
           </Badge>
         ))}
       </Group>
-    </Stack>
+    </Box>
   );
 };
 

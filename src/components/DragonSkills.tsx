@@ -1,7 +1,7 @@
 "use client";
 import { dragonWithSkillsAndRating } from "@/services/dragons";
-import { Group, Grid, Stack, Text, Title, Card } from "@mantine/core";
-import Image from "next/image";
+import { Grid, Stack, Text, Title, Card, Image } from "@mantine/core";
+import NextImage from "next/image";
 import { FC } from "react";
 
 interface IDragonSkillsProps {
@@ -15,14 +15,16 @@ const DragonSkills: FC<IDragonSkillsProps> = ({ dragon }) => {
         <Title order={3}>Skills</Title>
         {dragon.skills?.length > 0 ? (
           dragon.skills.map((skill) => (
-            <Grid key={skill.id}>
+            <Grid key={skill.id} align="center">
               <Grid.Col span={2}>
                 <Image
+                  component={NextImage}
                   src={`/images/skilltype/${skill.skillType}.png`}
                   alt={skill.name}
-                  width={32}
-                  height={32}
-                  className="object-contain"
+                  width={48}
+                  height={48}
+                  h={48}
+                  fit="contain"
                 />
               </Grid.Col>
               <Grid.Col span={10}>

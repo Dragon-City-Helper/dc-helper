@@ -1,14 +1,7 @@
 import { HomeDragons } from "@/services/dragons";
-import {
-  Center,
-  Checkbox,
-  Group,
-  Loader,
-  SimpleGrid,
-  Text,
-} from "@mantine/core";
+import { Checkbox, Group, Loader, SimpleGrid, Text } from "@mantine/core";
 
-import { FC, useMemo } from "react";
+import { FC } from "react";
 import DragonDetailCard from "./DragonDetailCard";
 import HomeLoadingSkeleton from "./HomeLoadingSkeleton";
 

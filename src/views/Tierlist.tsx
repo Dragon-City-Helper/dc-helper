@@ -50,6 +50,7 @@ export default function TierList({
   if (owned.length > 0) {
     allowedFilters.push("show");
   }
+
   return (
     <div className="flex flex-col w-100 h-100 overflow-auto gap-6">
       <DragonFilters

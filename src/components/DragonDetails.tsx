@@ -5,22 +5,18 @@ import DragonProfile from "./DragonProfile";
 import DragonRatings from "./DragonRatings";
 import DragonSkills from "./DragonSkills";
 import DragonSkinChanges from "./DragonSkinChanges";
-import { Group, Stack, Title, Grid, Container } from "@mantine/core";
-import FamilyImage from "./FamilyImage";
+import { Stack, Title, Card, SimpleGrid, Center } from "@mantine/core";
 
 interface IDragonDetailsProps {
   dragon: dragonWithSkillsAndRating;
 }
 const DragonDetails: FC<IDragonDetailsProps> = ({ dragon }) => {
   return (
-    <Container>
-      <Group my="lg">
-        {dragon.familyName && (
-          <FamilyImage familyName={dragon.familyName} height={36} />
-        )}
+    <Card my="md">
+      <Center>
         <Title order={2}>{dragon.isSkin ? dragon.skinName : dragon.name}</Title>
-      </Group>
-      <Group wrap="wrap" align="start">
+      </Center>
+      <SimpleGrid cols={{ base: 1, sm: 2 }} my="md">
         <DragonProfile dragon={dragon} />
         <Stack>
           <DragonRatings dragon={dragon} />
@@ -30,8 +26,8 @@ const DragonDetails: FC<IDragonDetailsProps> = ({ dragon }) => {
             <DragonSkills dragon={dragon} />
           )}
         </Stack>
-      </Group>
-    </Container>
+      </SimpleGrid>
+    </Card>
   );
 };
 

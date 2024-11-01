@@ -1,4 +1,4 @@
-import { fetchRatedDragons, RateDragons } from "@/services/dragons";
+import { fetchRatedDragons } from "@/services/dragons";
 import { fetchOwned } from "@/services/owned";
 import TierList from "@/views/Tierlist";
 import { FC } from "react";
