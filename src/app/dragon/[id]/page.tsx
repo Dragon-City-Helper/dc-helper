@@ -1,4 +1,4 @@
-// app/[id]/page.tsx
+// dragon/[id]/page.tsx
 
 import { notFound, redirect, RedirectType } from "next/navigation";
 import DragonDetails from "@/components/DragonDetails";
@@ -18,6 +18,48 @@ export async function generateStaticParams() {
   return dragonIds.map((id) => ({
     id,
   }));
+}
+
+export async function generateMetadata({ params }: { params: { id: string } }) {
+  const { id } = params;
+
+  // Fetch dragon data
+  const dragonData = await fetchDragon(id);
+
+  if (!dragonData) {
+    return {
+      title: "Dragon Not Found - Dragon City Helper",
+      description:
+        "The requested dragon could not be found in Dragon City Helper.",
+    };
+  }
+
+  // Define dynamic title and description based on dragon data
+  return {
+    title: `${dragonData.name} - Dragon Details | Dragon City Helper`,
+    description: `Explore detailed information on ${dragonData.name}, including skills, stats, skins, and more in Dragon City Helper. Discover if ${dragonData.name} could be a valuable addition to your collection.`,
+    openGraph: {
+      title: `${dragonData.name} - Dragon City Helper`,
+      description: `Discover detailed stats, skins, and abilities of ${dragonData.name} in Dragon City Helper.`,
+      images: [
+        {
+          url: `https://dci-static-s1.socialpointgames.com/static/dragoncity/mobile/ui${dragonData.thumbnail}`,
+          width: 1200,
+          height: 630,
+          alt: `${dragonData.name} in Dragon City`,
+        },
+      ],
+      type: "website",
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: `${dragonData.name} - Dragon Details | Dragon City Helper`,
+      description: `Check out ${dragonData.name}'s abilities, skins, and more on Dragon City Helper.`,
+      images: [
+        `https://dci-static-s1.socialpointgames.com/static/dragoncity/mobile/ui${dragonData.thumbnail}`,
+      ],
+    },
+  };
 }
 
 // Page component

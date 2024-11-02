@@ -4,6 +4,34 @@ import { Rarity, Role } from "@prisma/client";
 import { redirect, notFound } from "next/navigation";
 import { auth } from "@/auth";
 import RateDragonsView from "@/views/RateDragonsView";
+import { RarityNames } from "@/constants/Dragon";
+
+export async function generateMetadata({
+  params,
+}: {
+  params: { rarity: string };
+}) {
+  const rarityParam = params.rarity;
+  const rarityMapping: { [key: string]: Rarity } = {
+    heroic: Rarity.H,
+    mythical: Rarity.M,
+    legendary: Rarity.L,
+    epic: Rarity.E,
+    "very-rare": Rarity.V,
+    rare: Rarity.R,
+    common: Rarity.C,
+  };
+  const rarity = rarityMapping[rarityParam];
+  const rarityDisplayName = RarityNames[rarity] || "Rarity";
+  return {
+    title: `Rate ${rarityDisplayName} Dragons - Admin | Dragon City Helper`,
+    description: `Internal page for rating dragons of ${rarityDisplayName} rarity. Access restricted to authorized users.`,
+    robots: {
+      index: false,
+      follow: false,
+    },
+  };
+}
 
 export default async function Page({ params }: { params: { rarity: string } }) {
   const rarityParam = params.rarity;
