@@ -159,7 +159,6 @@ const fetchDragons = async ({
     );
   return dragons;
 };
-
 async function seedDragons(dragons) {
   console.log(`Start seeding dragons...`);
   for (const dragon of dragons) {
@@ -221,9 +220,6 @@ async function main() {
           .replace(/\s*<\/?ul>\s*/g, "") // Remove <ul>, </ul>, and surrounding whitespace
           .replace(/\s*-\s*/g, "") // Remove "- " and surrounding whitespace
           .replace(/\|\|\s*$/, ""); // Remove the last "||" and any trailing whitespace
-        console.log("\n\n");
-        console.log(`${curr.name} (${skin.skinname})`);
-        console.log(parsedSkinDescr);
         return {
           ...curr,
           name: `${curr.name} (${skin.skinname})`,
@@ -252,9 +248,6 @@ async function main() {
                 .replace(/\|\|\s*$/, ""), // Remove the last "||" and any trailing whitespace
           )
           .join("||");
-        console.log("\n\n");
-        console.log(`${curr.name} (All Skins)`);
-        console.log(allSkillsDescr);
         return [
           ...acc,
           curr,
@@ -276,6 +269,7 @@ async function main() {
     }
     return [...acc, curr];
   }, []);
+
   seedDragons(dragonsAndSkins);
 }
 

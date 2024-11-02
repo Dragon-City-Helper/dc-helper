@@ -14,16 +14,16 @@ export const fetchOwned = async () => {
     console.log(`fetchOwned: User authenticated with ID: ${session.user.id}`);
 
     try {
-      const ownedDragons = await prisma.ownedDragons.findUnique({
+      const ownedDragons = await prisma.ownedDragons.findMany({
         where: {
           userId: session.user.id,
         },
       });
 
-      const dragonCount = ownedDragons?.dragons.length || 0;
+      const dragonCount = ownedDragons?.length || 0;
       console.log(`fetchOwned: Fetched ${dragonCount} owned dragons`);
 
-      return ownedDragons?.dragons ?? [];
+      return ownedDragons.map((d) => d.dragonsId) || [];
     } catch (err) {
       console.error(
         "fetchOwned: Error occurred while fetching owned dragons",
@@ -43,48 +43,60 @@ export const fetchOwned = async () => {
   }
 };
 
-export const setOwnedIds = async (ownedIds: string[]) => {
-  console.log(
-    "setOwnedIds: Start setting owned dragon IDs for authenticated user",
-  );
+export const toggleOwned = async (dragonsId: string) => {
+  console.log("toggleOwned: Start toggling owned status for dragon", dragonsId);
 
   const session = await auth();
   if (session?.user.id) {
-    console.log(`setOwnedIds: User authenticated with ID: ${session.user.id}`);
+    const userId = session.user.id;
+    console.log(`toggleOwned: User authenticated with ID: ${userId}`);
 
     try {
-      const ownedDragons = await prisma.ownedDragons.upsert({
+      // Check if the dragon is already marked as owned
+      const existingOwnedDragon = await prisma.ownedDragons.findUnique({
         where: {
-          userId: session.user.id,
-        },
-        create: {
-          userId: session.user.id,
-          dragons: ownedIds,
-        },
-        update: {
-          dragons: ownedIds,
+          userId_dragonsId: {
+            userId,
+            dragonsId,
+          },
         },
       });
 
-      console.log(
-        `setOwnedIds: Successfully set ${ownedIds.length} owned dragon IDs`,
-      );
-      return ownedDragons.dragons;
+      if (existingOwnedDragon) {
+        // Dragon is already owned; remove it from the list
+        await prisma.ownedDragons.delete({
+          where: {
+            id: existingOwnedDragon.id,
+          },
+        });
+        console.log(`toggleOwned: Dragon ${dragonsId} removed from owned list`);
+      } else {
+        // Dragon is not owned; add it to the list
+        await prisma.ownedDragons.create({
+          data: {
+            userId,
+            dragonsId,
+          },
+        });
+        console.log(`toggleOwned: Dragon ${dragonsId} added to owned list`);
+      }
+
+      return { success: true };
     } catch (err) {
       console.error(
-        "setOwnedIds: Error occurred while setting owned dragon IDs",
+        "toggleOwned: Error occurred while toggling owned dragon status",
         err,
       );
       captureException(err, {
         level: "fatal",
         tags: {
-          serverAction: "setOwnedIds",
+          serverAction: "toggleOwned",
         },
       });
       throw err;
     }
   } else {
-    console.warn("setOwnedIds: No authenticated user found - action aborted");
+    console.warn("toggleOwned: No authenticated user found - action aborted");
     throw new Error("No User logged in");
   }
 };

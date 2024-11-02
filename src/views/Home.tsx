@@ -6,7 +6,7 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import DragonFilters from "@/components/DragonFilters";
 import useDragonFilters from "@/hooks/useDragonFilters";
 import { IFilters } from "@/types/filters";
-import { setOwnedIds } from "@/services/owned";
+import { toggleOwned } from "@/services/owned";
 import FilterMessage, { IFilterMessageProps } from "@/components/FilterMessage";
 
 const TAKE = 48; // Number of items to fetch each time
@@ -40,7 +40,7 @@ export default function Home({
         newOwned = owned.filter((id) => id != dragonId);
       }
       setLoading(dragonId);
-      await setOwnedIds(newOwned);
+      await toggleOwned(dragonId);
       setOwned(newOwned);
       setLoading(undefined);
     } catch (error) {
