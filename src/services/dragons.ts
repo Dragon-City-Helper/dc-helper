@@ -1,9 +1,11 @@
 import prisma from "@/lib/prisma";
-import { Rarity, Rating, Prisma, dragons } from "@prisma/client";
+import { Rarity, Rating, Prisma, Elements } from "@prisma/client";
 import axios from "axios";
-
 import { cache } from "react";
 
+// Fetch functions
+
+// Home Dragons - Sorted by rating, skin status, and rarity
 export const fetchHomeDragons = cache(async () => {
   const dragons = await prisma.dragons.findMany({
     select: {
@@ -27,38 +29,20 @@ export const fetchHomeDragons = cache(async () => {
   });
 
   const rarityOrder = ["H", "M", "L", "E", "V", "R", "C"];
-  const sortedDragons = dragons.sort((a, b) => {
-    // Sort by dragon.rating.overall (descending)
-    if (b.rating?.overall !== a.rating?.overall) {
+  return dragons.sort((a, b) => {
+    if (b.rating?.overall !== a.rating?.overall)
       return (b.rating?.overall ?? 0) - (a.rating?.overall ?? 0);
-    }
-
-    // Sort by dragon.rating.score (descending)
-    if (b.rating?.score !== a.rating?.score) {
+    if (b.rating?.score !== a.rating?.score)
       return (b.rating?.score ?? 0) - (a.rating?.score ?? 0);
-    }
-
-    // Sort by dragon.isSkin (true values come first)
-    if (a.isSkin !== b.isSkin) {
-      return a.isSkin ? -1 : 1;
-    }
-
-    // Sort by dragon.rarity according to the specified order
-    if (rarityOrder.indexOf(a.rarity) !== rarityOrder.indexOf(a.rarity)) {
-      return rarityOrder.indexOf(b.rarity) - rarityOrder.indexOf(a.rarity);
-    }
-
-    return a.hasSkills ? -1 : 1;
+    if (a.isSkin !== b.isSkin) return a.isSkin ? -1 : 1;
+    return rarityOrder.indexOf(b.rarity) - rarityOrder.indexOf(a.rarity);
   });
-
-  return sortedDragons;
 });
 
-export const fetchRateDragons = cache(async (options?: { rarity: Rarity }) => {
-  return await prisma.dragons.findMany({
-    where: {
-      rarity: options?.rarity,
-    },
+// Filtered dragons by rarity
+export const fetchRateDragons = async (options?: { rarity: Rarity }) => {
+  return prisma.dragons.findMany({
+    where: { rarity: options?.rarity },
     select: {
       id: true,
       name: true,
@@ -74,8 +58,9 @@ export const fetchRateDragons = cache(async (options?: { rarity: Rarity }) => {
       thumbnail: true,
     },
   });
-});
+};
 
+// Paginated & Filtered dragons with optional search filters
 export const fetchRateScreenDragons = cache(
   async (options: {
     rarity: Rarity;
@@ -96,34 +81,16 @@ export const fetchRateScreenDragons = cache(
       skins,
     } = options;
 
-    const where: any = {
+    const where: Prisma.dragonsWhereInput = {
       rarity,
+      name: search ? { contains: search, mode: "insensitive" } : undefined,
+      elements: element ? { has: element as Elements } : undefined,
+      familyName,
+      isSkin:
+        skins === "skins" ? true : skins === "dragons" ? false : undefined,
     };
 
-    if (search) {
-      where.name = {
-        contains: search,
-        mode: "insensitive",
-      };
-    }
-
-    if (element) {
-      where.elements = {
-        has: element,
-      };
-    }
-
-    if (familyName) {
-      where.familyName = familyName;
-    }
-
-    if (skins === "skins") {
-      where.isSkin = true;
-    } else if (skins === "dragons") {
-      where.isSkin = false;
-    }
-
-    const dragons = await prisma.dragons.findMany({
+    return prisma.dragons.findMany({
       where,
       skip,
       take,
@@ -143,26 +110,15 @@ export const fetchRateScreenDragons = cache(
         tags: true,
       },
     });
-
-    return dragons;
   },
 );
 
-type ThenArg<T> = T extends PromiseLike<infer U> ? U : T;
-
-export type HomeDragons = ThenArg<ReturnType<typeof fetchHomeDragons>>;
-export type RateDragons = ThenArg<ReturnType<typeof fetchRateDragons>>;
-export type RateScreenDragons = ThenArg<
-  ReturnType<typeof fetchRateScreenDragons>
->;
-
+// Fetch dragons with non-null ratings
 export const fetchRatedDragons = cache(async (options?: { rarity: Rarity }) => {
-  return await prisma.dragons.findMany({
+  return prisma.dragons.findMany({
     where: {
       rarity: options?.rarity,
-      NOT: {
-        rating: null,
-      },
+      NOT: { rating: null },
     },
     select: {
       id: true,
@@ -181,132 +137,84 @@ export const fetchRatedDragons = cache(async (options?: { rarity: Rarity }) => {
   });
 });
 
-export const fetchAllDragonIds = async () => {
-  const dragonIds = await prisma.dragons.findMany({
-    select: {
-      id: true,
-    },
-  });
-  return dragonIds.map((dragon) => dragon.id);
+// Fetch unique tags
+export const fetchUniqueTags = async () => {
+  const tags = await prisma.dragons.findMany({ select: { tags: true } });
+  return Array.from(
+    new Set(tags.flatMap((dragon) => dragon.tags).filter(Boolean)),
+  );
 };
 
-export const fetchAllSkinIds = async () => {
-  const dragonIds = await prisma.dragons.findMany({
-    where: {
-      isSkin: true,
-      hasAllSkins: false,
-    },
-    select: {
-      id: true,
-    },
-  });
-  return dragonIds.map((dragon) => dragon.id);
-};
-
-export const fetchSkinsForADragon = async (name: string) => {
-  return await prisma.dragons.findMany({
-    where: {
-      name: {
-        contains: name,
-      },
-      isSkin: true,
-    },
-    include: {
-      rating: true,
-      skills: true,
-    },
-  });
-};
-
-export const fetchDragon = async (id: string) => {
-  return await prisma.dragons.findUniqueOrThrow({
-    where: {
-      id,
-    },
-    include: {
-      rating: true,
-      skills: {
-        select: {
-          id: true,
-          name: true,
-          skillType: true,
-          description: true,
-        },
-      },
-    },
-  });
-};
-
-export const fetchDragonByName = async (name: string) => {
-  return await prisma.dragons.findUniqueOrThrow({
-    where: {
-      name,
-    },
-    include: {
-      rating: true,
-      skills: {
-        select: {
-          id: true,
-          name: true,
-          skillType: true,
-          description: true,
-        },
-      },
-    },
-  });
-};
-
-export type dragonWithSkillsAndRating = ThenArg<ReturnType<typeof fetchDragon>>;
-
-export const fetchUniqueTags = cache(async () => {
-  const tags = await prisma.dragons.findMany({
-    select: {
-      tags: true,
-    },
-  });
-
-  // Flatten the tags arrays and get unique values
-  const uniqueTags = Array.from(
-    new Set(tags.flatMap((dragon) => dragon.tags)),
-  ).filter((tag): tag is string => tag !== null && tag.trim() !== "");
-
-  return uniqueTags;
-});
-
-export const fetchUniqueFamilyNames = cache(async () => {
+// Fetch unique family names
+export const fetchUniqueFamilyNames = async () => {
   const familyNames = await prisma.dragons.findMany({
-    where: {
-      familyName: {
-        not: null,
-      },
-    },
-    select: {
-      familyName: true,
-    },
+    where: { familyName: { not: null } },
+    select: { familyName: true },
     distinct: ["familyName"],
   });
+  return familyNames.map((dragon) => dragon.familyName).filter(Boolean);
+};
 
-  // Extract family names and ensure they are non-null
-  const uniqueFamilyNames = familyNames
-    .map((dragon) => dragon.familyName)
-    .filter((name): name is string => name !== null);
+// Specific Dragon Fetches
 
-  return uniqueFamilyNames;
+export const fetchAllDragonIds = cache(async () => {
+  return (await prisma.dragons.findMany({ select: { id: true } })).map(
+    (dragon) => dragon.id,
+  );
 });
+
+export const fetchAllSkinIds = async () => {
+  return (
+    await prisma.dragons.findMany({
+      where: { isSkin: true, hasAllSkins: false },
+      select: { id: true },
+    })
+  ).map((dragon) => dragon.id);
+};
+
+export const fetchSkinsForADragon = cache(async (name: string) => {
+  return prisma.dragons.findMany({
+    where: { originalDragonName: name, isSkin: true },
+    include: { rating: true, skills: true },
+  });
+});
+
+export const fetchDragon = cache(async (id: string) => {
+  return prisma.dragons.findUniqueOrThrow({
+    where: { id },
+    include: {
+      rating: true,
+      skills: {
+        select: { id: true, name: true, skillType: true, description: true },
+      },
+    },
+  });
+});
+
+export const fetchDragonByName = cache(async (name: string) => {
+  return prisma.dragons.findUniqueOrThrow({
+    where: { name },
+    include: {
+      rating: true,
+      skills: {
+        select: { id: true, name: true, skillType: true, description: true },
+      },
+    },
+  });
+});
+
+// Update Functions
 
 export async function updateDragon(
   id: string,
   data: Prisma.dragonsUpdateInput,
 ) {
   try {
-    const updatedDragon = await prisma.dragons.update({
+    return await prisma.dragons.update({
       where: { id },
       data,
-      include: {
-        rating: true,
-      },
+      include: { rating: true },
     });
-    return updatedDragon;
   } catch (error) {
     console.error("Failed to update dragon:", error);
     throw error;
@@ -325,9 +233,7 @@ export async function putDragonData(
     rating: data.rating
       ? {
           upsert: {
-            where: {
-              dragonsId: id,
-            },
+            where: { dragonsId: id },
             create: createRating,
             update: updateRating,
           },
@@ -335,13 +241,19 @@ export async function putDragonData(
       : undefined,
   };
   try {
-    const response = await axios.put<RateScreenDragons[number]>(
-      `/api/dragons/${id}`,
-      body,
-    );
+    const response = await axios.put(`/api/dragons/${id}`, body);
     return response.data;
   } catch (error) {
     console.error("Failed to update dragon data:", error);
     throw error;
   }
 }
+
+// Types
+type ThenArg<T> = T extends PromiseLike<infer U> ? U : T;
+export type HomeDragons = ThenArg<ReturnType<typeof fetchHomeDragons>>;
+export type RateDragons = ThenArg<ReturnType<typeof fetchRateDragons>>;
+export type RateScreenDragons = ThenArg<
+  ReturnType<typeof fetchRateScreenDragons>
+>;
+export type dragonWithSkillsAndRating = ThenArg<ReturnType<typeof fetchDragon>>;

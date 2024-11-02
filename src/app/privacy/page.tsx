@@ -11,7 +11,7 @@ export const metadata = {
   },
 };
 
-export const revalidate = 84600;
+export const dynamic = "force-static";
 
 const Terms: FC = () => {
   return <PrivacyPolicyPage />;
