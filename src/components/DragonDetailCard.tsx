@@ -67,11 +67,11 @@ const DragonDetailCard: FC<PropsWithChildren<IDragonDetailCardProps>> = ({
             <Text visibleFrom="sm"> Rating </Text>
             <RatingBadge rating={dragon.rating?.overall} />
           </Group>
-          <Group my="sm" justify="space-evenly" className="h-36 sm:h-28">
+          <Group my="sm" justify="space-evenly" className="h-40 sm:h-28">
             {dragon.tags
               .sort((a, b) => b.length - a.length)
               .map((tag) => (
-                <Badge key={`${dragon.id}-${tag}`} variant="light">
+                <Badge key={`${dragon.id}-${tag}`} variant="light" size="sm">
                   {tag}
                 </Badge>
               ))}

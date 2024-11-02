@@ -23,7 +23,7 @@ export const fetchHomeDragons = cache(async () => {
       baseSpeed: true,
       rating: true,
       image: true,
-      breedable: true,
+      originalDragonName: true,
       tags: true,
     },
   });

@@ -57,6 +57,14 @@ const BasicAppShell: FC<PropsWithChildren<IBasicAppShellProps>> = ({
             href="/tierlist"
             active={pathname === "/tierlist"}
           />
+          {session && (
+            <NavLink
+              component={Link}
+              label="Dragon Dashboard"
+              href="/dashboard"
+              active={pathname === "/dashboard"}
+            />
+          )}
         </AppShell.Section>
         <AppShell.Section>
           {session ? (

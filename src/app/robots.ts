@@ -6,7 +6,7 @@ export default function robots(): MetadataRoute.Robots {
       {
         userAgent: "*",
         allow: "/",
-        disallow: ["/rate/", "/api/"],
+        disallow: ["/rate/", "/api/", "/dashboard"],
       },
     ],
     sitemap: "https://www.dragoncityhelper.com/sitemap.xml",
