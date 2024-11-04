@@ -249,6 +249,34 @@ export async function putDragonData(
   }
 }
 
+export async function getDragonById(id: string) {
+  try {
+    console.log(`Requesting dragon data for ID: ${id}`);
+    const response = await axios.get(`/api/dragons/${id}`);
+
+    console.log(`Successfully fetched dragon data for ID: ${id}`);
+    return response.data;
+  } catch (error: any) {
+    if (error.response) {
+      // Server responded with a status other than 200 range
+      console.error(
+        `Error: ${error.response.status} - ${error.response.data.error}`,
+      );
+      throw new Error(
+        error.response.data.error || "Error fetching dragon data",
+      );
+    } else if (error.request) {
+      // No response was received from the server
+      console.error("Error: No response received from server");
+      throw new Error("No response received from server");
+    } else {
+      // Something else went wrong
+      console.error(`Error: ${error.message}`);
+      throw new Error(error.message || "Unexpected error occurred");
+    }
+  }
+}
+
 // Types
 type ThenArg<T> = T extends PromiseLike<infer U> ? U : T;
 export type HomeDragons = ThenArg<ReturnType<typeof fetchHomeDragons>>;

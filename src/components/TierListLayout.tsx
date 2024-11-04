@@ -1,5 +1,5 @@
 import { RateDragons } from "@/services/dragons";
-import { FC, useMemo } from "react";
+import { FC, useMemo, useState } from "react";
 import DragonFaceCard from "./DragonFaceCard";
 import {
   AllowedRatingKeys,
@@ -7,13 +7,19 @@ import {
   ratings,
   ratingStyles,
 } from "@/constants/Rating";
-import { SimpleGrid, Stack, Title } from "@mantine/core";
+import { Drawer, SimpleGrid, Stack, Title } from "@mantine/core";
+import { useDisclosure } from "@mantine/hooks";
+import DragonDrawer from "./DragonDrawer";
 
 interface ITierListLayoutProps {
   dragons: RateDragons;
   ratingKey: AllowedRatingKeys;
 }
 const TierListLayout: FC<ITierListLayoutProps> = ({ dragons, ratingKey }) => {
+  const [opened, { open, close }] = useDisclosure(false);
+
+  const [selectedDragonId, setSelectedDragonId] = useState<string>();
+
   const dragonsByRating = useMemo(() => {
     const sortedDragons = dragons.sort(
       (a, b) => (b.rating?.score ?? 0) - (a.rating?.score ?? 0),
@@ -34,6 +40,11 @@ const TierListLayout: FC<ITierListLayoutProps> = ({ dragons, ratingKey }) => {
     );
   }, [dragons, ratingKey]);
 
+  const onDragonClick = (id: string) => {
+    setSelectedDragonId(id);
+    open();
+  };
+
   return (
     <Stack gap={0}>
       {ratings.map((rating) => (
@@ -48,11 +59,18 @@ const TierListLayout: FC<ITierListLayoutProps> = ({ dragons, ratingKey }) => {
           <SimpleGrid cols={{ base: 4, lg: 6 }} my="sm">
             {dragonsByRating[rating.label]?.length > 0 &&
               dragonsByRating[rating.label].map((dragon) => (
-                <DragonFaceCard dragon={dragon} key={dragon.id} />
+                <DragonFaceCard
+                  dragon={dragon}
+                  onDragonClick={onDragonClick}
+                  key={dragon.id}
+                />
               ))}
           </SimpleGrid>
         </div>
       ))}
+      <Drawer opened={opened} onClose={close} size="xl" position="right">
+        <DragonDrawer id={selectedDragonId || ""} />
+      </Drawer>
     </Stack>
   );
 };

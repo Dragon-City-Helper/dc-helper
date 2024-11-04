@@ -1,6 +1,5 @@
-import { NextResponse } from "next/server";
-import { updateDragon } from "@/services/dragons";
-import { NextRequest } from "next/server";
+import { NextResponse, NextRequest } from "next/server";
+import { fetchDragon, updateDragon } from "@/services/dragons";
 import { Role } from "@prisma/client";
 import { auth } from "@/auth";
 
@@ -52,6 +51,36 @@ export async function PUT(
     console.error("Failed to update dragon:", error);
     return NextResponse.json(
       { error: "Failed to update dragon" },
+      { status: 500 },
+    );
+  }
+}
+
+export async function GET(
+  request: NextRequest,
+  { params }: { params: { id: string } },
+) {
+  const { id } = params;
+
+  console.log(`Fetching dragon with ID: ${id}`); // Log the request for debugging
+
+  try {
+    // Attempt to fetch the dragon data
+    const dragon = await fetchDragon(id);
+
+    // Check if dragon exists
+    if (!dragon) {
+      console.warn(`Dragon with ID: ${id} not found.`);
+      return NextResponse.json({ error: "Dragon not found" }, { status: 404 });
+    }
+
+    console.log(`Dragon with ID: ${id} fetched successfully.`);
+    return NextResponse.json(dragon);
+  } catch (error) {
+    // Log any errors that occur
+    console.error(`Error fetching dragon with ID: ${id}`, error);
+    return NextResponse.json(
+      { error: "Failed to fetch dragon" },
       { status: 500 },
     );
   }
