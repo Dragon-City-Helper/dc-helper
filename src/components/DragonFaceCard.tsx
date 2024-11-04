@@ -1,5 +1,5 @@
 import { RateDragons } from "@/services/dragons";
-import { Box, Card, Group, Image } from "@mantine/core";
+import { Card, Center, Group, Image } from "@mantine/core";
 import NextImage from "next/image";
 import Link from "next/link";
 import { FC } from "react";
@@ -50,6 +50,11 @@ const DragonFaceCard: FC<IDragonFaceCardProps> = ({ dragon }) => {
               />
             ) : null}
           </Group>
+        </Card.Section>
+        <Card.Section hiddenFrom="sm">
+          <Center>
+            {dragon.isSkin && <SkinImage hasAllSkins={dragon.hasAllSkins} />}
+          </Center>
         </Card.Section>
       </Link>
     </Card>
