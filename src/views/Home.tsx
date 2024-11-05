@@ -8,6 +8,7 @@ import useDragonFilters from "@/hooks/useDragonFilters";
 import { IFilters } from "@/types/filters";
 import { toggleOwned } from "@/services/owned";
 import FilterMessage, { IFilterMessageProps } from "@/components/FilterMessage";
+import { useSession } from "next-auth/react";
 
 const TAKE = 48; // Number of items to fetch each time
 export default function Home({
@@ -24,6 +25,8 @@ export default function Home({
   const [hasMore, setHasMore] = useState(initialDragons.length === TAKE);
   const [filters, setFilters] = useState<IFilters>({});
   const [metadata, setMetadata] = useState<IFilterMessageProps["metadata"]>();
+  const { status } = useSession();
+
   const ownedIdsMap = useMemo(() => {
     return ownedIds.reduce((acc, curr) => {
       acc.set(curr, true);
@@ -176,7 +179,7 @@ export default function Home({
     "skill",
   ];
 
-  if (owned.length > 0) {
+  if (status === "authenticated") {
     allowedFilters.push("show");
   }
   return (
@@ -190,7 +193,7 @@ export default function Home({
       <FilterMessage metadata={metadata} />
       <DragonsGrid
         dragons={filteredDragons as HomeDragons}
-        onOwned={owned.length > 0 ? onOwned : undefined}
+        onOwned={status === "authenticated" ? onOwned : undefined}
         ownedIdsMap={ownedIdsMap}
         loading={loading}
         infiniteLoading={infiniteLoading}
