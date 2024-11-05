@@ -23,11 +23,7 @@ export default function DragonPanelContent({ id }: { id: string }) {
   }, [id]);
 
   if (loading) {
-    return (
-      <Center>
-        <DragonDetailsSkeleton />
-      </Center>
-    );
+    return <DragonDetailsSkeleton />;
   }
 
   return (

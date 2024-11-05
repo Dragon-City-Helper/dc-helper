@@ -17,7 +17,7 @@ export default function DragonPanel({
     <Drawer
       opened={opened}
       onClose={close}
-      size="xl"
+      size="100%"
       position="right"
       title={<Title order={2}>{dragon?.name || ""}</Title>}
     >
