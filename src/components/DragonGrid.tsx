@@ -55,11 +55,13 @@ const DragonsGrid: FC<IDragonsGridProps> = ({
                     <Loader size="sm" />
                   ) : (
                     <Checkbox
+                      className="cursor-pointer"
                       size="sm"
                       checked={ownedIdsMap.has(dragon.id)}
-                      onChange={() =>
+                      onChange={(e) =>
                         onOwned(dragon.id, !ownedIdsMap.get(dragon.id))
                       }
+                      onClick={(e) => e.stopPropagation()}
                     />
                   )}
                 </Group>
