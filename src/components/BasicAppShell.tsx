@@ -24,7 +24,7 @@ const BasicAppShell: FC<PropsWithChildren<IBasicAppShellProps>> = ({
   children,
   session,
 }) => {
-  const [opened, { toggle }] = useDisclosure(false);
+  const [opened, { toggle, close }] = useDisclosure(false);
   const pathname = usePathname();
 
   return (
@@ -46,19 +46,24 @@ const BasicAppShell: FC<PropsWithChildren<IBasicAppShellProps>> = ({
       <AppShell.Navbar p="md">
         <AppShell.Section grow my="md">
           <NavLink
+            onClick={close}
             component={Link}
             label="Home"
             href="/"
             active={pathname === "/"}
+            prefetch
           />
           <NavLink
+            onClick={close}
             component={Link}
             label="Tierlist"
             href="/tierlist"
             active={pathname === "/tierlist"}
+            prefetch
           />
           {session && (
             <NavLink
+              onClick={close}
               component={Link}
               label="Dragon Dashboard"
               href="/dashboard"
@@ -69,14 +74,12 @@ const BasicAppShell: FC<PropsWithChildren<IBasicAppShellProps>> = ({
         <AppShell.Section>
           {session ? (
             <NavLink
-              component={UnstyledButton}
               label="Logout"
               leftSection={<IconLogout2 />}
               onClick={() => signOut()}
             />
           ) : (
             <NavLink
-              component={UnstyledButton}
               label="Login"
               leftSection={<IconLogin2 />}
               onClick={() => signIn()}

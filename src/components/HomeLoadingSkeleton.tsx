@@ -1,3 +1,4 @@
+"use client";
 // LoadingSkeletons.tsx
 
 import { SimpleGrid } from "@mantine/core";
