@@ -7,10 +7,12 @@ import {
   AllowedRatingKeys,
   RateByKeys,
   RatingKeysToText,
+  RatingKeyTooltips,
 } from "@/constants/Rating";
 import useDragonFilters from "@/hooks/useDragonFilters";
 import { RateDragons } from "@/services/dragons";
 import { IFilters } from "@/types/filters";
+import { Text } from "@mantine/core";
 import { useMemo, useState } from "react";
 
 export default function TierList({
@@ -67,6 +69,7 @@ export default function TierList({
         allowDeselect={false}
         onChange={(value) => setRatingKey(value as AllowedRatingKeys)}
       />
+      <Text>{RatingKeyTooltips[ratingKey]}</Text>
       <TierListLayout
         dragons={filteredDragons as RateDragons}
         ratingKey={ratingKey}

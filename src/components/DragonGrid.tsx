@@ -12,7 +12,6 @@ import { FC, useState } from "react";
 import DragonDetailCard from "./DragonDetailCard";
 import HomeLoadingSkeleton from "./HomeLoadingSkeleton";
 import { useDisclosure } from "@mantine/hooks";
-import DragonDrawerContent from "./DragonDrawerContent";
 import DragonPanel from "./DragonPanel";
 
 interface IDragonsGridProps {
