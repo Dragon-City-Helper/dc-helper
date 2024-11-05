@@ -7,9 +7,9 @@ import {
   ratings,
   ratingStyles,
 } from "@/constants/Rating";
-import { Drawer, SimpleGrid, Stack, Title } from "@mantine/core";
+import { SimpleGrid, Stack, Title } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
-import DragonDrawer from "./DragonDrawer";
+import DragonPanel from "./DragonPanel";
 
 interface ITierListLayoutProps {
   dragons: RateDragons;
@@ -18,7 +18,7 @@ interface ITierListLayoutProps {
 const TierListLayout: FC<ITierListLayoutProps> = ({ dragons, ratingKey }) => {
   const [opened, { open, close }] = useDisclosure(false);
 
-  const [selectedDragonId, setSelectedDragonId] = useState<string>();
+  const [selectedDragon, setSelectedDragon] = useState<RateDragons[number]>();
 
   const dragonsByRating = useMemo(() => {
     const sortedDragons = dragons.sort(
@@ -40,8 +40,8 @@ const TierListLayout: FC<ITierListLayoutProps> = ({ dragons, ratingKey }) => {
     );
   }, [dragons, ratingKey]);
 
-  const onDragonClick = (id: string) => {
-    setSelectedDragonId(id);
+  const onDragonClick = (dragon: RateDragons[number]) => {
+    setSelectedDragon(dragon);
     open();
   };
 
@@ -68,9 +68,7 @@ const TierListLayout: FC<ITierListLayoutProps> = ({ dragons, ratingKey }) => {
           </SimpleGrid>
         </div>
       ))}
-      <Drawer opened={opened} onClose={close} size="xl" position="right">
-        <DragonDrawer id={selectedDragonId || ""} />
-      </Drawer>
+      <DragonPanel dragon={selectedDragon} opened={opened} close={close} />
     </Stack>
   );
 };

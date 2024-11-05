@@ -9,7 +9,7 @@ import SkinImage from "./SkinImage";
 
 interface IDragonFaceCardProps {
   dragon: RateDragons[number];
-  onDragonClick?: (id: string) => void;
+  onDragonClick?: (dragon: RateDragons[number]) => void;
 }
 
 const DragonFaceCard: FC<IDragonFaceCardProps> = ({
@@ -23,7 +23,7 @@ const DragonFaceCard: FC<IDragonFaceCardProps> = ({
       radius="md"
       withBorder
       className="cursor-pointer"
-      onClick={() => onDragonClick && onDragonClick(dragon.id)}
+      onClick={() => onDragonClick && onDragonClick(dragon)}
     >
       <Card.Section>
         <Image

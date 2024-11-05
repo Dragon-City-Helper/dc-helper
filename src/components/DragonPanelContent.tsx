@@ -2,8 +2,9 @@ import DragonDetails from "@/components/DragonDetails";
 import { dragonWithSkillsAndRating, getDragonById } from "@/services/dragons";
 import { Center, Loader } from "@mantine/core";
 import { useEffect, useState } from "react";
+import DragonDetailsSkeleton from "./DragonDetailsSkeleton";
 
-export default function DragonDrawer({ id }: { id: string }) {
+export default function DragonPanelContent({ id }: { id: string }) {
   const [dragon, setDragon] = useState<dragonWithSkillsAndRating | null>(null);
   const [loading, setLoading] = useState(false);
 
@@ -24,7 +25,7 @@ export default function DragonDrawer({ id }: { id: string }) {
   if (loading) {
     return (
       <Center>
-        <Loader />
+        <DragonDetailsSkeleton />
       </Center>
     );
   }
@@ -32,7 +33,7 @@ export default function DragonDrawer({ id }: { id: string }) {
   return (
     <>
       {dragon ? (
-        <DragonDetails dragon={dragon} />
+        <DragonDetails dragon={dragon} hideTitle={true} />
       ) : (
         <Center>Dragon Details not found</Center>
       )}

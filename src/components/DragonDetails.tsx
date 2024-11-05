@@ -9,13 +9,18 @@ import { Stack, Title, Card, SimpleGrid, Center } from "@mantine/core";
 
 interface IDragonDetailsProps {
   dragon: dragonWithSkillsAndRating;
+  hideTitle?: boolean;
 }
-const DragonDetails: FC<IDragonDetailsProps> = ({ dragon }) => {
+const DragonDetails: FC<IDragonDetailsProps> = ({ dragon, hideTitle }) => {
   return (
     <Card my="md">
-      <Center>
-        <Title order={2}>{dragon.isSkin ? dragon.skinName : dragon.name}</Title>
-      </Center>
+      {!hideTitle && (
+        <Center>
+          <Title order={2}>
+            {dragon.isSkin ? dragon.skinName : dragon.name}
+          </Title>
+        </Center>
+      )}
       <SimpleGrid cols={{ base: 1, sm: 2 }} my="md">
         <DragonProfile dragon={dragon} />
         <Stack>

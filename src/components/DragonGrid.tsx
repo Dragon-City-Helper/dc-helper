@@ -1,9 +1,19 @@
 import { HomeDragons } from "@/services/dragons";
-import { Checkbox, Group, Loader, SimpleGrid, Text } from "@mantine/core";
+import {
+  Checkbox,
+  Drawer,
+  Group,
+  Loader,
+  SimpleGrid,
+  Text,
+} from "@mantine/core";
 
-import { FC } from "react";
+import { FC, useState } from "react";
 import DragonDetailCard from "./DragonDetailCard";
 import HomeLoadingSkeleton from "./HomeLoadingSkeleton";
+import { useDisclosure } from "@mantine/hooks";
+import DragonDrawerContent from "./DragonDrawerContent";
+import DragonPanel from "./DragonPanel";
 
 interface IDragonsGridProps {
   dragons: HomeDragons;
@@ -21,12 +31,24 @@ const DragonsGrid: FC<IDragonsGridProps> = ({
   loading,
   infiniteLoading,
 }) => {
+  const [opened, { open, close }] = useDisclosure(false);
+
+  const [selectedDragon, setSelectedDragon] = useState<HomeDragons[number]>();
+
+  const onDragonClick = (dragon: HomeDragons[number]) => {
+    setSelectedDragon(dragon);
+    open();
+  };
   return (
     <>
       <SimpleGrid cols={{ base: 2, sm: 3, lg: 4 }}>
         {dragons.map((dragon) => {
           return (
-            <DragonDetailCard key={dragon.id} dragon={dragon}>
+            <DragonDetailCard
+              key={dragon.id}
+              dragon={dragon}
+              onDragonClick={onDragonClick}
+            >
               {onOwned && (
                 <Group justify="space-between" my="md">
                   <Text>Owned ? </Text>
@@ -48,6 +70,7 @@ const DragonsGrid: FC<IDragonsGridProps> = ({
         })}
       </SimpleGrid>
       {infiniteLoading && <HomeLoadingSkeleton />}
+      <DragonPanel dragon={selectedDragon} opened={opened} close={close} />
     </>
   );
 };
