@@ -69,27 +69,6 @@ export default function Home({
       if (filters.vip === "normal") params.append("isVip", "false");
       if (filters.skins === "skins") params.append("isSkin", "true");
       if (filters.skins === "dragons") params.append("isSkin", "false");
-      if (filters.skill) {
-        switch (filters.skill) {
-          case "any":
-            params.append("hasSkills", "true");
-            break;
-          case "no":
-            params.append("hasSkills", "false");
-            break;
-          case "ps":
-            params.append("skillType", "3");
-            break;
-          case "as":
-            params.append("skillType", "1");
-            break;
-          case "aps":
-            params.append("skillType", "2");
-            break;
-          default:
-            break;
-        }
-      }
 
       const response = await fetch(`/api/dragons?${params.toString()}`);
       const {
@@ -128,7 +107,6 @@ export default function Home({
       filters.search,
       filters.vip,
       filters.skins,
-      filters.skill,
     ],
   );
 
@@ -176,7 +154,6 @@ export default function Home({
     "rarity",
     "skins",
     "vip",
-    "skill",
   ];
 
   if (status === "authenticated") {
