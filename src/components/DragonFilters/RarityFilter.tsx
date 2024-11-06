@@ -4,7 +4,11 @@ import Select from "../Select";
 import RarityImage from "../RarityImage";
 import { IDragonFilters } from "@/types/filters";
 
-const RarityFilter: FC<IDragonFilters> = ({ filters, onFilterChange }) => {
+const RarityFilter: FC<IDragonFilters> = ({
+  filters,
+  onFilterChange,
+  disabled,
+}) => {
   const options = rarities.map((rarity) => ({
     value: rarity,
     label: RarityNames[rarity],
@@ -17,6 +21,7 @@ const RarityFilter: FC<IDragonFilters> = ({ filters, onFilterChange }) => {
       data={options}
       value={filters.rarity}
       allowDeselect
+      disabled={disabled}
       icon={(option) => <RarityImage rarity={option.value} />}
     />
   );

@@ -9,6 +9,7 @@ import { IFilters } from "@/types/filters";
 import { toggleOwned } from "@/services/owned";
 import FilterMessage, { IFilterMessageProps } from "@/components/FilterMessage";
 import { useSession } from "next-auth/react";
+import { useDebouncedCallback } from "@mantine/hooks";
 
 const TAKE = 48; // Number of items to fetch each time
 export default function Home({
@@ -36,18 +37,17 @@ export default function Home({
 
   const onOwned = async (dragonId: string, checked: boolean) => {
     try {
-      let newOwned = owned;
-      if (checked) {
-        newOwned = [...owned, dragonId];
-      } else {
-        newOwned = owned.filter((id) => id != dragonId);
-      }
       setLoading(dragonId);
       await toggleOwned(dragonId);
-      setOwned(newOwned);
+      setOwned((owned) => {
+        if (checked) {
+          return [...owned, dragonId];
+        } else {
+          return owned.filter((id) => id != dragonId);
+        }
+      });
       setLoading(undefined);
     } catch (error) {
-      setOwned(owned);
       setLoading(undefined);
     }
   };
@@ -137,15 +137,18 @@ export default function Home({
     isClientOnlyFilter,
   } = useDragonFilters(dragons, ownedIdsMap);
 
-  const onFilterChange = (key: keyof IFilters, value: any) => {
-    setFilters({
-      ...filters,
-      [key]: value,
-    });
-    if (isClientOnlyFilter(key)) {
-      onClientFilterChange(key, value);
-    }
-  };
+  const onFilterChange = useDebouncedCallback(
+    (key: keyof IFilters, value: any) => {
+      setFilters({
+        ...filters,
+        [key]: value,
+      });
+      if (isClientOnlyFilter(key)) {
+        onClientFilterChange(key, value);
+      }
+    },
+    500,
+  );
 
   const allowedFilters: (keyof IFilters)[] = [
     "search",
@@ -166,6 +169,7 @@ export default function Home({
         filters={filters}
         dragons={dragons}
         allowedFilters={allowedFilters}
+        disabled={infiniteLoading || !!loading}
       />
       <FilterMessage metadata={metadata} />
       <DragonsGrid

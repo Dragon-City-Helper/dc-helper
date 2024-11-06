@@ -3,7 +3,11 @@ import Select from "../Select";
 import FamilyImage from "../FamilyImage";
 import { IDragonFilters } from "@/types/filters";
 
-const FamilyFilter: FC<IDragonFilters> = ({ filters, onFilterChange }) => {
+const FamilyFilter: FC<IDragonFilters> = ({
+  filters,
+  onFilterChange,
+  disabled,
+}) => {
   const [familyNames, setFamilyNames] = useState<string[]>([]);
 
   useEffect(() => {
@@ -24,6 +28,7 @@ const FamilyFilter: FC<IDragonFilters> = ({ filters, onFilterChange }) => {
       data={familyNames}
       value={filters.familyName}
       allowDeselect
+      disabled={disabled}
       icon={(option) => <FamilyImage familyName={option.value} />}
     />
   );

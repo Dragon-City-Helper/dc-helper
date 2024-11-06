@@ -34,8 +34,9 @@ export const fetchHomeDragons = cache(async () => {
       return (b.rating?.overall ?? 0) - (a.rating?.overall ?? 0);
     if (b.rating?.score !== a.rating?.score)
       return (b.rating?.score ?? 0) - (a.rating?.score ?? 0);
-    if (a.isSkin !== b.isSkin) return a.isSkin ? -1 : 1;
-    return rarityOrder.indexOf(a.rarity) - rarityOrder.indexOf(b.rarity);
+    if (a.rarity !== b.rarity)
+      return rarityOrder.indexOf(a.rarity) - rarityOrder.indexOf(b.rarity);
+    return a.isSkin ? -1 : 1;
   });
 });
 

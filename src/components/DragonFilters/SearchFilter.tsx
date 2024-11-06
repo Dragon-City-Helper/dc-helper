@@ -3,7 +3,11 @@ import { CloseButton, TextInput } from "@mantine/core";
 import { IDragonFilters } from "@/types/filters";
 import { useDebouncedValue } from "@mantine/hooks";
 
-const SearchFilter: FC<IDragonFilters> = ({ filters, onFilterChange }) => {
+const SearchFilter: FC<IDragonFilters> = ({
+  filters,
+  onFilterChange,
+  disabled,
+}) => {
   // Local state to manage the input value
   const [searchValue, setSearchValue] = useState(filters.search || "");
 
@@ -28,6 +32,7 @@ const SearchFilter: FC<IDragonFilters> = ({ filters, onFilterChange }) => {
       placeholder="Search by name"
       value={searchValue}
       rightSectionPointerEvents="all"
+      disabled={disabled}
       onChange={(e) => setSearchValue(e.target.value)}
       rightSection={
         <CloseButton

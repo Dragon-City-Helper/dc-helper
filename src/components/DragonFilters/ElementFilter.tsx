@@ -5,7 +5,11 @@ import ElementImage from "../ElementImage";
 import { elements, ElementsNames } from "@/constants/Dragon";
 import { IDragonFilters } from "@/types/filters";
 
-const ElementFilter: FC<IDragonFilters> = ({ filters, onFilterChange }) => {
+const ElementFilter: FC<IDragonFilters> = ({
+  filters,
+  onFilterChange,
+  disabled,
+}) => {
   const options = elements.map((element) => ({
     value: element,
     label: ElementsNames[element],
@@ -14,6 +18,7 @@ const ElementFilter: FC<IDragonFilters> = ({ filters, onFilterChange }) => {
     <Select
       onChange={(value) => onFilterChange("element", value)}
       label="Element"
+      disabled={disabled}
       placeholder="Select an element"
       data={options}
       value={filters.element}

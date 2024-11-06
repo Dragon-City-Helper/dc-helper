@@ -17,4 +17,5 @@ export interface IDragonFilters {
   filters: IFilters;
   allowedFilters?: (keyof IFilters)[];
   dragons: HomeDragons | RateDragons;
+  disabled?: boolean;
 }

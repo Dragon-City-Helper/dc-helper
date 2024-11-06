@@ -2,7 +2,11 @@ import { FC } from "react";
 import Select from "../Select";
 import { IDragonFilters } from "@/types/filters";
 
-const SkinsFilter: FC<IDragonFilters> = ({ filters, onFilterChange }) => {
+const SkinsFilter: FC<IDragonFilters> = ({
+  filters,
+  onFilterChange,
+  disabled,
+}) => {
   const options = [
     {
       value: "skins",
@@ -19,6 +23,7 @@ const SkinsFilter: FC<IDragonFilters> = ({ filters, onFilterChange }) => {
       label="Skins"
       placeholder="Skin or Skinless"
       data={options}
+      disabled={disabled}
       onChange={(value) => onFilterChange("skins", value)}
     />
   );

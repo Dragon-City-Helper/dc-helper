@@ -2,7 +2,11 @@ import { FC } from "react";
 import Select from "../Select";
 import { IDragonFilters } from "@/types/filters";
 
-const VipFilter: FC<IDragonFilters> = ({ filters, onFilterChange }) => {
+const VipFilter: FC<IDragonFilters> = ({
+  filters,
+  onFilterChange,
+  disabled,
+}) => {
   const options = [
     {
       value: "vip",
@@ -19,6 +23,7 @@ const VipFilter: FC<IDragonFilters> = ({ filters, onFilterChange }) => {
       label="Show"
       placeholder="VIP"
       data={options}
+      disabled={disabled}
       onChange={(value) => onFilterChange("vip", value)}
     />
   );

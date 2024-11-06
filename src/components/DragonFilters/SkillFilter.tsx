@@ -2,7 +2,11 @@ import { FC } from "react";
 import Select from "../Select";
 import { IDragonFilters } from "@/types/filters";
 
-const SkillFilter: FC<IDragonFilters> = ({ filters, onFilterChange }) => {
+const SkillFilter: FC<IDragonFilters> = ({
+  filters,
+  onFilterChange,
+  disabled,
+}) => {
   const options = [
     {
       value: "any",
@@ -31,6 +35,7 @@ const SkillFilter: FC<IDragonFilters> = ({ filters, onFilterChange }) => {
       label="Skill"
       placeholder="Select a skillType"
       data={options}
+      disabled={disabled}
       onChange={(value) => onFilterChange("skill", value)}
     />
   );

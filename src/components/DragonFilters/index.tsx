@@ -33,6 +33,7 @@ export const DragonFilters: FC<IDragonFilters> = ({
     "vip",
   ],
   dragons,
+  disabled = false,
 }) => {
   return (
     <Accordion variant="contained" my="lg">
@@ -48,6 +49,7 @@ export const DragonFilters: FC<IDragonFilters> = ({
                   onFilterChange={onFilterChange}
                   filters={filters}
                   dragons={dragons}
+                  disabled={disabled}
                 />
               ) : (
                 ""

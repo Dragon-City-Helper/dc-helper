@@ -1,4 +1,4 @@
-import { FC, ReactNode, useState } from "react";
+import { FC, ReactNode, useEffect, useState } from "react";
 import { Select as MantineSelect, SelectProps, Group } from "@mantine/core";
 import { IconCheck } from "@tabler/icons-react";
 
@@ -12,7 +12,11 @@ const iconProps = {
   size: 18,
 };
 
-const Select: FC<ISelectProps & SelectProps> = ({ icon, ...rest }) => {
+const Select: FC<ISelectProps & SelectProps> = ({
+  icon,
+  disabled,
+  ...rest
+}) => {
   const [opened, setOpened] = useState<boolean>(false);
 
   const renderOption: SelectProps["renderOption"] = ({ option, checked }) => {
@@ -26,6 +30,9 @@ const Select: FC<ISelectProps & SelectProps> = ({ icon, ...rest }) => {
       </Group>
     );
   };
+  useEffect(() => {
+    setOpened(false);
+  }, [disabled]);
   return (
     <div onClick={() => setOpened(true)} onBlurCapture={() => setOpened(false)}>
       <MantineSelect
