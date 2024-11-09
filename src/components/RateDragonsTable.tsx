@@ -10,12 +10,17 @@ import {
 import {
   Box,
   Button,
+  Center,
+  Group,
   Loader,
+  Paper,
   SimpleGrid,
+  Stack,
   TagsInput,
   Text,
 } from "@mantine/core";
 import DragonFaceCard from "./DragonFaceCard";
+import ElementImage from "./ElementImage";
 
 interface IRateDragonsTableProps {
   dragons: RateScreenDragons;
@@ -166,11 +171,25 @@ const RateDragonsTable: FC<IRateDragonsTableProps> = ({ dragons }) => {
           >
             <SimpleGrid cols={{ sm: 2, xs: 1 }}>
               <Box>
-                <DragonFaceCard dragon={dragon} />
-                <Text>
+                <Center>
+                  <Box w={200}>
+                    <Stack>
+                      <DragonFaceCard dragon={dragon} />
+                      <Group justify="space-evenly" gap={4} my="sm">
+                        {dragon.elements.map((element, index) => (
+                          <ElementImage
+                            element={element}
+                            key={`${dragon.id}-${element}-${index}`}
+                          />
+                        ))}
+                      </Group>
+                    </Stack>
+                  </Box>
+                </Center>
+                <Text w="100%" ta="center">
                   <b>{dragon.name}</b>
                 </Text>
-                <div className="flex flex-col gap-2">
+                <div className="flex flex-col gap-2 mt-4">
                   <b>Tags</b>
                   <TagsInput
                     value={localTags[dragon.id]}
