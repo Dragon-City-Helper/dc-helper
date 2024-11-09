@@ -12,7 +12,11 @@ const FamilyFilter: FC<IDragonFilters> = ({
 
   useEffect(() => {
     const fetchFamilyNames = async () => {
-      const response = await fetch("/api/family-names");
+      const response = await fetch("/api/family-names", {
+        next: {
+          revalidate: 86400, // 1 day
+        },
+      });
       const familyNames = await response.json();
       setFamilyNames(familyNames);
     };

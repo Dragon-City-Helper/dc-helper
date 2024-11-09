@@ -55,7 +55,11 @@ const RateDragonsTable: FC<IRateDragonsTableProps> = ({ dragons }) => {
   useEffect(() => {
     const fetchTags = async () => {
       try {
-        const response = await fetch("/api/tags");
+        const response = await fetch("/api/tags", {
+          next: {
+            revalidate: 86400, // 1 day
+          },
+        });
         const tags = await response.json();
         setAvailableTags(tags);
       } catch (error) {

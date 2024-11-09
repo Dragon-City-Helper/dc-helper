@@ -66,9 +66,12 @@ const fetchDragons = async ({
   breedable = null,
   animation = null,
 }) => {
-  const ditlepResponse = await axios.post(
-    "https://www.ditlep.com/Dragon/Search",
-    {
+  const ditlepResponse = await fetch("https://www.ditlep.com/Dragon/Search", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
       dragonName,
       rarities,
       orderBy,
@@ -78,24 +81,32 @@ const fetchDragons = async ({
       families,
       breedable,
       animation,
-    },
-    {
-      headers: {
-        "Content-Type": "application/json",
-      },
-    },
-  );
+    }),
+  });
 
-  const dcMetaResponse = await axios.get(
+  if (!ditlepResponse.ok) {
+    throw new Error("Failed to fetch dragon data from Ditlep");
+  }
+
+  const ditlepData = await ditlepResponse.json();
+
+  const dcMetaResponse = await fetch(
     "https://dragoncitymeta.com/calculate-tier/t-all-nonee",
     {
+      method: "GET",
       headers: {
         "Content-Type": "application/json",
       },
     },
   );
 
-  const dcMetaResponseByName = dcMetaResponse.data.reduce((acc, curr) => {
+  if (!dcMetaResponse.ok) {
+    throw new Error("Failed to fetch tier data from Dragon City Meta");
+  }
+
+  const dcMetaData = await dcMetaResponse.json();
+
+  const dcMetaResponseByName = dcMetaData.reduce((acc, curr) => {
     const name = (nameCorrections[curr.dragon.name] ?? curr.dragon.name).trim();
     return {
       ...acc,
@@ -103,7 +114,7 @@ const fetchDragons = async ({
     };
   }, {});
 
-  const dragons = ditlepResponse.data.items
+  const dragons = ditlepData.items
     .filter(
       ({ id }) =>
         ![1145, 1146, 1144, 1410, 1882, 1911, 1920, 1921, 1852, 1114].includes(

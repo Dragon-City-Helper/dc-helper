@@ -1,6 +1,6 @@
 import prisma from "@/lib/prisma";
 import { Rarity, Rating, Prisma, Elements } from "@prisma/client";
-import axios from "axios";
+import { revalidateTag } from "next/cache";
 import { cache } from "react";
 
 // Fetch functions
@@ -242,8 +242,21 @@ export async function putDragonData(
       : undefined,
   };
   try {
-    const response = await axios.put(`/api/dragons/${id}`, body);
-    return response.data;
+    const response = await fetch(`/api/dragons/${id}`, {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(body),
+    });
+
+    if (!response.ok) {
+      throw new Error(`Failed to update dragon with id ${id}`);
+    }
+
+    const data = await response.json();
+    revalidateTag(`dragons/${id}`);
+    return data;
   } catch (error) {
     console.error("Failed to update dragon data:", error);
     throw error;
@@ -253,10 +266,21 @@ export async function putDragonData(
 export async function getDragonById(id: string) {
   try {
     console.log(`Requesting dragon data for ID: ${id}`);
-    const response = await axios.get(`/api/dragons/${id}`);
+
+    const response = await fetch(`/api/dragons/${id}`, {
+      next: {
+        tags: [`dragons/${id}`],
+      },
+    });
+
+    if (!response.ok) {
+      throw new Error(`Failed to fetch dragon data for ID: ${id}`);
+    }
+
+    const data = await response.json();
 
     console.log(`Successfully fetched dragon data for ID: ${id}`);
-    return response.data;
+    return data;
   } catch (error: any) {
     if (error.response) {
       // Server responded with a status other than 200 range

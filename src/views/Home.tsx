@@ -70,7 +70,11 @@ export default function Home({
       if (filters.skins === "skins") params.append("isSkin", "true");
       if (filters.skins === "dragons") params.append("isSkin", "false");
 
-      const response = await fetch(`/api/dragons?${params.toString()}`);
+      const response = await fetch(`/api/dragons?${params.toString()}`, {
+        next: {
+          revalidate: 3600, // 1 hour
+        },
+      });
       const {
         dragons: newDragons,
         filterDragonsCount,

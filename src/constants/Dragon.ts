@@ -1,13 +1,13 @@
 import { Elements, Rarity } from "@prisma/client";
 
 export const RarityNames: Record<Rarity, string> = {
-  M: "Mythical",
   H: "Heroic",
+  M: "Mythical",
   L: "Legendary",
+  E: "Epic",
+  V: "Very Rare",
   R: "Rare",
   C: "Common",
-  V: "Very Rare",
-  E: "Epic",
 };
 export const rarities: Rarity[] = ["H", "M", "L", "E", "V", "R", "C"];
 export const RarityColors: Record<Rarity, string> = {
