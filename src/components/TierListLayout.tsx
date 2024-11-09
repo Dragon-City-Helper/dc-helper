@@ -48,15 +48,19 @@ const TierListLayout: FC<ITierListLayoutProps> = ({ dragons, ratingKey }) => {
   return (
     <Stack gap={0}>
       {ratings.map((rating) => (
-        <div
+        <Stack
           key={rating.label}
-          className="flex flex-col justify-between border-b-2 border-black min-h-44 p-1 md:p-6"
+          p="md"
           style={{
             ...ratingStyles[rating.label],
           }}
         >
           <Title order={3}>{rating.label}</Title>
-          <SimpleGrid cols={{ base: 4, lg: 6 }} my="sm">
+          <SimpleGrid
+            cols={{ base: 3, sm: 6, lg: 8 }}
+            my="sm"
+            spacing={{ base: "xs", lg: "sm" }}
+          >
             {dragonsByRating[rating.label]?.length > 0 &&
               dragonsByRating[rating.label].map((dragon) => (
                 <DragonFaceCard
@@ -66,7 +70,7 @@ const TierListLayout: FC<ITierListLayoutProps> = ({ dragons, ratingKey }) => {
                 />
               ))}
           </SimpleGrid>
-        </div>
+        </Stack>
       ))}
       <DragonPanel dragon={selectedDragon} opened={opened} close={close} />
     </Stack>

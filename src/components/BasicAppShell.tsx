@@ -14,7 +14,11 @@ import Logo from "./Logo";
 import { FC, PropsWithChildren } from "react";
 import { signIn, signOut, useSession } from "next-auth/react";
 import { usePathname } from "next/navigation";
-import { IconLogin2, IconLogout2 } from "@tabler/icons-react";
+import {
+  IconBrandDiscordFilled,
+  IconLogin2,
+  IconLogout2,
+} from "@tabler/icons-react";
 import { Session } from "next-auth";
 
 interface IBasicAppShellProps {
@@ -32,8 +36,8 @@ const BasicAppShell: FC<PropsWithChildren<IBasicAppShellProps>> = ({
       header={{ height: 60 }}
       navbar={{
         width: 200,
-        breakpoint: "sm",
-        collapsed: { desktop: !opened, mobile: !opened },
+        breakpoint: "md",
+        collapsed: { desktop: false, mobile: !opened },
       }}
       padding="md"
     >
@@ -72,6 +76,12 @@ const BasicAppShell: FC<PropsWithChildren<IBasicAppShellProps>> = ({
           )}
         </AppShell.Section>
         <AppShell.Section>
+          <NavLink
+            label="Discord"
+            leftSection={<IconBrandDiscordFilled color="#5865F2" />}
+            href="https://discord.gg/U8CyQYpnWT"
+            target="_blank"
+          />
           {session ? (
             <NavLink
               label="Logout"

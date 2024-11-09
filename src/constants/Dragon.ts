@@ -10,6 +10,15 @@ export const RarityNames: Record<Rarity, string> = {
   E: "Epic",
 };
 export const rarities: Rarity[] = ["H", "M", "L", "E", "V", "R", "C"];
+export const RarityColors: Record<Rarity, string> = {
+  H: "#FFEA1F",
+  M: "#F692F1",
+  L: "#8B2BC2",
+  E: "#F8AB04",
+  V: "#44D232",
+  R: "#E15425",
+  C: "#BCB9DF",
+};
 
 export const ElementsNames: Record<Elements, string> = {
   pu: "Pure",

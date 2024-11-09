@@ -52,6 +52,7 @@ const familyNameCorrections = {
   Redemption2: "Redemption",
   PlasmaR: "Plasma Colony",
   Plasma: "Plasma Colony",
+  Cyberability: "Cybervoid",
 };
 
 const fetchDragons = async ({
@@ -269,8 +270,8 @@ async function main() {
     }
     return [...acc, curr];
   }, []);
-
-  seedDragons(dragonsAndSkins);
+  const filteredDragons = dragonsAndSkins.filter((d) => d.rarity === "H");
+  seedDragons(filteredDragons);
 }
 
 main()

@@ -27,6 +27,19 @@ export default async function RootLayout({
           />
         )}
         <ColorSchemeScript defaultColorScheme="dark" />
+        {/*  eslint-disable-next-line @next/next/no-sync-scripts */}
+        <script
+          data-name="BMC-Widget"
+          data-cfasync="false"
+          src="https://cdnjs.buymeacoffee.com/1.0.0/widget.prod.min.js"
+          data-id="8oBtn6i2fC"
+          data-description="Support me on Buy me a coffee!"
+          data-message="Fuel the Dragons! Support Our Servers"
+          data-color="#5F7FFF"
+          data-position="Right"
+          data-x_margin="18"
+          data-y_margin="18"
+        />
       </head>
       <body>
         <Theme>
