@@ -1,7 +1,7 @@
 // app/dashboard/page.tsx
 
 import { auth } from "@/auth";
-import { fetchHomeDragons, HomeDragons } from "@/services/dragons";
+import { fetchHomeDragons, BaseDragons } from "@/services/dragons";
 import { fetchOwned } from "@/services/owned";
 import DragonDashboard from "@/views/DragonDashboard";
 import { redirect } from "next/navigation";
@@ -15,7 +15,7 @@ const DashboardPage = async () => {
   }
   // Fetch data from your APIs
   const ownedDragonIds: string[] = await fetchOwned();
-  const allDragons: HomeDragons = await fetchHomeDragons();
+  const allDragons: BaseDragons = await fetchHomeDragons();
 
   // Filter the dragons to get only the ones you own
   const ownedDragons = allDragons.filter((dragon) =>
@@ -122,7 +122,7 @@ const DashboardPage = async () => {
       .filter(
         (dragon) => dragon.rating && typeof dragon.rating.overall === "number",
       )
-      .reduce<{ [key: string]: HomeDragons[number] }>((acc, dragon) => {
+      .reduce<{ [key: string]: BaseDragons[number] }>((acc, dragon) => {
         const key = dragon.originalDragonName || dragon.name;
         if (!acc[key] || acc[key]?.rating!.overall < dragon?.rating!.overall) {
           acc[key] = dragon; // Keep only the highest-rated variant

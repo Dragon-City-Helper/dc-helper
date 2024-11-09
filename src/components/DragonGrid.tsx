@@ -1,4 +1,4 @@
-import { HomeDragons } from "@/services/dragons";
+import { BaseDragons } from "@/services/dragons";
 import { Checkbox, Group, Loader, SimpleGrid, Text } from "@mantine/core";
 
 import { FC, useState } from "react";
@@ -8,7 +8,7 @@ import { useDisclosure } from "@mantine/hooks";
 import DragonPanel from "./DragonPanel";
 
 interface IDragonsGridProps {
-  dragons: HomeDragons;
+  dragons: BaseDragons;
   onOwned?: (dragonId: string, checked: boolean) => void;
   ownedIdsMap: Map<string, boolean>;
   loading?: string;
@@ -25,9 +25,9 @@ const DragonsGrid: FC<IDragonsGridProps> = ({
 }) => {
   const [opened, { open, close }] = useDisclosure(false);
 
-  const [selectedDragon, setSelectedDragon] = useState<HomeDragons[number]>();
+  const [selectedDragon, setSelectedDragon] = useState<BaseDragons[number]>();
 
-  const onDragonClick = (dragon: HomeDragons[number]) => {
+  const onDragonClick = (dragon: BaseDragons[number]) => {
     setSelectedDragon(dragon);
     open();
   };

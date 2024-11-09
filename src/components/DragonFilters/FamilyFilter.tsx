@@ -15,6 +15,7 @@ const FamilyFilter: FC<IDragonFilters> = ({
       const response = await fetch("/api/family-names", {
         next: {
           revalidate: 86400, // 1 day
+          tags: ["familyNames"],
         },
       });
       const familyNames = await response.json();

@@ -1,4 +1,4 @@
-import { RateDragons } from "@/services/dragons";
+import { BaseDragons } from "@/services/dragons";
 import { FC, useMemo, useState } from "react";
 import DragonFaceCard from "./DragonFaceCard";
 import {
@@ -12,20 +12,20 @@ import { useDisclosure } from "@mantine/hooks";
 import DragonPanel from "./DragonPanel";
 
 interface ITierListLayoutProps {
-  dragons: RateDragons;
+  dragons: BaseDragons;
   ratingKey: AllowedRatingKeys;
 }
 const TierListLayout: FC<ITierListLayoutProps> = ({ dragons, ratingKey }) => {
   const [opened, { open, close }] = useDisclosure(false);
 
-  const [selectedDragon, setSelectedDragon] = useState<RateDragons[number]>();
+  const [selectedDragon, setSelectedDragon] = useState<BaseDragons[number]>();
 
   const dragonsByRating = useMemo(() => {
     const sortedDragons = dragons.sort(
       (a, b) => (b.rating?.score ?? 0) - (a.rating?.score ?? 0),
     );
     return sortedDragons.reduce(
-      (acc: { [key in string]: RateDragons }, dragon) => {
+      (acc: { [key in string]: BaseDragons }, dragon) => {
         const rating = dragon.rating?.[ratingKey] ?? 0;
         const ratingText = getRatingText(rating);
         // Initialize array for the rating if it doesn't exist
@@ -40,7 +40,7 @@ const TierListLayout: FC<ITierListLayoutProps> = ({ dragons, ratingKey }) => {
     );
   }, [dragons, ratingKey]);
 
-  const onDragonClick = (dragon: RateDragons[number]) => {
+  const onDragonClick = (dragon: BaseDragons[number]) => {
     setSelectedDragon(dragon);
     open();
   };

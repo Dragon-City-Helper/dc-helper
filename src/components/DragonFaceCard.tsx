@@ -1,4 +1,4 @@
-import { RateDragons } from "@/services/dragons";
+import { BaseDragons } from "@/services/dragons";
 import { Box, Card, Center, Group, Image } from "@mantine/core";
 import NextImage from "next/image";
 import { FC } from "react";
@@ -9,8 +9,8 @@ import SkinImage from "./SkinImage";
 import { RarityColors } from "@/constants/Dragon";
 
 interface IDragonFaceCardProps {
-  dragon: RateDragons[number];
-  onDragonClick?: (dragon: RateDragons[number]) => void;
+  dragon: BaseDragons[number];
+  onDragonClick?: (dragon: BaseDragons[number]) => void;
 }
 
 const DragonFaceCard: FC<IDragonFaceCardProps> = ({

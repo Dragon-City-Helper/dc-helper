@@ -1,7 +1,7 @@
 "use client";
 
 import DragonsGrid from "@/components/DragonGrid";
-import { HomeDragons } from "@/services/dragons";
+import { BaseDragons } from "@/services/dragons";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import DragonFilters from "@/components/DragonFilters";
 import useDragonFilters from "@/hooks/useDragonFilters";
@@ -16,7 +16,7 @@ export default function Home({
   initialDragons,
   owned,
 }: {
-  initialDragons: HomeDragons;
+  initialDragons: BaseDragons;
   owned: string[];
 }) {
   const [loading, setLoading] = useState<string>();
@@ -73,6 +73,7 @@ export default function Home({
       const response = await fetch(`/api/dragons?${params.toString()}`, {
         next: {
           revalidate: 3600, // 1 hour
+          tags: [`homeDragons/${params.toString()}`],
         },
       });
       const {
@@ -177,7 +178,7 @@ export default function Home({
       />
       <FilterMessage metadata={metadata} />
       <DragonsGrid
-        dragons={filteredDragons as HomeDragons}
+        dragons={filteredDragons}
         onOwned={status === "authenticated" ? onOwned : undefined}
         ownedIdsMap={ownedIdsMap}
         loading={loading}

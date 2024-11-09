@@ -1,5 +1,5 @@
 // app/rate/[rarity]/page.tsx
-import { RateScreenDragons, fetchRateScreenDragons } from "@/services/dragons";
+import { BaseDragons, fetchRateScreenDragons } from "@/services/dragons";
 import { Rarity, Role } from "@prisma/client";
 import { redirect, notFound } from "next/navigation";
 import { auth } from "@/auth";
@@ -62,7 +62,7 @@ export default async function Page({ params }: { params: { rarity: string } }) {
   }
 
   // Fetch the initial batch of dragons
-  let dragons: RateScreenDragons = [];
+  let dragons: BaseDragons = [];
   try {
     dragons = await fetchRateScreenDragons({ rarity, take: 30 }); // Fetch initial 50 dragons
   } catch (error) {

@@ -1,14 +1,14 @@
 import { ratings } from "@/constants/Rating";
-import { RateScreenDragons } from "@/services/dragons";
+import { BaseDragons } from "@/services/dragons";
 import { FC } from "react";
 import Select from "./Select";
 
 interface IRatingDropdown {
-  dragon: RateScreenDragons[number];
+  dragon: BaseDragons[number];
   ratingKey: string;
   value?: number | null;
   onRatingChange: (
-    dragon: RateScreenDragons[number],
+    dragon: BaseDragons[number],
     ratingKey: string,
     value: number,
   ) => void;

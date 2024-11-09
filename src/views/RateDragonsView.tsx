@@ -1,6 +1,6 @@
 "use client";
 
-import { RateScreenDragons } from "@/services/dragons";
+import { BaseDragons } from "@/services/dragons";
 import RateDragonsTable from "@/components/RateDragonsTable";
 import DragonFilters from "@/components/DragonFilters";
 import { Rarity } from "@prisma/client";
@@ -12,10 +12,10 @@ export default function RateDragonsView({
   initialDragons,
   rarity,
 }: {
-  initialDragons: RateScreenDragons;
+  initialDragons: BaseDragons;
   rarity: Rarity;
 }) {
-  const [dragons, setDragons] = useState<RateScreenDragons>(initialDragons);
+  const [dragons, setDragons] = useState<BaseDragons>(initialDragons);
   const [loading, setLoading] = useState(false);
   const [hasMore, setHasMore] = useState(initialDragons.length === 30);
   const [filters, setFilters] = useState<IFilters>({});
@@ -39,7 +39,7 @@ export default function RateDragonsView({
     if (filters.skins) params.append("skins", filters.skins);
 
     const response = await fetch(`/api/rate-dragons?${params.toString()}`);
-    const newDragons: RateScreenDragons = await response.json();
+    const newDragons: BaseDragons = await response.json();
 
     setDragons((prevDragons) => [...prevDragons, ...newDragons]);
     setHasMore(newDragons.length === TAKE);
@@ -86,7 +86,7 @@ export default function RateDragonsView({
       if (filters.skins) params.append("skins", filters.skins);
 
       const response = await fetch(`/api/rate-dragons?${params.toString()}`);
-      const newDragons: RateScreenDragons = await response.json();
+      const newDragons: BaseDragons = await response.json();
 
       setDragons(newDragons);
       setHasMore(newDragons.length === TAKE);

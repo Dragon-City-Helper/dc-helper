@@ -1,65 +1,52 @@
 import prisma from "@/lib/prisma";
 import { Rarity, Rating, Prisma, Elements } from "@prisma/client";
-import { revalidateTag } from "next/cache";
+import { revalidateTag, unstable_cache } from "next/cache";
 import { cache } from "react";
 
 // Fetch functions
 
-// Home Dragons - Sorted by rating, skin status, and rarity
-export const fetchHomeDragons = cache(async () => {
-  const dragons = await prisma.dragons.findMany({
-    select: {
-      id: true,
-      name: true,
-      familyName: true,
-      elements: true,
-      rarity: true,
-      isSkin: true,
-      hasAllSkins: true,
-      isVip: true,
-      hasSkills: true,
-      skillType: true,
-      maxSpeed: true,
-      baseSpeed: true,
-      rating: true,
-      image: true,
-      originalDragonName: true,
-      tags: true,
-    },
-  });
+// Home Dragons - Sorted by rating, rarity and skin status
+export const fetchHomeDragons = cache(
+  unstable_cache(
+    async () => {
+      const dragons = await prisma.dragons.findMany({
+        select: {
+          id: true,
+          name: true,
+          familyName: true,
+          elements: true,
+          rarity: true,
+          isSkin: true,
+          hasAllSkins: true,
+          isVip: true,
+          hasSkills: true,
+          skillType: true,
+          rating: true,
+          image: true,
+          thumbnail: true,
+          originalDragonName: true,
+          tags: true,
+        },
+      });
 
-  const rarityOrder = ["H", "M", "L", "E", "V", "R", "C"];
-  return dragons.sort((a, b) => {
-    if (b.rating?.overall !== a.rating?.overall)
-      return (b.rating?.overall ?? 0) - (a.rating?.overall ?? 0);
-    if (b.rating?.score !== a.rating?.score)
-      return (b.rating?.score ?? 0) - (a.rating?.score ?? 0);
-    if (a.rarity !== b.rarity)
-      return rarityOrder.indexOf(a.rarity) - rarityOrder.indexOf(b.rarity);
-    return a.isSkin ? -1 : 1;
-  });
-});
-
-// Filtered dragons by rarity
-export const fetchRateDragons = async (options?: { rarity: Rarity }) => {
-  return prisma.dragons.findMany({
-    where: { rarity: options?.rarity },
-    select: {
-      id: true,
-      name: true,
-      familyName: true,
-      elements: true,
-      rarity: true,
-      isSkin: true,
-      hasAllSkins: true,
-      isVip: true,
-      hasSkills: true,
-      skillType: true,
-      rating: true,
-      thumbnail: true,
+      const rarityOrder = ["H", "M", "L", "E", "V", "R", "C"];
+      return dragons.sort((a, b) => {
+        if (b.rating?.overall !== a.rating?.overall)
+          return (b.rating?.overall ?? 0) - (a.rating?.overall ?? 0);
+        if (b.rating?.score !== a.rating?.score)
+          return (b.rating?.score ?? 0) - (a.rating?.score ?? 0);
+        if (a.rarity !== b.rarity)
+          return rarityOrder.indexOf(a.rarity) - rarityOrder.indexOf(b.rarity);
+        return a.isSkin ? -1 : 1;
+      });
     },
-  });
-};
+    ["homeDragons"],
+    {
+      revalidate: 21600, // 6 hours
+      tags: ["homeDragons"],
+    },
+  ),
+);
 
 // Paginated & Filtered dragons with optional search filters
 export const fetchRateScreenDragons = cache(
@@ -107,7 +94,9 @@ export const fetchRateScreenDragons = cache(
         hasSkills: true,
         skillType: true,
         rating: true,
+        image: true,
         thumbnail: true,
+        originalDragonName: true,
         tags: true,
       },
     });
@@ -133,7 +122,10 @@ export const fetchRatedDragons = cache(async (options?: { rarity: Rarity }) => {
       hasSkills: true,
       skillType: true,
       rating: true,
+      image: true,
       thumbnail: true,
+      originalDragonName: true,
+      tags: true,
     },
   });
 });
@@ -256,6 +248,7 @@ export async function putDragonData(
 
     const data = await response.json();
     revalidateTag(`dragons/${id}`);
+    revalidateTag(`tags`);
     return data;
   } catch (error) {
     console.error("Failed to update dragon data:", error);
@@ -304,9 +297,5 @@ export async function getDragonById(id: string) {
 
 // Types
 type ThenArg<T> = T extends PromiseLike<infer U> ? U : T;
-export type HomeDragons = ThenArg<ReturnType<typeof fetchHomeDragons>>;
-export type RateDragons = ThenArg<ReturnType<typeof fetchRateDragons>>;
-export type RateScreenDragons = ThenArg<
-  ReturnType<typeof fetchRateScreenDragons>
->;
+export type BaseDragons = ThenArg<ReturnType<typeof fetchHomeDragons>>;
 export type dragonWithSkillsAndRating = ThenArg<ReturnType<typeof fetchDragon>>;

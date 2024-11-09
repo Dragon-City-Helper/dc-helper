@@ -1,4 +1,4 @@
-import { HomeDragons } from "@/services/dragons";
+import { BaseDragons } from "@/services/dragons";
 import { Badge, Card, Center, Group, Image, Stack, Text } from "@mantine/core";
 import NextImage from "next/image";
 import { FC, PropsWithChildren } from "react";
@@ -9,8 +9,8 @@ import SkinImage from "./SkinImage";
 import RatingBadge from "./RatingBadge";
 
 interface IDragonDetailCardProps {
-  dragon: HomeDragons[number];
-  onDragonClick?: (dragon: HomeDragons[number]) => void;
+  dragon: BaseDragons[number];
+  onDragonClick?: (dragon: BaseDragons[number]) => void;
 }
 const DragonDetailCard: FC<PropsWithChildren<IDragonDetailCardProps>> = ({
   dragon,

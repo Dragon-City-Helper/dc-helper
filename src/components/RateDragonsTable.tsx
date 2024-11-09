@@ -1,7 +1,7 @@
 import { Rarity, Rating } from "@prisma/client";
 import { FC, useEffect, useState } from "react";
 import RatingDropdown from "./RatingDropdown";
-import { RateScreenDragons, putDragonData } from "@/services/dragons";
+import { BaseDragons, putDragonData } from "@/services/dragons";
 import {
   rarityBasedOffset,
   RatingKeys,
@@ -13,7 +13,6 @@ import {
   Center,
   Group,
   Loader,
-  Paper,
   SimpleGrid,
   Stack,
   TagsInput,
@@ -23,7 +22,7 @@ import DragonFaceCard from "./DragonFaceCard";
 import ElementImage from "./ElementImage";
 
 interface IRateDragonsTableProps {
-  dragons: RateScreenDragons;
+  dragons: BaseDragons;
 }
 
 const RateDragonsTable: FC<IRateDragonsTableProps> = ({ dragons }) => {
@@ -58,6 +57,7 @@ const RateDragonsTable: FC<IRateDragonsTableProps> = ({ dragons }) => {
         const response = await fetch("/api/tags", {
           next: {
             revalidate: 86400, // 1 day
+            tags: ["tags"],
           },
         });
         const tags = await response.json();
@@ -107,7 +107,7 @@ const RateDragonsTable: FC<IRateDragonsTableProps> = ({ dragons }) => {
   };
 
   const onRatingChange = (
-    dragon: RateScreenDragons[number],
+    dragon: BaseDragons[number],
     ratingKey: string,
     value: number,
   ) => {

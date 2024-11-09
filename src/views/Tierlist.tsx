@@ -10,7 +10,7 @@ import {
   RatingKeyTooltips,
 } from "@/constants/Rating";
 import useDragonFilters from "@/hooks/useDragonFilters";
-import { RateDragons } from "@/services/dragons";
+import { BaseDragons } from "@/services/dragons";
 import { IFilters } from "@/types/filters";
 import { Text } from "@mantine/core";
 import { useMemo, useState } from "react";
@@ -19,7 +19,7 @@ export default function TierList({
   dragons,
   owned,
 }: {
-  dragons: RateDragons;
+  dragons: BaseDragons;
   owned: string[];
 }) {
   const [ratingKey, setRatingKey] = useState<AllowedRatingKeys>("overall"); // default filter is overall
@@ -70,10 +70,7 @@ export default function TierList({
         onChange={(value) => setRatingKey(value as AllowedRatingKeys)}
       />
       <Text>{RatingKeyTooltips[ratingKey]}</Text>
-      <TierListLayout
-        dragons={filteredDragons as RateDragons}
-        ratingKey={ratingKey}
-      />
+      <TierListLayout dragons={filteredDragons} ratingKey={ratingKey} />
     </div>
   );
 }

@@ -5,7 +5,7 @@ import ElementImage from "@/components/ElementImage";
 import FamilyImage from "@/components/FamilyImage";
 import RarityImage from "@/components/RarityImage";
 import { ElementsNames, RarityNames } from "@/constants/Dragon";
-import { HomeDragons } from "@/services/dragons";
+import { BaseDragons } from "@/services/dragons";
 import {
   Card,
   Table,
@@ -29,7 +29,7 @@ type Stats = {
   skinCount: number;
   familyCounts: Record<string, { dragons: number; skins: number }>;
   tagCounts: Record<string, { dragons: number; skins: number }>;
-  topRatedDragons: HomeDragons;
+  topRatedDragons: BaseDragons;
 };
 
 const DragonDashboard = ({ stats }: { stats: Stats }) => {

@@ -1,4 +1,4 @@
-import { HomeDragons, RateDragons } from "@/services/dragons";
+import { BaseDragons } from "@/services/dragons";
 import { Elements, Rarity } from "@prisma/client";
 
 export interface IFilters {
@@ -16,6 +16,6 @@ export interface IDragonFilters {
   onFilterChange: (key: keyof IFilters, e: any) => void;
   filters: IFilters;
   allowedFilters?: (keyof IFilters)[];
-  dragons: HomeDragons | RateDragons;
+  dragons: BaseDragons;
   disabled?: boolean;
 }

@@ -1,4 +1,4 @@
-import { HomeDragons, RateDragons } from "@/services/dragons";
+import { BaseDragons } from "@/services/dragons";
 import { Drawer, Group, NavLink, Text, Title } from "@mantine/core";
 import DragonPanelContent from "./DragonPanelContent";
 import Link from "next/link";
@@ -9,7 +9,7 @@ export default function DragonPanel({
   opened,
   close,
 }: {
-  dragon?: RateDragons[number] | HomeDragons[number];
+  dragon?: BaseDragons[number];
   opened: boolean;
   close: any;
 }) {
