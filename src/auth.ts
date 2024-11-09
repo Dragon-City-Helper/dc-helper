@@ -2,9 +2,9 @@ import NextAuth from "next-auth";
 import Discord from "next-auth/providers/discord";
 import { PrismaAdapter } from "@auth/prisma-adapter";
 import { prisma } from "@/lib/prisma";
-
 import { type DefaultSession } from "next-auth";
 import { Role } from "@prisma/client";
+import { addDiscordRoleToUser } from "./utils/discord";
 
 declare module "next-auth" {
   interface Session extends DefaultSession {
@@ -29,6 +29,18 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
           name: session.user.name,
         },
       };
+    },
+  },
+  events: {
+    signIn({ account, isNewUser }) {
+      if (
+        account?.provider === "discord" &&
+        account?.providerAccountId &&
+        isNewUser
+      ) {
+        addDiscordRoleToUser(account.providerAccountId);
+        // TODO: future expand to beta testers
+      }
     },
   },
 });
