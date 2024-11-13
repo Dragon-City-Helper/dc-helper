@@ -1,10 +1,10 @@
 "use client";
-import { dragonWithSkillsAndRating } from "@/services/dragons";
+import { fullDragon } from "@/services/dragons";
 import { List, Title, Text, Box } from "@mantine/core";
 import { FC } from "react";
 
 interface IDragonSkinChangesProps {
-  dragon: dragonWithSkillsAndRating;
+  dragon: fullDragon;
 }
 
 const DragonSkinChanges: FC<IDragonSkinChangesProps> = ({ dragon }) => {

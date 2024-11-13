@@ -5,7 +5,7 @@ import {
   RatingKeyTooltips,
   skillRatingKeys,
 } from "@/constants/Rating";
-import { dragonWithSkillsAndRating } from "@/services/dragons";
+import { fullDragon } from "@/services/dragons";
 import { FC } from "react";
 import RatingBadge from "./RatingBadge";
 import {
@@ -20,7 +20,7 @@ import {
 import { IconHelp } from "@tabler/icons-react";
 
 interface IDragonRatingsProps {
-  dragon: dragonWithSkillsAndRating;
+  dragon: fullDragon;
 }
 
 const DragonRatings: FC<IDragonRatingsProps> = ({ dragon }) => {

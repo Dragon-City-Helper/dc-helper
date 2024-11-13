@@ -1,5 +1,5 @@
 "use client";
-import { dragonWithSkillsAndRating } from "@/services/dragons";
+import { fullDragon } from "@/services/dragons";
 import { FC } from "react";
 import DragonProfile from "./DragonProfile";
 import DragonRatings from "./DragonRatings";
@@ -8,7 +8,7 @@ import DragonSkinChanges from "./DragonSkinChanges";
 import { Stack, Title, Card, SimpleGrid, Center } from "@mantine/core";
 
 interface IDragonDetailsProps {
-  dragon: dragonWithSkillsAndRating;
+  dragon: fullDragon;
   hideTitle?: boolean;
 }
 const DragonDetails: FC<IDragonDetailsProps> = ({ dragon, hideTitle }) => {

@@ -1,4 +1,5 @@
 import prisma from "@/lib/prisma";
+import { IPerkSuggestion } from "@/types/perkSuggestions";
 import { Rarity, Rating, Prisma, Elements } from "@prisma/client";
 import { revalidateTag, unstable_cache } from "next/cache";
 import { cache } from "react";
@@ -26,6 +27,7 @@ export const fetchHomeDragons = cache(
           thumbnail: true,
           originalDragonName: true,
           tags: true,
+          perkSuggestions: true,
         },
       });
 
@@ -98,6 +100,7 @@ export const fetchRateScreenDragons = cache(
         thumbnail: true,
         originalDragonName: true,
         tags: true,
+        perkSuggestions: true,
       },
     });
   },
@@ -126,6 +129,7 @@ export const fetchRatedDragons = cache(async (options?: { rarity: Rarity }) => {
       thumbnail: true,
       originalDragonName: true,
       tags: true,
+      perkSuggestions: true,
     },
   });
 });
@@ -180,6 +184,12 @@ export const fetchDragon = cache(async (id: string) => {
       skills: {
         select: { id: true, name: true, skillType: true, description: true },
       },
+      perkSuggestions: {
+        select: {
+          perk1: true,
+          perk2: true,
+        },
+      },
     },
   });
 });
@@ -216,13 +226,27 @@ export async function updateDragon(
 
 export async function putDragonData(
   id: string,
-  data: { tags: string[]; rating: Rating },
+  data: {
+    tags: string[];
+    rating: Rating;
+    perkSuggestions: IPerkSuggestion[];
+  },
 ) {
   const { dragonsId, ...createRating } = data.rating ?? {};
   const { id: ID, dragonsId: dID, ...updateRating } = data.rating ?? {};
 
   const body: Prisma.dragonsUpdateInput = {
     ...data,
+    perkSuggestions: data.perkSuggestions
+      ? {
+          set: data.perkSuggestions.map((perkSuggestion) => ({
+            perk1_perk2: {
+              perk1: perkSuggestion.perk1,
+              perk2: perkSuggestion.perk2,
+            },
+          })),
+        }
+      : undefined,
     rating: data.rating
       ? {
           upsert: {
@@ -298,4 +322,4 @@ export async function getDragonById(id: string) {
 // Types
 type ThenArg<T> = T extends PromiseLike<infer U> ? U : T;
 export type BaseDragons = ThenArg<ReturnType<typeof fetchHomeDragons>>;
-export type dragonWithSkillsAndRating = ThenArg<ReturnType<typeof fetchDragon>>;
+export type fullDragon = ThenArg<ReturnType<typeof fetchDragon>>;

@@ -1,11 +1,11 @@
 "use client";
-import { dragonWithSkillsAndRating } from "@/services/dragons";
+import { fullDragon } from "@/services/dragons";
 import { Grid, Stack, Text, Title, Card, Image } from "@mantine/core";
 import NextImage from "next/image";
 import { FC } from "react";
 
 interface IDragonSkillsProps {
-  dragon: dragonWithSkillsAndRating;
+  dragon: fullDragon;
 }
 
 const DragonSkills: FC<IDragonSkillsProps> = ({ dragon }) => {

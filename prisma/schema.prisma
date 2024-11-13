@@ -8,8 +8,8 @@ generator client {
 }
 
 model dragons {
-  id                 String     @id @default(auto()) @map("_id") @db.ObjectId
-  name               String     @unique
+  id                 String           @id @default(auto()) @map("_id") @db.ObjectId
+  name               String           @unique
   rarity             Rarity
   familyName         String?
   breedable          Boolean
@@ -20,8 +20,8 @@ model dragons {
   maxSpeed           Int
   maxDamage          Int
   category           Int
-  skills             Skill[]    @relation(fields: [skillsId], references: [id])
-  skillsId           String[]   @db.ObjectId
+  skills             Skill[]          @relation(fields: [skillsId], references: [id])
+  skillsId           String[]         @db.ObjectId
   rating             Rating?
   isVip              Boolean
   hasSkills          Boolean
@@ -32,7 +32,30 @@ model dragons {
   isSkin             Boolean
   skinDescription    String?
   hasAllSkins        Boolean
+  perkSuggestions    perkSuggestion[] @relation(fields: [perkSuggestionId], references: [id])
+  perkSuggestionId   String[]         @db.ObjectId
   tags               String[]
+}
+
+model perkSuggestion {
+  id        String    @id @default(auto()) @map("_id") @db.ObjectId
+  perk1     Perk?
+  perk2     Perk?
+  dragons   dragons[] @relation(fields: [dragonsId], references: [id])
+  dragonsId String[]  @db.ObjectId
+
+  @@unique([perk1, perk2])
+}
+
+enum Perk {
+  H
+  D
+  P
+  R
+  AH
+  AD
+  B
+  AB
 }
 
 model Rating {

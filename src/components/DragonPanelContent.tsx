@@ -1,11 +1,11 @@
 import DragonDetails from "@/components/DragonDetails";
-import { dragonWithSkillsAndRating, getDragonById } from "@/services/dragons";
+import { fullDragon, getDragonById } from "@/services/dragons";
 import { Center, Loader } from "@mantine/core";
 import { useEffect, useState } from "react";
 import DragonDetailsSkeleton from "./DragonDetailsSkeleton";
 
 export default function DragonPanelContent({ id }: { id: string }) {
-  const [dragon, setDragon] = useState<dragonWithSkillsAndRating | null>(null);
+  const [dragon, setDragon] = useState<fullDragon | null>(null);
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {

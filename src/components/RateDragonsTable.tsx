@@ -1,4 +1,4 @@
-import { Rarity, Rating } from "@prisma/client";
+import { Perk, Rarity, Rating } from "@prisma/client";
 import { FC, useEffect, useState } from "react";
 import RatingDropdown from "./RatingDropdown";
 import { BaseDragons, putDragonData } from "@/services/dragons";
@@ -20,6 +20,8 @@ import {
 } from "@mantine/core";
 import DragonFaceCard from "./DragonFaceCard";
 import ElementImage from "./ElementImage";
+import PerkSelector from "./PerkSelector";
+import { IPerkSuggestion } from "@/types/perkSuggestions";
 
 interface IRateDragonsTableProps {
   dragons: BaseDragons;
@@ -31,13 +33,15 @@ const RateDragonsTable: FC<IRateDragonsTableProps> = ({ dragons }) => {
   const [dirty, setDirty] = useState<{ [key: string]: boolean }>({});
   const [loading, setLoading] = useState<{ [key: string]: boolean }>({});
   const [availableTags, setAvailableTags] = useState<string[]>([]);
+  const [localPerks, setLocalPerks] = useState<
+    Record<string, IPerkSuggestion[]>
+  >({});
 
   useEffect(() => {
     const initRatings = dragons.reduce((acc, curr) => {
       return {
         ...acc,
         [curr.id]: curr.rating,
-        dragonsId: null,
       };
     }, {});
     setLocalRatings(initRatings);
@@ -49,6 +53,17 @@ const RateDragonsTable: FC<IRateDragonsTableProps> = ({ dragons }) => {
       };
     }, {});
     setLocalTags(initTags);
+    const initPerkSuggestions = dragons.reduce((acc, curr) => {
+      return {
+        ...acc,
+        [curr.id]:
+          curr.perkSuggestions.map((perkSug) => ({
+            perk1: perkSug.perk1,
+            perk2: perkSug.perk2,
+          })) || {},
+      };
+    }, {});
+    setLocalPerks(initPerkSuggestions);
   }, [dragons]);
 
   useEffect(() => {
@@ -78,6 +93,7 @@ const RateDragonsTable: FC<IRateDragonsTableProps> = ({ dragons }) => {
     const updatedData = {
       tags: localTags[id],
       rating: localRatings[id],
+      perkSuggestions: localPerks[id], // Include perkSuggestions here
     };
 
     try {
@@ -165,8 +181,22 @@ const RateDragonsTable: FC<IRateDragonsTableProps> = ({ dragons }) => {
     );
   };
 
+  const onPerksChange = (
+    dragonId: string,
+    perkSuggestions: IPerkSuggestion[],
+  ) => {
+    setDirty({
+      ...dirty,
+      [dragonId]: true,
+    });
+    setLocalPerks((prevPerks) => ({
+      ...prevPerks,
+      [dragonId]: perkSuggestions,
+    }));
+  };
+
   return (
-    <div className="overflow-x-auto">
+    <Box>
       {dragons.map((dragon) => {
         return (
           <div
@@ -203,6 +233,15 @@ const RateDragonsTable: FC<IRateDragonsTableProps> = ({ dragons }) => {
                     data={availableTags}
                   />
                 </div>
+                <PerkSelector
+                  onPerksChange={(perkSuggestions) =>
+                    onPerksChange(
+                      dragon.id,
+                      perkSuggestions as IPerkSuggestion[],
+                    )
+                  }
+                  combinations={localPerks[dragon.id] ?? []}
+                />
               </Box>
               <SimpleGrid cols={{ lg: 3, xs: 2 }}>
                 {RatingKeys.map((key) => (
@@ -236,7 +275,7 @@ const RateDragonsTable: FC<IRateDragonsTableProps> = ({ dragons }) => {
           </div>
         );
       })}
-    </div>
+    </Box>
   );
 };
 

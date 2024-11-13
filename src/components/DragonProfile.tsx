@@ -1,4 +1,4 @@
-import { dragonWithSkillsAndRating } from "@/services/dragons";
+import { fullDragon } from "@/services/dragons";
 import Image from "next/image";
 import { FC } from "react";
 import { Badge, Center, Group, Box } from "@mantine/core";
@@ -6,9 +6,10 @@ import RarityImage from "./RarityImage";
 import ElementImage from "./ElementImage";
 import SkinImage from "./SkinImage";
 import FamilyImage from "./FamilyImage";
+import DragonPerks from "./DragonPerks";
 
 interface IDragonProfileProps {
-  dragon: dragonWithSkillsAndRating;
+  dragon: fullDragon;
 }
 const DragonProfile: FC<IDragonProfileProps> = ({ dragon }) => {
   return (
@@ -44,6 +45,7 @@ const DragonProfile: FC<IDragonProfileProps> = ({ dragon }) => {
           </Badge>
         ))}
       </Group>
+      <DragonPerks dragon={dragon} />
     </Box>
   );
 };

@@ -23,7 +23,7 @@ const RatingDropdown: FC<IRatingDropdown> = ({
   return (
     <Select
       className="select select-bordered w-full max-w-xs"
-      value={value?.toString() ?? "0"}
+      value={value?.toString()}
       onChange={(value) =>
         onRatingChange(dragon, ratingKey, parseInt(value ?? "0", 10))
       }

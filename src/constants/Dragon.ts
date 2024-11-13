@@ -1,4 +1,4 @@
-import { Elements, Rarity } from "@prisma/client";
+import { Elements, Perk, Rarity } from "@prisma/client";
 
 export const RarityNames: Record<Rarity, string> = {
   H: "Heroic",
@@ -67,3 +67,14 @@ export const elements: Elements[] = [
   "so",
   "dr",
 ];
+
+export const PerkNames: Record<Perk, string> = {
+  H: "Health",
+  R: "Reaper",
+  D: "Damage",
+  P: "Phoenix",
+  AH: "Advanced Health",
+  AD: "Advanced Damage",
+  B: "Breeding",
+  AB: "Advanced Breeding",
+};
