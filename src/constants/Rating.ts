@@ -102,31 +102,16 @@ export const RatingKeyTooltips: {
   [key in AllowedRatingKeys]: string;
 } = {
   overall:
-    "A comprehensive rating that aggregates all other factors, including skill cooldown, value, versatility, potency, and elemental strength, to provide a holistic assessment of the element’s or skill’s overall performance in various scenarios.",
-
-  cooldown:
-    "Specifies the number of turns required before the skill can be used again.",
-
-  value:
-    "Represents the overall benefit of the skill, factoring in its pros and cons to deliver consistent utility.",
-
-  versatility:
-    "Assesses how adaptable the skill is across a wide range of scenarios and combat conditions.",
-
-  potency:
-    "Indicates the average damage output the skill can generate in typical use cases.",
-
+    "An all-encompassing score that reflects the combined effectiveness of all ratings.",
+  cooldown: "Turns required before reuse, ranked by skill power balance.",
+  value: "Overall skill utility based on benefits vs. drawbacks.",
+  versatility: "Effectiveness across various situations.",
+  potency: "Average damage potential of the skill.",
   primary:
-    "Reflects the element's inherent strength, dictating its defensive capabilities and resistances. Note: A different system is used for guards, twds, and spikes.",
-
-  coverage:
-    "Reflects the offensive potential of the element, including any penalties applied when a primary element is critically hit by an opposing element, which then triggers a critical hit on the user's element.",
-
-  usability:
-    "Measures the flexibility of the element in terms of how many of the dragon’s four master arenas it can be effectively deployed in.",
-
-  viability:
-    "Evaluates how well the element performs in competitive arenas, particularly against commonly used meta picks.",
+    "Element strength for defense; uses a different system for guards, twds, and spikes.",
+  coverage: "Offensive strength, adjusted for critical-hit vulnerabilities.",
+  usability: "Applicable across multiple master arenas.",
+  viability: "Performance against meta picks in arenas.",
   extra: "",
   rarity: "",
 };

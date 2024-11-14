@@ -71,6 +71,7 @@ const BasicAppShell: FC<PropsWithChildren<IBasicAppShellProps>> = ({
               component={Link}
               label="Dragon Dashboard"
               href="/dashboard"
+              prefetch={false}
               active={pathname === "/dashboard"}
             />
           )}

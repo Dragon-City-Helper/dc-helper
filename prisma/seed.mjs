@@ -1,4 +1,5 @@
 import { PrismaClient } from "@prisma/client";
+import CryptoJS from "crypto-js";
 
 const prisma = new PrismaClient();
 
@@ -57,6 +58,7 @@ const familyNameCorrections = {
 const fetchDragons = async ({
   dragonName = "",
   rarities = [],
+  elements = [],
   orderBy = 1,
   page = 0,
   pageSize = 5000,
@@ -66,13 +68,14 @@ const fetchDragons = async ({
   animation = null,
 }) => {
   const ditlepResponse = await fetch("https://www.ditlep.com/Dragon/Search", {
-    method: "POST",
     headers: {
-      "Content-Type": "application/json",
+      "content-type": "application/json;charset=UTF-8",
     },
+    method: "POST",
     body: JSON.stringify({
       dragonName,
       rarities,
+      elements,
       orderBy,
       page,
       pageSize,
@@ -87,8 +90,8 @@ const fetchDragons = async ({
     throw new Error("Failed to fetch dragon data from Ditlep");
   }
 
-  const ditlepData = await ditlepResponse.json();
-
+  const encryptedDitlepData = await ditlepResponse.text();
+  const ditlepData = decryptData(encryptedDitlepData);
   const dcMetaResponse = await fetch(
     "https://dragoncitymeta.com/calculate-tier/t-all-nonee",
     {
@@ -129,6 +132,8 @@ const fetchDragons = async ({
         elements,
         baseSpeed,
         maxSpeed,
+        weaknessElements,
+        strongElements,
         maxDamage,
         skills,
         skillType,
@@ -152,6 +157,8 @@ const fetchDragons = async ({
           maxSpeed,
           maxDamage,
           category,
+          weak: weaknessElements,
+          strong: strongElements,
           skills: skills.map((skill) => ({
             name: skill.name === "" ? "Produce Food" : skill.name,
             skillType: skill.skillType === 0 ? 3 : skill.skillType,
@@ -280,8 +287,58 @@ async function main() {
     }
     return [...acc, curr];
   }, []);
-  const filteredDragons = dragonsAndSkins.filter((d) => d.rarity === "H");
+  const filteredDragons = dragonsAndSkins.filter((d) => d.rarity !== "L");
   seedDragons(filteredDragons);
+}
+
+export function decryptData(encryptedText) {
+  console.log("Starting decryption process...");
+
+  try {
+    console.log("Setting up decryption parameters...");
+
+    const iv = CryptoJS.enc.Hex.parse(process.env.DITLEP_IV);
+    console.log("Initialization vector (IV) set.");
+
+    const password = CryptoJS.enc.Utf8.parse(process.env.DITLEP_PASSWORD);
+    console.log("Password set.");
+
+    const salt = CryptoJS.enc.Utf8.parse(process.env.DITLEP_SALT);
+    console.log("Salt set.");
+
+    // Derive key using PBKDF2 with the password and salt
+    const key = CryptoJS.PBKDF2(password.toString(CryptoJS.enc.Utf8), salt, {
+      keySize: 4, // 4 * 32 bits = 128 bits (for AES-128)
+      iterations: 1000,
+    });
+    console.log("Key derived using PBKDF2.");
+
+    // Parse the base64 encrypted text as ciphertext
+    const cipherParams = CryptoJS.lib.CipherParams.create({
+      ciphertext: CryptoJS.enc.Base64.parse(encryptedText),
+    });
+    console.log("Ciphertext parsed from encrypted text.");
+
+    // Decrypt using AES with the derived key, IV, CBC mode, and PKCS7 padding
+    const decrypted = CryptoJS.AES.decrypt(cipherParams, key, {
+      mode: CryptoJS.mode.CBC,
+      iv,
+      padding: CryptoJS.pad.Pkcs7,
+    });
+    console.log("Decryption complete.");
+
+    const decryptedData = JSON.parse(decrypted.toString(CryptoJS.enc.Utf8));
+    if (!decryptedData) {
+      console.warn(
+        "Decryption resulted in an empty string. Possible invalid input or incorrect key.",
+      );
+    }
+
+    return decryptedData;
+  } catch (error) {
+    console.error("Decryption failed:", error.message);
+    return ""; // Return empty string if decryption fails
+  }
 }
 
 main()

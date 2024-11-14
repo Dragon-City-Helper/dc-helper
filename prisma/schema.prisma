@@ -35,6 +35,8 @@ model dragons {
   perkSuggestions    perkSuggestion[] @relation(fields: [perkSuggestionId], references: [id])
   perkSuggestionId   String[]         @db.ObjectId
   tags               String[]
+  strong             Elements[]
+  weak               Elements[]
 }
 
 model perkSuggestion {

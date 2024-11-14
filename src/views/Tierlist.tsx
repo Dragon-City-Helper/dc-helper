@@ -2,6 +2,7 @@
 
 import DragonFilters from "@/components/DragonFilters";
 import Select from "@/components/Select";
+import SkinImage from "@/components/SkinImage";
 import TierListLayout from "@/components/TierListLayout";
 import {
   AllowedRatingKeys,
@@ -12,7 +13,7 @@ import {
 import useDragonFilters from "@/hooks/useDragonFilters";
 import { BaseDragons } from "@/services/dragons";
 import { IFilters } from "@/types/filters";
-import { Text } from "@mantine/core";
+import { Group, Text } from "@mantine/core";
 import { useMemo, useState } from "react";
 
 export default function TierList({
@@ -70,6 +71,16 @@ export default function TierList({
         onChange={(value) => setRatingKey(value as AllowedRatingKeys)}
       />
       <Text>{RatingKeyTooltips[ratingKey]}</Text>
+      {filters.skins !== "dragons" && (
+        <Group justify="start">
+          <Group py="sm">
+            <SkinImage hasAllSkins /> - All Skins
+          </Group>
+          <Group py="sm">
+            <SkinImage hasAllSkins={false} /> - Skin
+          </Group>
+        </Group>
+      )}
       <TierListLayout dragons={filteredDragons} ratingKey={ratingKey} />
     </div>
   );

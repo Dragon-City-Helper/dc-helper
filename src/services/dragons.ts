@@ -172,7 +172,18 @@ export const fetchAllSkinIds = async () => {
 export const fetchSkinsForADragon = cache(async (name: string) => {
   return prisma.dragons.findMany({
     where: { originalDragonName: name, isSkin: true },
-    include: { rating: true, skills: true },
+    include: {
+      rating: true,
+      skills: {
+        select: { id: true, name: true, skillType: true, description: true },
+      },
+      perkSuggestions: {
+        select: {
+          perk1: true,
+          perk2: true,
+        },
+      },
+    },
   });
 });
 
