@@ -6,6 +6,8 @@ import { fetchOwned } from "@/services/owned";
 import DragonDashboard from "@/views/DragonDashboard";
 import { redirect } from "next/navigation";
 
+export const dynamic = "force-dynamic";
+
 const DashboardPage = async () => {
   // Retrieve the session on the server side
   const session = await auth();

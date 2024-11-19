@@ -20,6 +20,8 @@ import {
   SimpleGrid,
 } from "@mantine/core";
 import { Elements, Rarity } from "@prisma/client";
+import { useRouter } from "next/navigation";
+import { useEffect } from "react";
 
 type Stats = {
   totalOwnedDragons: number;
@@ -43,6 +45,12 @@ const DragonDashboard = ({ stats }: { stats: Stats }) => {
     tagCounts,
     topRatedDragons,
   } = stats;
+  const { refresh } = useRouter();
+
+  //  this is to force api calls post router loads it.
+  useEffect(() => {
+    refresh();
+  }, [refresh]);
 
   return (
     <div>
