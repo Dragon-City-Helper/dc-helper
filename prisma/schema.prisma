@@ -10,23 +10,25 @@ generator client {
 model dragons {
   id                 String           @id @default(auto()) @map("_id") @db.ObjectId
   name               String           @unique
+  description        String
   rarity             Rarity
   familyName         String?
   breedable          Boolean
   elements           Elements[]
   image              String
   thumbnail          String
+  code               Int
   baseSpeed          Int
   maxSpeed           Int
-  maxDamage          Int
+  baseLife           Int
+  baseAttack         Int
   category           Int
   skills             Skill[]          @relation(fields: [skillsId], references: [id])
   skillsId           String[]         @db.ObjectId
   rating             Rating?
   isVip              Boolean
   hasSkills          Boolean
-  skillType          Int
-  skinPrice          String?
+  skillType          Int?
   skinName           String?
   originalDragonName String?
   isSkin             Boolean
@@ -37,6 +39,14 @@ model dragons {
   tags               String[]
   strong             Elements[]
   weak               Elements[]
+}
+
+model arena {
+  id    String     @id @default(auto()) @map("_id") @db.ObjectId
+  name  String
+  boost Elements[]
+  ban   Elements
+  chest Elements
 }
 
 model perkSuggestion {
@@ -90,7 +100,8 @@ model Skill {
   id          String    @id @default(auto()) @map("_id") @db.ObjectId
   name        String    @unique
   skillType   Int
-  description String
+  description String?
+  cooldown    Int?
   dragons     dragons[] @relation(fields: [dragonsId], references: [id])
   dragonsId   String[]  @db.ObjectId
 }

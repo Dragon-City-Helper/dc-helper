@@ -3,7 +3,7 @@ import CryptoJS from "crypto-js";
 
 const prisma = new PrismaClient();
 
-const getImageUrl = ({ image, isThumbnail }) => {
+export const getImageUrl = ({ image, isThumbnail }) => {
   // const host =
   //   "https://dci-static-s1.socialpointgames.com/static/dragoncity/mobile/ui";
   if (isThumbnail) {
@@ -57,7 +57,7 @@ const familyNameCorrections = {
 
 const fetchDragons = async ({
   dragonName = "",
-  rarities = [],
+  rarities = ["M"],
   elements = [],
   orderBy = 1,
   page = 0,
@@ -177,7 +177,7 @@ const fetchDragons = async ({
     );
   return dragons;
 };
-async function seedDragons(dragons) {
+export async function seedDragons(dragons) {
   console.log(`Start seeding dragons...`);
   for (const dragon of dragons) {
     await prisma.dragons.upsert({
@@ -249,7 +249,6 @@ async function main() {
             dragonSkinThumbnailCorrections[skin.skinname] ??
             filterHostUrl(convertToThumbnailUrl(skin.img)),
           skinName: skin.skinname,
-          skinPrice: skin.price,
           skinDescription: parsedSkinDescr,
           originalDragonName: curr.name,
         };
@@ -291,19 +290,19 @@ async function main() {
   seedDragons(filteredDragons);
 }
 
-export function decryptData(encryptedText) {
+function decryptData(encryptedText) {
   console.log("Starting decryption process...");
 
   try {
     console.log("Setting up decryption parameters...");
 
-    const iv = CryptoJS.enc.Hex.parse(process.env.DITLEP_IV);
+    const iv = CryptoJS.enc.Hex.parse("e84ad660c4721ae0e84ad660c4721ae0");
     console.log("Initialization vector (IV) set.");
 
-    const password = CryptoJS.enc.Utf8.parse(process.env.DITLEP_PASSWORD);
+    const password = CryptoJS.enc.Utf8.parse("ZGl0bGVwLWRyYWdvbi1jaXR5");
     console.log("Password set.");
 
-    const salt = CryptoJS.enc.Utf8.parse(process.env.DITLEP_SALT);
+    const salt = CryptoJS.enc.Utf8.parse("ZGl0bGVwLWRyYWdvbi1jaXR5LXNhbHQ=");
     console.log("Salt set.");
 
     // Derive key using PBKDF2 with the password and salt
@@ -341,12 +340,12 @@ export function decryptData(encryptedText) {
   }
 }
 
-main()
-  .then(async () => {
-    await prisma.$disconnect();
-  })
-  .catch(async (e) => {
-    console.error(e);
-    await prisma.$disconnect();
-    process.exit(1);
-  });
+// main()
+//   .then(async () => {
+//     await prisma.$disconnect();
+//   })
+//   .catch(async (e) => {
+//     console.error(e);
+//     await prisma.$disconnect();
+//     process.exit(1);
+//   });

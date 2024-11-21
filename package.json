@@ -10,7 +10,7 @@
     "lint": "next lint",
     "test": "jest --passWithNoTests",
     "prisma:db:push": "dotenv -e .env.local prisma db push",
-    "prisma:seed": "dotenv -e .env.local node prisma/seed.mjs",
+    "prisma:seed:master": "dotenv -e .env.local node prisma/seed-master.mjs",
     "revalidate": "dotenv -e .env.local node scripts/revalidate.mjs",
     "prepare": "husky"
   },
