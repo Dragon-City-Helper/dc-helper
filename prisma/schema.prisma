@@ -163,6 +163,7 @@ model Account {
   scope             String?
   id_token          String? @db.String
   session_state     String?
+  roleAssigned      Boolean @default(false) // New field for tracking assigned roles
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
