@@ -1,12 +1,11 @@
 import { ColorSchemeScript, Container } from "@mantine/core";
 import { SessionProvider } from "next-auth/react";
-import { Analytics } from "@vercel/analytics/react";
-import { SpeedInsights } from "@vercel/speed-insights/next";
 import Theme from "@/components/Theme";
 import BasicAppShell from "@/components/BasicAppShell";
 import "@mantine/core/styles.css";
 import "../styles/globals.css";
 import { auth } from "@/auth";
+import { GoogleTagManager } from "@next/third-parties/google";
 
 export default async function RootLayout({
   children,
@@ -40,9 +39,8 @@ export default async function RootLayout({
             </BasicAppShell>
           </SessionProvider>
         </Theme>
-        <Analytics />
-        <SpeedInsights />
       </body>
+      <GoogleTagManager gtmId="G-QHLYJ2EH3M" />
     </html>
   );
 }
