@@ -66,18 +66,17 @@ const getSkins = (IMAGES) => {
   for (const key in IMAGES) {
     if (key.startsWith("skin_")) {
       const { NAME, DESC = "", CODE } = IMAGES[key];
-
+      let description = DESC;
       // Modify the description
       const marker = " Please restart your game for this to take effect.";
-      let description = DESC.replace(
-        "By simply owning this Skin, your dragon will",
-        "",
-      )
-        .replace("By simply owning this Skin, your dragon's", "")
-        .trim();
+      const marker2 = "By simply owning this Skin,";
 
-      if (description.includes(marker)) {
-        description = description.replace(marker, "").trim();
+      if (description.includes(marker) || description.includes(marker2)) {
+        description = description
+          .replace(marker, "")
+          .replace("By simply owning this Skin, your dragon will", "")
+          .replace("By simply owning this Skin, your dragon's", "")
+          .trim();
       } else {
         description = "";
       }
@@ -215,14 +214,25 @@ const transformData = (data) => {
   return dragonsAndSkins;
 };
 const filterData = (data) => {
-  return data
-    .filter(
-      (d) =>
-        ![1145, 1146, 1144, 1410, 1882, 1911, 1920, 1921, 1852, 1114].includes(
-          d.code,
-        ),
-    )
-    .filter((d) => !!d.familyName);
+  return data.filter((d) =>
+    [
+      // "High Tectonic Dragon (Tectonic Talisman)",
+      // "Spiked Pegasus Dragon (Spiked Pegasus Skill Skin)",
+      // "Spiked Leatherback Dragon (Spiked Leatherback Skill Skin)",
+      // "Leaderbliss Dragon (Royale Leader Skill Skin)",
+      // "Spiked Raptor Dragon (Spiked Raptor Skill Skin)",
+      "High Super Dragon",
+      "Aquarelle Dragon",
+      "Ice Hockey Dragon",
+      "Jewel Dragon",
+      "Happy Egg Dragon",
+      "Terraformer Dragon",
+      "Third Birthday Dragon",
+      "Neo-Izumi Dragon",
+      "Crest Dragon",
+      "Neo-Akimori Dragon",
+    ].includes(d.name),
+  );
 };
 
 const writeData = (data) => {
@@ -240,7 +250,6 @@ async function main() {
     const dragonData = await readJsonFile(filePath);
     const transformedData = transformData(dragonData);
     const filteredData = filterData(transformedData);
-    // console.log(filteredData);
     writeData(filteredData);
   } catch (error) {
     console.error("An error occurred in main:", error);
