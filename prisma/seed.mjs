@@ -1,182 +1,281 @@
+import fs from "fs/promises";
+import path from "path";
 import { PrismaClient } from "@prisma/client";
-import CryptoJS from "crypto-js";
-
 const prisma = new PrismaClient();
-
-export const getImageUrl = ({ image, isThumbnail }) => {
-  // const host =
-  //   "https://dci-static-s1.socialpointgames.com/static/dragoncity/mobile/ui";
-  if (isThumbnail) {
-    return `/${image.replace("/ui_", "/HD/thumb_")}_3.png`;
-  }
-  return `/${image}_3@2x.png`;
-};
-
-function convertToThumbnailUrl(imageUrl) {
-  // Replace the path and remove the "@2x" at the end
-  return imageUrl
-    .replace("/ui/dragons/ui_", "/ui/dragons/HD/thumb_")
-    .replace("@2x.png", ".png");
-}
-
-function filterHostUrl(image) {
-  return image.replace(
-    "https://dci-static-s1.socialpointgames.com/static/dragoncity/mobile/ui",
-    "",
-  );
-}
-
-const nameCorrections = {
-  "Spiked Ghoul Dragon": "Spiky Ghoul Dragon",
-};
 
 const dragonSkinThumbnailCorrections = {
   "Norn Skill Skin":
     "/dragons/HD/thumb_3109_dragon_highredemptionnorn_skin3_b_3.png",
-  "Blood Skill Skin":
-    "/dragons/HD/thumb_2788_dragon_highvoodoovampire_skin1_b_3.png",
 };
 
-const dragonSkinImageCorrections = {
-  "Blood Skill Skin":
-    "/dragons/ui_2788_dragon_highvoodoovampire_skin1_b_3@2x.png",
+const dragonSkinImageCorrections = {};
+
+async function readJsonFile(filePath) {
+  try {
+    // Read the file content
+    const fileContent = await fs.readFile(filePath, "utf-8");
+
+    // Parse and return the JSON data
+    return JSON.parse(fileContent);
+  } catch (error) {
+    console.error("Error reading JSON file:", error);
+    throw error;
+  }
+}
+
+const getImages = (code) => {
+  //3 is adult
+  const image = `/dragons/ui_${code}@2x.png`;
+  const thumbnail = `/dragons/HD/thumb_${code}.png`;
+  return { image, thumbnail };
 };
 
-const familyNameCorrections = {
-  ability: null,
-  abilityy: null,
-  abilityyskin: null,
-  skin: null,
-  "skin-vampire": null,
-  Redemption1: "Redemption",
-  Redemption2: "Redemption",
-  PlasmaR: "Plasma Colony",
-  Plasma: "Plasma Colony",
-  Cyberability: "Cybervoid",
+const getFamilyName = (family) => {
+  const familyNameCorrections = {
+    vampire: "Vampire",
+    dual: "Dual",
+    corrupted: "Corrupted",
+    quantum: "Quantum",
+    karma: "Karma",
+    titan: "Titan",
+    arcana: "Arcana",
+    plasma: "Plasma Colony",
+    extractor: "Extractor",
+    berserk: "Berserker",
+    ascended: "Ascended",
+    eternal: "Eternal",
+    spikes: "Spiked",
+    twd: "Walking Dead",
+    redemption: "Redemption",
+    strategist: "Strategist",
+    evader: "Evader",
+  };
+
+  const dragonFamily =
+    familyNameCorrections[family] !== undefined
+      ? familyNameCorrections[family]
+      : family;
+
+  return dragonFamily;
 };
 
-const fetchDragons = async ({
-  dragonName = "",
-  rarities = ["M"],
-  elements = [],
-  orderBy = 1,
-  page = 0,
-  pageSize = 5000,
-  families = [],
-  inStore = null,
-  breedable = null,
-  animation = null,
-}) => {
-  const ditlepResponse = await fetch("https://www.ditlep.com/Dragon/Search", {
-    headers: {
-      "content-type": "application/json;charset=UTF-8",
-    },
-    method: "POST",
-    body: JSON.stringify({
-      dragonName,
-      rarities,
+const getBreedable = (BOOK) => {
+  return (
+    BOOK["SOURCES"].includes("breedable") ||
+    BOOK["SOURCES"].includes("breeding_sanctuary")
+  );
+};
+
+const getSkins = (IMAGES) => {
+  const skins = [];
+
+  for (const key in IMAGES) {
+    if (key.startsWith("skin_")) {
+      const { NAME, DESC = "", CODE } = IMAGES[key];
+      let description = DESC;
+      // Modify the description
+      const marker = " Please restart your game for this to take effect.";
+      const marker2 = "By simply owning this Skin,";
+
+      if (description.includes(marker) || description.includes(marker2)) {
+        description = description
+          .replace(marker, "")
+          .replace("By simply owning this Skin, your dragon will", "")
+          .replace("By simply owning this Skin, your dragon's", "")
+          .trim();
+      } else {
+        description = "";
+      }
+
+      // Capitalize the first letter of the modified description
+      if (description) {
+        description = description[0].toUpperCase() + description.slice(1);
+      }
+      const { image, thumbnail } = getImages(CODE);
+      skins.push({ skinname: NAME, descr: description, image, thumbnail });
+    }
+  }
+
+  return skins;
+};
+
+function parseSkills(skills) {
+  return skills.flatMap((skill) => {
+    const parsedSkill = {
+      name: skill.NAME,
+      description: skill.DESC,
+      skillType: skill.SKILL_TYPE,
+      cooldown: skill.COOLDOWN || null,
+    };
+
+    const foodProducerSkill =
+      skill.WORLD &&
+      skill.WORLD.TYPE === "RESOURCE_PRODUCTION" &&
+      skill.WORLD.RESOURCE === "f"
+        ? {
+            name: "Food Production",
+            description: "",
+            skillType: -1,
+            cooldown: null,
+          }
+        : null;
+
+    return foodProducerSkill ? [foodProducerSkill, parsedSkill] : [parsedSkill];
+  });
+}
+
+const transformData = (data) => {
+  const dragonArray = Object.values(data);
+  const dragons = dragonArray.map((dragon) => {
+    const {
+      ID,
+      BOOK,
+      ELEMENTS: elements,
+      INFO,
+      IMAGES,
+      SKILLS = [],
+      WEAKNESS: weak,
+      STRONGEST: strong,
+      SKILL_TYPE: skillType,
+      TID_NAME,
+      TID_DESC,
+    } = dragon;
+    const {
+      RARITY: rarity,
+      FAMILY,
+      SPEED,
+      CATEGORY: category,
+      BASE_STATS,
+    } = INFO;
+    const { image, thumbnail } = getImages(IMAGES["3"].CODE);
+    const familyName = getFamilyName(FAMILY);
+    const skills = parseSkills(SKILLS);
+    const hasSkills = skills.length > 0;
+    return {
+      name: TID_NAME.trim(),
+      description: TID_DESC,
+      code: ID,
+      rarity,
       elements,
-      orderBy,
-      page,
-      pageSize,
-      inStore,
-      families,
-      breedable,
-      animation,
-    }),
+      image,
+      thumbnail,
+      familyName,
+      baseLife: BASE_STATS.LIFE,
+      baseAttack: BASE_STATS.ATTACK,
+      baseSpeed: SPEED[0],
+      maxSpeed: SPEED[1],
+      breedable: getBreedable(BOOK),
+      category,
+      weak,
+      strong,
+      isVip: !!familyName && hasSkills,
+      isSkin: false,
+      hasAllSkins: false,
+      skins: getSkins(IMAGES), // you get name description from images object from master file
+      skillType,
+      hasSkills,
+      skills,
+    };
   });
 
-  if (!ditlepResponse.ok) {
-    throw new Error("Failed to fetch dragon data from Ditlep");
-  }
+  const dragonsAndSkins = dragons.reduce((acc, curr) => {
+    if (curr.skins) {
+      const skillSkins = curr.skins.filter((skin) => !!skin.descr);
 
-  const encryptedDitlepData = await ditlepResponse.text();
-  const ditlepData = decryptData(encryptedDitlepData);
-  const dcMetaResponse = await fetch(
-    "https://dragoncitymeta.com/calculate-tier/t-all-nonee",
-    {
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-      },
-    },
-  );
-
-  if (!dcMetaResponse.ok) {
-    throw new Error("Failed to fetch tier data from Dragon City Meta");
-  }
-
-  const dcMetaData = await dcMetaResponse.json();
-
-  const dcMetaResponseByName = dcMetaData.reduce((acc, curr) => {
-    const name = (nameCorrections[curr.dragon.name] ?? curr.dragon.name).trim();
-    return {
-      ...acc,
-      [name]: curr,
-    };
-  }, {});
-
-  const dragons = ditlepData.items
-    .filter(
-      ({ id }) =>
-        ![1145, 1146, 1144, 1410, 1882, 1911, 1920, 1921, 1852, 1114].includes(
-          id,
-        ),
-    )
-    .filter(({ name }) => !!dcMetaResponseByName[name.trim()])
-    .map(
-      ({
-        name,
-        rarity,
-        breedable,
-        elements,
-        baseSpeed,
-        maxSpeed,
-        weaknessElements,
-        strongElements,
-        maxDamage,
-        skills,
-        skillType,
-        hasSKill,
-        category,
-        image,
-      }) => {
-        const trimmedName = name.trim();
-        const { dragon } = dcMetaResponseByName[trimmedName];
-        const dragonFamily =
-          familyNameCorrections[dragon.family] !== undefined
-            ? familyNameCorrections[dragon.family]
-            : dragon.family;
+      delete curr.skins;
+      const skinDragons = skillSkins.map((skin) => {
         return {
-          name: trimmedName,
-          rarity,
-          familyName: dragonFamily,
-          breedable,
-          elements,
-          baseSpeed,
-          maxSpeed,
-          maxDamage,
-          category,
-          weak: weaknessElements,
-          strong: strongElements,
-          skills: skills.map((skill) => ({
-            name: skill.name === "" ? "Produce Food" : skill.name,
-            skillType: skill.skillType === 0 ? 3 : skill.skillType,
-            description: skill.descriptionKey,
-          })),
-          skins: dragon.skins,
-          image: filterHostUrl(dragon.image),
-          thumbnail: getImageUrl({ image, isThumbnail: true }),
-          isVip: !!dragonFamily && (skills?.length ?? 0) > 0,
-          hasSkills: hasSKill,
-          skillType,
-          isSkin: false,
-          hasAllSkins: false,
+          ...curr,
+          name: `${curr.name} (${skin.skinname})`,
+          image: dragonSkinImageCorrections[skin.skinname] ?? skin.image,
+          thumbnail:
+            dragonSkinThumbnailCorrections[skin.skinname] ?? skin.thumbnail,
+          isSkin: true,
+          skinName: skin.skinname,
+          skinDescription: skin.descr,
+          originalDragonName: curr.name,
         };
-      },
-    );
-  return dragons;
+      });
+      if (skinDragons.length > 1) {
+        const allSkillsDescr = skillSkins.map((skin) => skin.descr).join("||");
+        return [
+          ...acc,
+          curr,
+          ...skinDragons,
+          {
+            ...curr,
+            name: `${curr.name} (All Skins)`,
+            skinName: "All Skins",
+            isSkin: true,
+            hasAllSkins: true,
+            skinDescription: allSkillsDescr,
+            originalDragonName: curr.name,
+          },
+        ];
+      } else if (skinDragons.length > 0) {
+        return [...acc, curr, ...skinDragons];
+      }
+    }
+    return [...acc, curr];
+  }, []);
+  return dragonsAndSkins;
 };
+const filterData = (data) => {
+  return data.filter((d) => d.rarity === "C" && d.elements.includes("f"));
+};
+
+const writeData = (data) => {
+  seedDragons(data);
+};
+
+async function main() {
+  try {
+    // Define the path to the JSON file
+    const folderPath = "./temp";
+    const fileName = "dragons.formatted.json";
+    const filePath = path.join(folderPath, fileName);
+
+    // Read the JSON file
+    const dragonData = await readJsonFile(filePath);
+    const transformedData = transformData(dragonData);
+    const filteredData = filterData(transformedData);
+    writeData(filteredData);
+  } catch (error) {
+    console.error("An error occurred in main:", error);
+  }
+}
+
+const writeVipDragonsToAFile = async () => {
+  const dragonData = await readJsonFile(filePath);
+  const dragonArray = Object.values(dragonData);
+  const filteredDragons = dragonArray.filter((dragon) => {
+    const { INFO, SKILLS = [] } = dragon;
+    const { FAMILY } = INFO;
+    const familyName = getFamilyName(FAMILY);
+    const skills = parseSkills(SKILLS);
+    const hasSkills = skills.length > 0;
+    return !!familyName && hasSkills;
+  });
+  writeJsonToFile(filteredDragons, "./temp/vipdragons.formatted.json");
+};
+/**
+ * Writes JSON data to a file.
+ *
+ * @param {Object} data - The JSON data to write.
+ * @param {string} filePath - The path to the file where the data should be written.
+ */
+async function writeJsonToFile(data, filePath) {
+  try {
+    const jsonData = JSON.stringify(data, null, 4); // Convert JSON to string with pretty formatting
+    await fs.writeFile(filePath, jsonData, "utf-8");
+    console.log(`JSON data has been written to ${filePath}`);
+  } catch (error) {
+    console.error(
+      `An error occurred while writing to the file: ${error.message}`,
+    );
+  }
+}
+
 export async function seedDragons(dragons) {
   console.log(`Start seeding dragons...`);
   for (const dragon of dragons) {
@@ -223,129 +322,13 @@ export async function seedDragons(dragons) {
     ${allSkinsLength} All Skin dragons seeded.`);
 }
 
-async function main() {
-  const dragons = await fetchDragons({});
-
-  const dragonsAndSkins = dragons.reduce((acc, curr) => {
-    if (curr.skins) {
-      const skinsWithAbilities = curr.skins.filter((skin) => !!skin.descr);
-
-      delete curr.skins;
-      const skinDragons = skinsWithAbilities.map((skin) => {
-        const parsedSkinDescr = skin.descr
-          .replace(/\s*<\/li>\s*|\s*\/li>\s*/g, "||") // Replace only </li> or /li> with "||" and remove surrounding whitespace
-          .replace(/\s*<li>\s*/g, "") // Remove <li> and surrounding whitespace
-          .replace(/\s*<\/?ul>\s*/g, "") // Remove <ul>, </ul>, and surrounding whitespace
-          .replace(/\s*-\s*/g, "") // Remove "- " and surrounding whitespace
-          .replace(/\|\|\s*$/, ""); // Remove the last "||" and any trailing whitespace
-        return {
-          ...curr,
-          name: `${curr.name} (${skin.skinname})`,
-          image:
-            dragonSkinImageCorrections[skin.skinname] ??
-            filterHostUrl(skin.img),
-          isSkin: true,
-          thumbnail:
-            dragonSkinThumbnailCorrections[skin.skinname] ??
-            filterHostUrl(convertToThumbnailUrl(skin.img)),
-          skinName: skin.skinname,
-          skinDescription: parsedSkinDescr,
-          originalDragonName: curr.name,
-        };
-      });
-      if (skinDragons.length > 1) {
-        const allSkillsDescr = skinsWithAbilities
-          .map(
-            (skin) =>
-              skin.descr
-                .replace(/\s*<\/li>\s*|\s*\/li>\s*/g, "||") // Replace only </li> or /li> with "||" and remove surrounding whitespace
-                .replace(/\s*<li>\s*/g, "") // Remove <li> and surrounding whitespace
-                .replace(/\s*<\/?ul>\s*/g, "") // Remove <ul>, </ul>, and surrounding whitespace
-                .replace(/\s*-\s*/g, "") // Remove "- " and surrounding whitespace
-                .replace(/\|\|\s*$/, ""), // Remove the last "||" and any trailing whitespace
-          )
-          .join("||");
-        return [
-          ...acc,
-          curr,
-          ...skinDragons,
-          {
-            ...curr,
-            name: `${curr.name} (All Skins)`,
-            skinName: "All Skins",
-            isSkin: true,
-            hasAllSkins: true,
-            skinPrice: "Obtain All Skins",
-            skinDescription: allSkillsDescr,
-            originalDragonName: curr.name,
-          },
-        ];
-      } else if (skinDragons.length > 0) {
-        return [...acc, curr, ...skinDragons];
-      }
-    }
-    return [...acc, curr];
-  }, []);
-  const filteredDragons = dragonsAndSkins.filter((d) => d.rarity !== "L");
-  seedDragons(filteredDragons);
-}
-
-function decryptData(encryptedText) {
-  console.log("Starting decryption process...");
-
-  try {
-    console.log("Setting up decryption parameters...");
-
-    const iv = CryptoJS.enc.Hex.parse("e84ad660c4721ae0e84ad660c4721ae0");
-    console.log("Initialization vector (IV) set.");
-
-    const password = CryptoJS.enc.Utf8.parse("ZGl0bGVwLWRyYWdvbi1jaXR5");
-    console.log("Password set.");
-
-    const salt = CryptoJS.enc.Utf8.parse("ZGl0bGVwLWRyYWdvbi1jaXR5LXNhbHQ=");
-    console.log("Salt set.");
-
-    // Derive key using PBKDF2 with the password and salt
-    const key = CryptoJS.PBKDF2(password.toString(CryptoJS.enc.Utf8), salt, {
-      keySize: 4, // 4 * 32 bits = 128 bits (for AES-128)
-      iterations: 1000,
-    });
-    console.log("Key derived using PBKDF2.");
-
-    // Parse the base64 encrypted text as ciphertext
-    const cipherParams = CryptoJS.lib.CipherParams.create({
-      ciphertext: CryptoJS.enc.Base64.parse(encryptedText),
-    });
-    console.log("Ciphertext parsed from encrypted text.");
-
-    // Decrypt using AES with the derived key, IV, CBC mode, and PKCS7 padding
-    const decrypted = CryptoJS.AES.decrypt(cipherParams, key, {
-      mode: CryptoJS.mode.CBC,
-      iv,
-      padding: CryptoJS.pad.Pkcs7,
-    });
-    console.log("Decryption complete.");
-
-    const decryptedData = JSON.parse(decrypted.toString(CryptoJS.enc.Utf8));
-    if (!decryptedData) {
-      console.warn(
-        "Decryption resulted in an empty string. Possible invalid input or incorrect key.",
-      );
-    }
-
-    return decryptedData;
-  } catch (error) {
-    console.error("Decryption failed:", error.message);
-    return ""; // Return empty string if decryption fails
-  }
-}
-
-// main()
-//   .then(async () => {
-//     await prisma.$disconnect();
-//   })
-//   .catch(async (e) => {
-//     console.error(e);
-//     await prisma.$disconnect();
-//     process.exit(1);
-//   });
+// Call the main function
+main()
+  .then(async () => {
+    await prisma.$disconnect();
+  })
+  .catch(async (e) => {
+    console.error(e);
+    await prisma.$disconnect();
+    process.exit(1);
+  });

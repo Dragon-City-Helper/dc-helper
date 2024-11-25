@@ -41,7 +41,10 @@ const DragonFaceCard: FC<IDragonFaceCardProps> = ({
       </Card>
       <Box className="absolute -left-0 top-1 ">
         {dragon.familyName && <FamilyImage familyName={dragon.familyName} />}
-        {!dragon.isSkin && !dragon.isVip && dragon.hasSkills ? (
+        {!dragon.familyName &&
+        !dragon.isSkin &&
+        !dragon.isVip &&
+        dragon.hasSkills ? (
           <NextImage
             src={`/images/skilltype/${dragon.skillType}.png`}
             alt={dragon.rarity}

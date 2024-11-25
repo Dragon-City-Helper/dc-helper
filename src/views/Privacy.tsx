@@ -1,6 +1,6 @@
 "use client";
 import { FC } from "react";
-import { Container, Title, Text, List, Anchor } from "@mantine/core";
+import { Container, Title, Text, List } from "@mantine/core";
 
 const PrivacyPolicyPage: FC = () => {
   return (
@@ -12,15 +12,15 @@ const PrivacyPolicyPage: FC = () => {
         1. Introduction
       </Title>
       <Text>
-        DC-Helper respects your privacy and is committed to protecting your
-        personal information. This Privacy Policy outlines our practices for
-        collecting, using, and safeguarding your data.
+        Dragon City Helper respects your privacy and is committed to protecting
+        your personal information. This Privacy Policy outlines our practices
+        for collecting, using, and safeguarding your data.
       </Text>
 
       <Title order={2} mt="xl" mb="sm">
         2. Information We Collect
       </Title>
-      <Text>When you use DC-Helper, we may collect:</Text>
+      <Text>When you use Dragon City Helper, we may collect:</Text>
       <List withPadding>
         <List.Item>
           <Text>
@@ -32,7 +32,7 @@ const PrivacyPolicyPage: FC = () => {
         <List.Item>
           <Text>
             <strong>Usage Data:</strong> Information related to your activities
-            within the App, collected through Vercel Analytics for performance
+            within the App, collected through Google Analytics for performance
             improvement.
           </Text>
         </List.Item>
@@ -67,8 +67,7 @@ const PrivacyPolicyPage: FC = () => {
       <List withPadding>
         <List.Item>Comply with legal obligations.</List.Item>
         <List.Item>
-          Analyze user behavior and performance using Vercel Analytics and
-          Vercel Speed Insights.
+          Analyze user behavior and performance using Google Analytics.
         </List.Item>
         <List.Item>
           Facilitate login with third-party platforms (Discord, and potentially
@@ -80,9 +79,10 @@ const PrivacyPolicyPage: FC = () => {
         5. Cookies and Tracking
       </Title>
       <Text>
-        DC-Helper uses cookies and similar tracking technologies to collect data
-        about App usage, enabling us to provide an optimized user experience.
-        You may control cookie preferences via your browser settings.
+        Dragon City Helper uses cookies and similar tracking technologies to
+        collect data about App usage, enabling us to provide an optimized user
+        experience. You may control cookie preferences via your browser
+        settings.
       </Text>
 
       <Title order={2} mt="xl" mb="sm">
@@ -99,16 +99,16 @@ const PrivacyPolicyPage: FC = () => {
       </Title>
       <Text>
         Our App may include links to third-party websites for additional
-        resources. DC-Helper is not responsible for the privacy practices of
-        these external sites.
+        resources. Dragon City Helper is not responsible for the privacy
+        practices of these external sites.
       </Text>
 
       <Title order={2} mt="xl" mb="sm">
         8. Changes to Privacy Policy
       </Title>
       <Text>
-        This Privacy Policy may be updated periodically. Continued use of
-        DC-Helper after any modifications indicates acceptance of the updated
+        This Privacy Policy may be updated periodically. Continued use of Dragon
+        City Helper after any modifications indicates acceptance of the updated
         policy.
       </Text>
 
@@ -116,8 +116,8 @@ const PrivacyPolicyPage: FC = () => {
         9. Contact Us
       </Title>
       <Text>
-        For questions about these Terms &amp; Conditions or the Privacy Policy,
-        please contact us via the contact form on our website.
+        For questions about this Privacy Policy, please contact us through our
+        official Discord server.
       </Text>
     </Container>
   );
