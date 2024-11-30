@@ -49,6 +49,7 @@ const getFamilyName = (family) => {
     redemption: "Redemption",
     strategist: "Strategist",
     evader: "Evader",
+    guard: "Guardian",
   };
 
   const dragonFamily =
@@ -221,7 +222,7 @@ const transformData = (data) => {
   return dragonsAndSkins;
 };
 const filterData = (data) => {
-  return data.filter((d) => d.rarity === "C" && d.elements.includes("f"));
+  return data.filter((d) => ["L"].includes(d.rarity));
 };
 
 const writeData = (data) => {
@@ -240,12 +241,13 @@ async function main() {
     const transformedData = transformData(dragonData);
     const filteredData = filterData(transformedData);
     writeData(filteredData);
+    // writeVipDragonsToAFile(filePath);
   } catch (error) {
     console.error("An error occurred in main:", error);
   }
 }
 
-const writeVipDragonsToAFile = async () => {
+const writeVipDragonsToAFile = async (filePath) => {
   const dragonData = await readJsonFile(filePath);
   const dragonArray = Object.values(dragonData);
   const filteredDragons = dragonArray.filter((dragon) => {
