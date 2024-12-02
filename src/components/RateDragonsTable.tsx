@@ -1,4 +1,4 @@
-import { Perk, Rarity, Rating } from "@prisma/client";
+import { Rarity, Rating } from "@prisma/client";
 import { FC, useEffect, useState } from "react";
 import RatingDropdown from "./RatingDropdown";
 import { BaseDragons, putDragonData } from "@/services/dragons";

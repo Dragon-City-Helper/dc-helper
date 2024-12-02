@@ -1,5 +1,5 @@
 import { BaseDragons } from "@/services/dragons";
-import { Elements, Rarity } from "@prisma/client";
+import { Alliance, Elements, Rarity } from "@prisma/client";
 
 export interface IFilters {
   search?: string;
@@ -17,5 +17,19 @@ export interface IDragonFilters {
   filters: IFilters;
   allowedFilters?: (keyof IFilters)[];
   dragons: BaseDragons;
+  disabled?: boolean;
+}
+
+export interface IAllianceFilters {
+  minMasterPoints?: number;
+  discord?: boolean;
+  contribution?: boolean;
+  tags?: string[];
+}
+
+export interface IAllianceHubFilters {
+  onFilterChange: (key: keyof IAllianceFilters, e: any) => void;
+  filters: IAllianceFilters;
+  alliances: Alliance;
   disabled?: boolean;
 }

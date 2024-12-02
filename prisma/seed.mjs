@@ -258,6 +258,7 @@ const filterData = (data) => {
 
 const writeData = (data) => {
   seedDragons(data);
+  // console.log(data);
 };
 
 async function main() {
