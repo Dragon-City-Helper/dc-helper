@@ -221,3 +221,30 @@ model Authenticator {
 
   @@unique([userId, credentialID])
 }
+
+model Alliance {
+  id             String      @id @default(auto()) @map("_id") @db.ObjectId
+  name           String
+  description    String
+  tags           String[]
+  isSponsored    Boolean     @default(false)
+  requirements   Requirement @relation(fields: [requirementsId], references: [id])
+  requirementsId String      @db.ObjectId
+  isRecruiting   Boolean     @default(true)
+  openSpots      Int         @default(1)
+  createdBy      String
+  createdAt      DateTime    @default(now())
+  updatedAt      DateTime    @updatedAt
+  contact        String
+  isDeleted      Boolean     @default(false)
+}
+
+model Requirement {
+  id              String     @id @default(auto()) @map("_id") @db.ObjectId
+  minMasterPoints Int        @default(0)
+  discord         Boolean    @default(false)
+  contribution    Boolean    @default(true) //5% chest contribution
+  other           String
+  allianceId      String[]   @db.ObjectId
+  alliance        Alliance[]
+}

@@ -131,59 +131,68 @@ function parseSkills(skills) {
   });
 }
 
-const transformData = (data) => {
+const transformData = (data, filterUnreleased = true) => {
   const dragonArray = Object.values(data);
-  const dragons = dragonArray.map((dragon) => {
-    const {
-      ID,
-      BOOK,
-      ELEMENTS: elements,
-      INFO,
-      IMAGES,
-      SKILLS = [],
-      WEAKNESS: weak,
-      STRONGEST: strong,
-      SKILL_TYPE: skillType,
-      TID_NAME,
-      TID_DESC,
-    } = dragon;
-    const {
-      RARITY: rarity,
-      FAMILY,
-      SPEED,
-      CATEGORY: category,
-      BASE_STATS,
-    } = INFO;
-    const { image, thumbnail } = getImages(IMAGES["3"].CODE);
-    const familyName = getFamilyName(FAMILY);
-    const skills = parseSkills(SKILLS);
-    const hasSkills = skills.length > 0;
-    return {
-      name: TID_NAME.trim(),
-      description: TID_DESC,
-      code: ID,
-      rarity,
-      elements,
-      image,
-      thumbnail,
-      familyName,
-      baseLife: BASE_STATS.LIFE,
-      baseAttack: BASE_STATS.ATTACK,
-      baseSpeed: SPEED[0],
-      maxSpeed: SPEED[1],
-      breedable: getBreedable(BOOK),
-      category,
-      weak,
-      strong,
-      isVip: !!familyName && hasSkills,
-      isSkin: false,
-      hasAllSkins: false,
-      skins: getSkins(IMAGES), // you get name description from images object from master file
-      skillType,
-      hasSkills,
-      skills,
-    };
-  });
+
+  const dragons = dragonArray
+    .filter((dragon) => {
+      if (filterUnreleased) {
+        const { BOOK } = dragon;
+        return BOOK.RELEASE.TIMESTAMP === 0;
+      }
+      return true;
+    })
+    .map((dragon) => {
+      const {
+        ID,
+        BOOK,
+        ELEMENTS: elements,
+        INFO,
+        IMAGES,
+        SKILLS = [],
+        WEAKNESS: weak,
+        STRONGEST: strong,
+        SKILL_TYPE: skillType,
+        TID_NAME,
+        TID_DESC,
+      } = dragon;
+      const {
+        RARITY: rarity,
+        FAMILY,
+        SPEED,
+        CATEGORY: category,
+        BASE_STATS,
+      } = INFO;
+      const { image, thumbnail } = getImages(IMAGES["3"].CODE);
+      const familyName = getFamilyName(FAMILY);
+      const skills = parseSkills(SKILLS);
+      const hasSkills = skills.length > 0;
+      return {
+        name: TID_NAME.trim(),
+        description: TID_DESC,
+        code: ID,
+        rarity,
+        elements,
+        image,
+        thumbnail,
+        familyName,
+        baseLife: BASE_STATS.LIFE,
+        baseAttack: BASE_STATS.ATTACK,
+        baseSpeed: SPEED[0],
+        maxSpeed: SPEED[1],
+        breedable: getBreedable(BOOK),
+        category,
+        weak,
+        strong,
+        isVip: !!familyName && hasSkills,
+        isSkin: false,
+        hasAllSkins: false,
+        skins: getSkins(IMAGES), // you get name description from images object from master file
+        skillType,
+        hasSkills,
+        skills,
+      };
+    });
 
   const dragonsAndSkins = dragons.reduce((acc, curr) => {
     if (curr.skins) {
@@ -237,6 +246,7 @@ const filterData = (data) => {
 
 const writeData = (data) => {
   seedDragons(data);
+  // console.log(data);
 };
 
 async function main() {
@@ -247,11 +257,11 @@ async function main() {
     const filePath = path.join(folderPath, fileName);
 
     // Read the JSON file
-    const dragonData = await readJsonFile(filePath);
-    const transformedData = transformData(dragonData);
-    const filteredData = filterData(transformedData);
-    writeData(filteredData);
-    // writeVipDragonsToAFile(filePath);
+    // const dragonData = await readJsonFile(filePath);
+    // const transformedData = transformData(dragonData, true);
+    // const filteredData = filterData(transformedData);
+    // writeData(filteredData);
+    writeVipDragonsToAFile(filePath);
   } catch (error) {
     console.error("An error occurred in main:", error);
   }

@@ -8,7 +8,13 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const dragonIds = await fetchAllDragonIds();
 
   // Define static routes
-  const staticRoutes = ["", "/tierlist", "/terms", "/privacy"].map((route) => ({
+  const staticRoutes = [
+    "",
+    "/tierlist",
+    "/terms",
+    "/privacy",
+    "/alliance-hub",
+  ].map((route) => ({
     url: `${baseUrl}${route}`,
     lastModified: new Date().toISOString(),
   }));

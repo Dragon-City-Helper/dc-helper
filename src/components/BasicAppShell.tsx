@@ -48,7 +48,10 @@ const BasicAppShell: FC<PropsWithChildren<IBasicAppShellProps>> = ({
                 closeDelay={400}
               >
                 <Menu.Target>
-                  <NavLink label="Dragons" />
+                  <NavLink
+                    label="Dragons"
+                    active={["/", "/tierlist", "/dashboard"].includes(pathname)}
+                  />
                 </Menu.Target>
                 <Menu.Dropdown>
                   <NavLink
@@ -80,14 +83,19 @@ const BasicAppShell: FC<PropsWithChildren<IBasicAppShellProps>> = ({
                   )}
                 </Menu.Dropdown>
               </Menu>
-              {/* <Menu
+              <Menu
                 shadow="md"
                 trigger="click-hover"
                 openDelay={100}
                 closeDelay={400}
               >
                 <Menu.Target>
-                  <NavLink label="Alliances" />
+                  <NavLink
+                    label="Alliances"
+                    active={["/alliance-hub", "/alliances/manage"].includes(
+                      pathname
+                    )}
+                  />
                 </Menu.Target>
                 <Menu.Dropdown>
                   <NavLink
@@ -109,7 +117,7 @@ const BasicAppShell: FC<PropsWithChildren<IBasicAppShellProps>> = ({
                     />
                   )}
                 </Menu.Dropdown>
-              </Menu> */}
+              </Menu>
               {/* <Menu
                 shadow="md"
                 trigger="click-hover"
@@ -180,8 +188,7 @@ const BasicAppShell: FC<PropsWithChildren<IBasicAppShellProps>> = ({
               active={pathname === "/dashboard"}
             />
           )}
-
-          {/* <NavLink
+          <NavLink
             onClick={close}
             component={Link}
             label="Alliance Hub"
@@ -189,14 +196,16 @@ const BasicAppShell: FC<PropsWithChildren<IBasicAppShellProps>> = ({
             active={pathname === "/alliance-hub"}
             prefetch
           />
-          <NavLink
-            onClick={close}
-            component={Link}
-            label="Manage Your Alliances"
-            href="/alliances/manage"
-            active={pathname === "/alliances/manage"}
-            // prefetch
-          /> */}
+          {session && (
+            <NavLink
+              onClick={close}
+              component={Link}
+              label="Manage Your Alliances"
+              href="/alliances/manage"
+              active={pathname === "/alliances/manage"}
+              // prefetch
+            />
+          )}
         </AppShell.Section>
         <AppShell.Section>
           <NavLink

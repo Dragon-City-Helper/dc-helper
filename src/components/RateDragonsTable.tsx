@@ -1,4 +1,4 @@
-import { Perk, Rarity, Rating } from "@prisma/client";
+import { Rarity, Rating } from "@prisma/client";
 import { FC, useEffect, useState } from "react";
 import RatingDropdown from "./RatingDropdown";
 import { BaseDragons, putDragonData } from "@/services/dragons";
@@ -125,7 +125,7 @@ const RateDragonsTable: FC<IRateDragonsTableProps> = ({ dragons }) => {
   const onRatingChange = (
     dragon: BaseDragons[number],
     ratingKey: string,
-    value: number,
+    value: number
   ) => {
     setDirty({
       ...dirty,
@@ -183,7 +183,7 @@ const RateDragonsTable: FC<IRateDragonsTableProps> = ({ dragons }) => {
 
   const onPerksChange = (
     dragonId: string,
-    perkSuggestions: IPerkSuggestion[],
+    perkSuggestions: IPerkSuggestion[]
   ) => {
     setDirty({
       ...dirty,
@@ -237,7 +237,7 @@ const RateDragonsTable: FC<IRateDragonsTableProps> = ({ dragons }) => {
                   onPerksChange={(perkSuggestions) =>
                     onPerksChange(
                       dragon.id,
-                      perkSuggestions as IPerkSuggestion[],
+                      perkSuggestions as IPerkSuggestion[]
                     )
                   }
                   combinations={localPerks[dragon.id] ?? []}
