@@ -4,7 +4,7 @@ import DragonDetailCard from "@/components/DragonDetailCard";
 import ElementImage from "@/components/ElementImage";
 import FamilyImage from "@/components/FamilyImage";
 import RarityImage from "@/components/RarityImage";
-import { ElementsNames, RarityNames } from "@/constants/Dragon";
+import { elements, ElementsNames, RarityNames } from "@/constants/Dragon";
 import { BaseDragons } from "@/services/dragons";
 import {
   Card,
@@ -18,6 +18,7 @@ import {
   AccordionPanel,
   AccordionControl,
   SimpleGrid,
+  Tabs,
 } from "@mantine/core";
 import { Elements, Rarity } from "@prisma/client";
 import { useRouter } from "next/navigation";
@@ -31,7 +32,7 @@ type Stats = {
   skinCount: number;
   familyCounts: Record<string, { dragons: number; skins: number }>;
   tagCounts: Record<string, { dragons: number; skins: number }>;
-  topRatedDragons: BaseDragons;
+  topRatedDragonsByElement: Record<Elements, BaseDragons>;
 };
 
 const DragonDashboard = ({ stats }: { stats: Stats }) => {
@@ -43,7 +44,7 @@ const DragonDashboard = ({ stats }: { stats: Stats }) => {
     skinCount,
     familyCounts,
     tagCounts,
-    topRatedDragons,
+    topRatedDragonsByElement,
   } = stats;
   const { refresh } = useRouter();
 
@@ -84,11 +85,41 @@ const DragonDashboard = ({ stats }: { stats: Stats }) => {
         <AccordionItem value="Top Rated Dragons">
           <AccordionControl>Your Top Rated Dragons</AccordionControl>
           <AccordionPanel>
-            <SimpleGrid cols={{ base: 2, md: 3 }}>
-              {topRatedDragons.map((dragon) => (
-                <DragonDetailCard dragon={dragon} key={dragon.id} />
-              ))}
-            </SimpleGrid>
+            <Tabs defaultValue={elements[0]}>
+              <Tabs.List>
+                {elements.map((element) => (
+                  <Tabs.Tab
+                    key={`${element}-top-owned-dragons-tab`}
+                    value={element}
+                  >
+                    <Group>
+                      <ElementImage element={element} />
+                      <Text>{ElementsNames[element]}</Text>
+                    </Group>
+                  </Tabs.Tab>
+                ))}
+              </Tabs.List>
+
+              {Object.entries(topRatedDragonsByElement).map(
+                ([element, dragons]) => {
+                  return (
+                    <Tabs.Panel
+                      value={element}
+                      key={`${element}-top-owned-dragons-tab-panel`}
+                    >
+                      <Title order={3} my="md">
+                        Top {ElementsNames[element as Elements]} Dragons
+                      </Title>
+                      <SimpleGrid cols={{ base: 2, md: 3 }}>
+                        {dragons.map((dragon) => (
+                          <DragonDetailCard dragon={dragon} key={dragon.id} />
+                        ))}
+                      </SimpleGrid>
+                    </Tabs.Panel>
+                  );
+                }
+              )}
+            </Tabs>
           </AccordionPanel>
         </AccordionItem>
 
