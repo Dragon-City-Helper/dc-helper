@@ -1,23 +1,17 @@
 "use client";
 
-import {
-  AppShell,
-  Burger,
-  Group,
-  NavLink,
-  Text,
-  UnstyledButton,
-} from "@mantine/core";
+import { AppShell, Burger, Group, Menu, NavLink } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
 import Link from "next/link";
 import Logo from "./Logo";
 import { FC, PropsWithChildren } from "react";
-import { signIn, signOut, useSession } from "next-auth/react";
+import { signIn, signOut } from "next-auth/react";
 import { usePathname } from "next/navigation";
 import {
   IconBrandDiscordFilled,
   IconLogin2,
   IconLogout2,
+  IconTipJar,
 } from "@tabler/icons-react";
 import { Session } from "next-auth";
 
@@ -35,16 +29,127 @@ const BasicAppShell: FC<PropsWithChildren<IBasicAppShellProps>> = ({
     <AppShell
       header={{ height: 60 }}
       navbar={{
-        width: 200,
-        breakpoint: "md",
-        collapsed: { desktop: false, mobile: !opened },
+        width: 300,
+        breakpoint: "sm",
+        collapsed: { desktop: true, mobile: !opened },
       }}
       padding="md"
     >
       <AppShell.Header>
-        <Group h="100%" px="md">
-          <Burger opened={opened} onClick={toggle} />
-          <Logo />
+        <Group h="100%" w="100%" px="md" wrap="nowrap">
+          <Burger opened={opened} onClick={toggle} hiddenFrom="sm" size="sm" />
+          <Group h="100%" w="100%" justify="space-between">
+            <Logo />
+            <Group ml="xl" gap={0} visibleFrom="sm" wrap="nowrap">
+              <Menu
+                shadow="md"
+                trigger="click-hover"
+                openDelay={100}
+                closeDelay={400}
+              >
+                <Menu.Target>
+                  <NavLink label="Dragons" />
+                </Menu.Target>
+                <Menu.Dropdown>
+                  <NavLink
+                    onClick={close}
+                    component={Link}
+                    label="Home"
+                    href="/"
+                    active={pathname === "/"}
+                    prefetch
+                  />
+                  <NavLink
+                    w="100%"
+                    onClick={close}
+                    component={Link}
+                    label="Tierlist"
+                    href="/tierlist"
+                    active={pathname === "/tierlist"}
+                    prefetch
+                  />
+                  {session && (
+                    <NavLink
+                      onClick={close}
+                      component={Link}
+                      label="Dragon Dashboard"
+                      href="/dashboard"
+                      prefetch={false}
+                      active={pathname === "/dashboard"}
+                    />
+                  )}
+                </Menu.Dropdown>
+              </Menu>
+              {/* <Menu
+                shadow="md"
+                trigger="click-hover"
+                openDelay={100}
+                closeDelay={400}
+              >
+                <Menu.Target>
+                  <NavLink label="Alliances" />
+                </Menu.Target>
+                <Menu.Dropdown>
+                  <NavLink
+                    onClick={close}
+                    component={Link}
+                    label="Alliance Hub"
+                    href="/alliance-hub"
+                    active={pathname === "/alliance-hub"}
+                    prefetch
+                  />
+                  {session && (
+                    <NavLink
+                      onClick={close}
+                      component={Link}
+                      label="Manage Your Alliances"
+                      href="/alliances/manage"
+                      active={pathname === "/alliances/manage"}
+                      // prefetch
+                    />
+                  )}
+                </Menu.Dropdown>
+              </Menu> */}
+              {/* <Menu
+                shadow="md"
+                trigger="click-hover"
+                openDelay={100}
+                closeDelay={400}
+              >
+                <Menu.Target>
+                  <NavLink label="Arenas" />
+                </Menu.Target>
+                <Menu.Dropdown></Menu.Dropdown>
+              </Menu> */}
+              <Menu
+                shadow="md"
+                trigger="hover"
+                openDelay={100}
+                closeDelay={400}
+              >
+                <Menu.Target>
+                  <NavLink label="Community" />
+                </Menu.Target>
+                <Menu.Dropdown>
+                  <NavLink
+                    label="Discord"
+                    leftSection={<IconBrandDiscordFilled color="#5865F2" />}
+                    href="https://discord.gg/U8CyQYpnWT"
+                    target="_blank"
+                  />
+                </Menu.Dropdown>
+              </Menu>
+              <NavLink
+                href="https://buymeacoffee.com/8obtn6i2fc"
+                label="Donate"
+              />
+              {session ? (
+                <NavLink label="Logout" onClick={() => signOut()} />
+              ) : (
+                <NavLink label="Login" onClick={() => signIn()} />
+              )}
+            </Group>
+          </Group>
         </Group>
       </AppShell.Header>
       <AppShell.Navbar p="md">
@@ -75,8 +180,31 @@ const BasicAppShell: FC<PropsWithChildren<IBasicAppShellProps>> = ({
               active={pathname === "/dashboard"}
             />
           )}
+
+          {/* <NavLink
+            onClick={close}
+            component={Link}
+            label="Alliance Hub"
+            href="/alliance-hub"
+            active={pathname === "/alliance-hub"}
+            prefetch
+          />
+          <NavLink
+            onClick={close}
+            component={Link}
+            label="Manage Your Alliances"
+            href="/alliances/manage"
+            active={pathname === "/alliances/manage"}
+            // prefetch
+          /> */}
         </AppShell.Section>
         <AppShell.Section>
+          <NavLink
+            href="https://buymeacoffee.com/8obtn6i2fc"
+            leftSection={<IconTipJar color="#FFD700" />}
+            target="_blank"
+            label="Donate"
+          />
           <NavLink
             label="Discord"
             leftSection={<IconBrandDiscordFilled color="#5865F2" />}
@@ -103,6 +231,9 @@ const BasicAppShell: FC<PropsWithChildren<IBasicAppShellProps>> = ({
         <Group fz="xs" justify="center">
           <Link href="/terms">Terms & Conditions</Link>
           <Link href="/privacy">Privacy Policy</Link>
+          <Link href="https://buymeacoffee.com/8obtn6i2fc" target="_blank">
+            Donate
+          </Link>
         </Group>
       </AppShell.Footer>
     </AppShell>
