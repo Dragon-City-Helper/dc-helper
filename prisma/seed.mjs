@@ -106,7 +106,7 @@ function parseSkills(skills) {
       name: skill.NAME,
       description: skill.DESC,
       skillType: skill.SKILL_TYPE,
-      cooldown: skill.COOLDOWN || null,
+      cooldown: skill.COOLDOWN ?? -1,
     };
 
     const foodProducerSkill =
@@ -117,11 +117,17 @@ function parseSkills(skills) {
             name: "Food Production",
             description: "",
             skillType: -1,
-            cooldown: null,
+            cooldown: -1,
           }
         : null;
-
-    return foodProducerSkill ? [foodProducerSkill, parsedSkill] : [parsedSkill];
+    const skills = [];
+    if (foodProducerSkill) {
+      skills.push(foodProducerSkill);
+    }
+    if (!parsedSkill.name.startsWith("tid_")) {
+      skills.push(parsedSkill);
+    }
+    return skills;
   });
 }
 
@@ -222,7 +228,11 @@ const transformData = (data) => {
   return dragonsAndSkins;
 };
 const filterData = (data) => {
-  return data.filter((d) => ["L"].includes(d.rarity));
+  return data
+    .filter((d) => {
+      return !d.name.startsWith("tid_") || !d.name.includes(" test");
+    })
+    .filter((d) => d.hasSkills);
 };
 
 const writeData = (data) => {
@@ -273,7 +283,7 @@ async function writeJsonToFile(data, filePath) {
     console.log(`JSON data has been written to ${filePath}`);
   } catch (error) {
     console.error(
-      `An error occurred while writing to the file: ${error.message}`,
+      `An error occurred while writing to the file: ${error.message}`
     );
   }
 }
@@ -288,7 +298,10 @@ export async function seedDragons(dragons) {
         skills: {
           connectOrCreate: dragon.skills.map((skill) => ({
             where: {
-              name: skill.name,
+              name_cooldown: {
+                name: skill.name,
+                cooldown: skill.cooldown,
+              },
             },
             create: skill,
           })),
@@ -299,7 +312,10 @@ export async function seedDragons(dragons) {
         skills: {
           connectOrCreate: dragon.skills.map((skill) => ({
             where: {
-              name: skill.name,
+              name_cooldown: {
+                name: skill.name,
+                cooldown: skill.cooldown,
+              },
             },
             create: skill,
           })),
@@ -315,7 +331,7 @@ export async function seedDragons(dragons) {
   }
   const dragonsLength = dragons.filter((dragon) => !dragon.isSkin).length;
   const skinsLength = dragons.filter(
-    (dragon) => dragon.isSkin && !dragon.hasAllSkins,
+    (dragon) => dragon.isSkin && !dragon.hasAllSkins
   ).length;
   const allSkinsLength = dragons.filter((dragon) => dragon.hasAllSkins).length;
   console.log(`Seeding finished.

@@ -98,12 +98,14 @@ model ownedDragons {
 
 model Skill {
   id          String    @id @default(auto()) @map("_id") @db.ObjectId
-  name        String    @unique
+  name        String
   skillType   Int
   description String?
-  cooldown    Int?
+  cooldown    Int
   dragons     dragons[] @relation(fields: [dragonsId], references: [id])
   dragonsId   String[]  @db.ObjectId
+
+  @@unique([name, cooldown])
 }
 
 enum Elements {
