@@ -6,6 +6,7 @@ import DragonRatings from "./DragonRatings";
 import DragonSkills from "./DragonSkills";
 import DragonSkinChanges from "./DragonSkinChanges";
 import { Stack, Title, Card, SimpleGrid, Center } from "@mantine/core";
+import DragonStats from "./DragonStats";
 
 interface IDragonDetailsProps {
   dragon: fullDragon;
@@ -28,7 +29,10 @@ const DragonDetails: FC<IDragonDetailsProps> = ({ dragon, hideTitle }) => {
           {dragon.isSkin ? (
             <DragonSkinChanges dragon={dragon} />
           ) : (
-            <DragonSkills dragon={dragon} />
+            <>
+              <DragonStats dragon={dragon} />
+              <DragonSkills dragon={dragon} />
+            </>
           )}
         </Stack>
       </SimpleGrid>

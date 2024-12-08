@@ -1,6 +1,7 @@
 "use client";
 import { fullDragon } from "@/services/dragons";
-import { Grid, Stack, Text, Title, Card, Image } from "@mantine/core";
+import { Grid, Stack, Text, Title, Card, Image, Group } from "@mantine/core";
+import { IconHourglass } from "@tabler/icons-react";
 import NextImage from "next/image";
 import { FC } from "react";
 
@@ -30,6 +31,17 @@ const DragonSkills: FC<IDragonSkillsProps> = ({ dragon }) => {
               <Grid.Col span={10}>
                 <Title order={4}>{skill.name}</Title>
                 <Text> {skill.description}</Text>
+                {skill.cooldown && skill.cooldown !== -1 ? (
+                  <Group align="center">
+                    <IconHourglass />
+                    <b>
+                      {skill.cooldown}
+                      {skill.cooldown > 1 ? " Turns" : " Turn"}
+                    </b>
+                  </Group>
+                ) : (
+                  ""
+                )}
               </Grid.Col>
             </Grid>
           ))

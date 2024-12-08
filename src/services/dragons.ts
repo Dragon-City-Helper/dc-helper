@@ -46,8 +46,8 @@ export const fetchHomeDragons = cache(
     {
       revalidate: 21600, // 6 hours
       tags: ["homeDragons"],
-    },
-  ),
+    }
+  )
 );
 
 // Paginated & Filtered dragons with optional search filters
@@ -103,7 +103,7 @@ export const fetchRateScreenDragons = cache(
         perkSuggestions: true,
       },
     });
-  },
+  }
 );
 
 // Fetch dragons with non-null ratings
@@ -138,7 +138,7 @@ export const fetchRatedDragons = cache(async (options?: { rarity: Rarity }) => {
 export const fetchUniqueTags = async () => {
   const tags = await prisma.dragons.findMany({ select: { tags: true } });
   return Array.from(
-    new Set(tags.flatMap((dragon) => dragon.tags).filter(Boolean)),
+    new Set(tags.flatMap((dragon) => dragon.tags).filter(Boolean))
   );
 };
 
@@ -156,7 +156,7 @@ export const fetchUniqueFamilyNames = async () => {
 
 export const fetchAllDragonIds = cache(async () => {
   return (await prisma.dragons.findMany({ select: { id: true } })).map(
-    (dragon) => dragon.id,
+    (dragon) => dragon.id
   );
 });
 
@@ -175,7 +175,13 @@ export const fetchSkinsForADragon = cache(async (name: string) => {
     include: {
       rating: true,
       skills: {
-        select: { id: true, name: true, skillType: true, description: true },
+        select: {
+          id: true,
+          name: true,
+          skillType: true,
+          description: true,
+          cooldown: true,
+        },
       },
       perkSuggestions: {
         select: {
@@ -193,7 +199,13 @@ export const fetchDragon = cache(async (id: string) => {
     include: {
       rating: true,
       skills: {
-        select: { id: true, name: true, skillType: true, description: true },
+        select: {
+          id: true,
+          name: true,
+          skillType: true,
+          description: true,
+          cooldown: true,
+        },
       },
       perkSuggestions: {
         select: {
@@ -221,7 +233,7 @@ export const fetchDragonByName = cache(async (name: string) => {
 
 export async function updateDragon(
   id: string,
-  data: Prisma.dragonsUpdateInput,
+  data: Prisma.dragonsUpdateInput
 ) {
   try {
     return await prisma.dragons.update({
@@ -241,7 +253,7 @@ export async function putDragonData(
     tags: string[];
     rating: Rating;
     perkSuggestions: IPerkSuggestion[];
-  },
+  }
 ) {
   const { dragonsId, ...createRating } = data.rating ?? {};
   const { id: ID, dragonsId: dID, ...updateRating } = data.rating ?? {};
@@ -313,10 +325,10 @@ export async function getDragonById(id: string) {
     if (error.response) {
       // Server responded with a status other than 200 range
       console.error(
-        `Error: ${error.response.status} - ${error.response.data.error}`,
+        `Error: ${error.response.status} - ${error.response.data.error}`
       );
       throw new Error(
-        error.response.data.error || "Error fetching dragon data",
+        error.response.data.error || "Error fetching dragon data"
       );
     } else if (error.request) {
       // No response was received from the server

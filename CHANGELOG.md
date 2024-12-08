@@ -1,5 +1,12 @@
 # dragon-city-helper
 
+## 1.2.1
+
+### Patch Changes
+
+- Reset all skills of all dragons to introduce cooldowns
+- Introduce dragon base stats panel to dragon details
+
 ## 1.2.0
 
 ### Minor Changes
