@@ -6,9 +6,26 @@ import { FC } from "react";
 export const revalidate = 21600; // temporarily make it a dynamic page , later update the page to revalidate every 6 hour.
 
 export const metadata = {
-  title: "Dragon City Helper - Dragon Tier List",
+  title: "Dragon Tier List - Rankings & Filters | Dragon City Helper",
   description:
-    "Discover the ultimate Dragon Tier List on Dragon City Helper! Explore rankings for each dragon based on overall performance, cooldown, value, versatility, potency, primary stats, coverage, usability, and viability. Easily filter dragons by element, family name, rarity, skins, VIP status, and more.",
+    "Explore the definitive Dragon Tier List on Dragon City Helper! Evaluate dragons ranked by overall performance, cooldown, value, versatility, potency, primary stats, and more. Tailor your search with filters for element, rarity, family name, VIP status, skins, and more to find the best dragon for your strategy.",
+  keywords: [
+    "Dragon City",
+    "Dragon City Helper",
+    "Dragon City Tier List",
+    "Best Dragons",
+    "Dragon Rankings",
+    "Dragon Stats",
+    "Dragon Elements",
+    "Dragon Rarity",
+    "Dragon Families",
+    "Dragon Skins",
+    "VIP Dragons",
+    "Dragon Strategy",
+    "Dragon Value",
+    "Dragon City Arena",
+    "Dragon City Meta",
+  ].join(", "),
   robots: {
     index: true,
     follow: true,

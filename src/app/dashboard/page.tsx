@@ -9,6 +9,24 @@ import { redirect } from "next/navigation";
 
 export const dynamic = "force-dynamic";
 
+export async function generateMetadata() {
+  return {
+    title: "Dragon Dashboard - Manage Your Collection",
+    description:
+      "View and analyze your owned dragons, including statistics by rarity, element, and more.",
+    keywords: [
+      "Dragon City Helper",
+      "Dragon Dashboard",
+      "Owned Dragons",
+      "Dragon Statistics",
+      "Dragon Skins",
+      "Dragon Rarity",
+      "Dragon Elements",
+      "VIP Dragons",
+      "Dragon Families",
+    ],
+  };
+}
 const DashboardPage = async () => {
   // Retrieve the session on the server side
   const session = await auth();
