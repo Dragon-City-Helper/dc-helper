@@ -1,8 +1,8 @@
 import { FC } from "react";
 import AllianceHub from "@/views/AllianceHub";
 import { fetchAlliances } from "@/services/alliances";
-import { auth } from "@/auth";
 
+export const revalidate = 21600;
 export const metadata = {
   title: "Alliance Hub - Dragon City Helper",
   description:
@@ -22,7 +22,7 @@ export const metadata = {
     title: "Alliance Hub - Dragon City Helper",
     description:
       "Discover and join alliances in Dragon City Helper. Use filters to find the perfect alliance for you.",
-    url: "https://www.dragoncityhelper.com/alliance-hub",
+    url: "https://www.dragoncityhelper.com/alliances",
     siteName: "Dragon City Helper",
     locale: "en_US",
     type: "website",
@@ -43,9 +43,8 @@ export const metadata = {
 };
 
 const Page: FC = async () => {
-  const session = await auth();
-  const { alliances } = await fetchAlliances({ page: 1, perPage: 20 });
-  return <AllianceHub initialAlliances={alliances} session={session} />;
+  const { alliances } = await fetchAlliances({ page: 1, perPage: 50 });
+  return <AllianceHub initialAlliances={alliances} />;
 };
 
 export default Page;

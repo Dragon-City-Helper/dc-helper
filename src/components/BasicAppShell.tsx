@@ -92,7 +92,7 @@ const BasicAppShell: FC<PropsWithChildren<IBasicAppShellProps>> = ({
                 <Menu.Target>
                   <NavLink
                     label="Alliances"
-                    active={["/alliance-hub", "/alliances/manage"].includes(
+                    active={["/alliances", "/alliances/manage"].includes(
                       pathname
                     )}
                   />
@@ -102,8 +102,8 @@ const BasicAppShell: FC<PropsWithChildren<IBasicAppShellProps>> = ({
                     onClick={close}
                     component={Link}
                     label="Alliance Hub"
-                    href="/alliance-hub"
-                    active={pathname === "/alliance-hub"}
+                    href="/alliances"
+                    active={pathname === "/alliances"}
                     prefetch
                   />
                   {session && (
@@ -192,10 +192,11 @@ const BasicAppShell: FC<PropsWithChildren<IBasicAppShellProps>> = ({
             onClick={close}
             component={Link}
             label="Alliance Hub"
-            href="/alliance-hub"
-            active={pathname === "/alliance-hub"}
+            href="/alliances"
+            active={pathname === "/alliances"}
             prefetch
           />
+
           {session && (
             <NavLink
               onClick={close}
