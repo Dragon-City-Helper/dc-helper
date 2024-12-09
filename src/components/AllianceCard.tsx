@@ -1,5 +1,3 @@
-// app/alliance-center/AllianceCard.tsx
-
 "use client";
 
 import { AllianceWithRequirements } from "@/services/alliances";

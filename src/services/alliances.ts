@@ -1,4 +1,5 @@
 import prisma from "@/lib/prisma";
+import { cache } from "react";
 
 export const createAlliance = async (data: any, userId: string) => {
   return await prisma.alliance.create({
@@ -72,7 +73,13 @@ export const getAllianceTags = async () => {
 };
 
 // Helper function to construct the base where clause
-const constructBaseWhereClause = (isRecruiting?: boolean, tags: string[]) => {
+const constructBaseWhereClause = ({
+  isRecruiting,
+  tags,
+}: {
+  isRecruiting?: boolean;
+  tags: string[];
+}) => {
   const baseWhereClause: any = {
     isDeleted: false,
     isRecruiting:
@@ -110,16 +117,12 @@ const constructRequirementsFilter = (
 // Helper function to fetch alliances
 const fetchAlliancesByCriteria = async (
   whereClause: any,
-  isSponsored: boolean,
-  sponsoredIds: string[],
   skip: number,
   take: number
 ) => {
   return await prisma.alliance.findMany({
     where: {
       ...whereClause,
-      isSponsored,
-      id: isSponsored ? undefined : { notIn: sponsoredIds },
     },
     include: { requirements: true },
     orderBy: { createdAt: "desc" },
@@ -139,10 +142,20 @@ const fetchTotalCount = async (whereClause: any, sponsoredIds: string[]) => {
   });
 };
 
+export const fetchUserOwnedAlliances = cache(async (userId: string) => {
+  return fetchAlliancesByCriteria(
+    {
+      createdBy: userId,
+    },
+    0,
+    100
+  );
+});
+
 // Main function
 export const fetchAlliances = async ({
   isRecruiting = true,
-  tags,
+  tags = [],
   minMasterPoints,
   discord,
   contribution,
@@ -160,7 +173,7 @@ export const fetchAlliances = async ({
   perPage?: number;
 }) => {
   // Step 1: Build base where clause and requirements filter
-  const baseWhereClause = constructBaseWhereClause(isRecruiting, tags);
+  const baseWhereClause = constructBaseWhereClause({ isRecruiting, tags });
   const requirementsFilter = constructRequirementsFilter(
     minMasterPoints,
     discord,
@@ -171,14 +184,15 @@ export const fetchAlliances = async ({
   if (Object.keys(requirementsFilter).length > 0) {
     baseWhereClause.requirements = requirementsFilter;
   }
-
+  const sponseredBaseWhereClause = {
+    ...baseWhereClause,
+    isSponsored: true,
+  };
   console.log("Filters applied:", baseWhereClause);
 
   // Step 2: Fetch sponsored alliances
   const sponsoredAlliances = await fetchAlliancesByCriteria(
-    baseWhereClause,
-    true,
-    [],
+    sponseredBaseWhereClause,
     0,
     sponsoredLimit
   );
@@ -189,10 +203,14 @@ export const fetchAlliances = async ({
   const nonSponsoredSkip = (page - 1) * perPage;
   const nonSponsoredTake = perPage - sponsoredAlliances.length;
 
+  const nonSponserdBaseWhereClause = {
+    ...baseWhereClause,
+    isSponsored: false,
+    id: { notIn: sponsoredIds },
+  };
+
   const nonSponsoredAlliances = await fetchAlliancesByCriteria(
-    baseWhereClause,
-    false,
-    sponsoredIds,
+    nonSponserdBaseWhereClause,
     nonSponsoredSkip,
     nonSponsoredTake
   );

@@ -1,3 +1,4 @@
+import { AllianceWithRequirements } from "@/services/alliances";
 import {
   Button,
   Checkbox,
@@ -11,7 +12,6 @@ import {
   Title,
 } from "@mantine/core";
 import { useForm } from "@mantine/form";
-import { Alliance } from "@prisma/client";
 import { useCallback, useEffect, useMemo, useState } from "react";
 
 export default function CreateUpdateAllianceModal({
@@ -25,7 +25,7 @@ export default function CreateUpdateAllianceModal({
   onClose: () => void;
   onCreateAlliance: (alliance: any) => void;
   onUpdateAlliance: (alliance: any) => void;
-  alliance?: Alliance;
+  alliance?: AllianceWithRequirements;
 }) {
   const [tagsOptions, setTagsOptions] = useState<
     { value: string; label: string }[]
@@ -53,10 +53,45 @@ export default function CreateUpdateAllianceModal({
     fetchTags();
   }, []);
 
+  useEffect(() => {
+    if (alliance) {
+      form.setValues({
+        name: alliance.name,
+        description: alliance.description,
+        tags: alliance.tags,
+        isSponsored: alliance.isSponsored,
+        isRecruiting: alliance.isRecruiting,
+        openSpots: alliance.openSpots,
+        contact: alliance.contact,
+        requirements: {
+          minMasterPoints: alliance.requirements.minMasterPoints,
+          discord: alliance.requirements.discord,
+          contribution: alliance.requirements.contribution,
+          other: alliance.requirements.other,
+        },
+      });
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [alliance]);
+
   // Form for creating alliance
   const form = useForm({
     initialValues: alliance
-      ? alliance
+      ? {
+          name: alliance.name,
+          description: alliance.description,
+          tags: alliance.tags,
+          isSponsored: alliance.isSponsored,
+          isRecruiting: alliance.isRecruiting,
+          openSpots: alliance.openSpots,
+          contact: alliance.contact,
+          requirements: {
+            minMasterPoints: alliance.requirements.minMasterPoints,
+            discord: alliance.requirements.discord,
+            contribution: alliance.requirements.contribution,
+            other: alliance.requirements.other,
+          },
+        }
       : {
           name: "",
           description: "",
@@ -81,8 +116,27 @@ export default function CreateUpdateAllianceModal({
   // Handle form submission
   const handleSubmit = useCallback(
     async (values: any) => {
-      if (isUpdateMode) {
-        console.log("update api call here");
+      if (isUpdateMode && !!alliance) {
+        try {
+          const response = await fetch(`/api/alliances/${alliance.id}}`, {
+            method: "PUT",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(values),
+          });
+
+          if (response.ok) {
+            const updatedAlliance = await response.json();
+            onUpdateAlliance(updatedAlliance);
+            form.reset();
+            onClose();
+          } else {
+            const errorData = await response.json();
+            form.setErrors({ api: errorData.error });
+          }
+        } catch (error) {
+          console.error("Error Updating alliance:", error);
+          form.setErrors({ api: "Failed to update alliance" });
+        }
       } else {
         try {
           const response = await fetch("/api/alliances", {
@@ -106,15 +160,21 @@ export default function CreateUpdateAllianceModal({
         }
       }
     },
-    [form, isUpdateMode, onClose, onCreateAlliance]
+    [alliance, form, isUpdateMode, onClose, onCreateAlliance, onUpdateAlliance]
   );
 
   return (
-    <Modal opened={opened} onClose={onClose} title="Create Alliance" size="lg">
+    <Modal
+      opened={opened}
+      onClose={onClose}
+      title={isUpdateMode ? `Update ${alliance?.name}` : "Create Alliance"}
+      size="lg"
+    >
       <form onSubmit={form.onSubmit(handleSubmit)}>
         <Stack>
           <TextInput
             label="Alliance Name"
+            disabled={isUpdateMode}
             {...form.getInputProps("name")}
             required
           />
@@ -176,7 +236,7 @@ export default function CreateUpdateAllianceModal({
           )}
         </Stack>
         <Button type="submit" mt="md">
-          {isUpdateMode ? "Create Alliance" : "Update Alliance"}
+          {isUpdateMode ? "Update Alliance" : "Create Alliance"}
         </Button>
       </form>
     </Modal>
