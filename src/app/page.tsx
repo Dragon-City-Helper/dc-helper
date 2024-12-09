@@ -6,9 +6,24 @@ import { fetchOwned } from "@/services/owned";
 export const revalidate = 43200; // revalidate every 12 hours
 
 export const metadata = {
-  title: "Dragon City Helper - All Dragons",
+  title: "All Dragons in Dragon City | Dragon City Helper",
   description:
-    "Explore all dragons in Dragon City with Dragon City Helper! Filter dragons, mark them as owned or unowned, and get detailed information for each dragon.",
+    "Discover the complete collection of dragons in Dragon City! Use Dragon City Helper to filter dragons by element, rarity, family, and more. Mark your dragons as owned or unowned and access detailed stats, skins, and abilities for every dragon.",
+  keywords: [
+    "Dragon City Helper",
+    "All Dragons",
+    "Dragon Collection",
+    "Dragon Stats",
+    "Dragon Skins",
+    "Dragon Skills",
+    "Dragon Elements",
+    "Dragon Families",
+    "Owned Dragons",
+    "Unowned Dragons",
+    "Dragon Rarity",
+    "Best Dragons",
+    "Dragon Filters",
+  ].join(", "),
   robots: {
     index: true,
     follow: true,

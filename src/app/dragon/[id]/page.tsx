@@ -9,6 +9,7 @@ import {
   fetchDragonByName,
 } from "@/services/dragons";
 import { Title } from "@mantine/core";
+import { ElementsNames } from "@/constants/Dragon";
 
 export const revalidate = 43200; // Revalidate every 12 hours
 
@@ -33,11 +34,28 @@ export async function generateMetadata({ params }: { params: { id: string } }) {
         "The requested dragon could not be found in Dragon City Helper.",
     };
   }
-
+  const keywords = [
+    dragonData.name,
+    "Dragon City Helper",
+    "Dragon Stats",
+    "Dragon Skins",
+    "Dragon City",
+    "Dragon City Rankings",
+    "Dragon City Ratings",
+    dragonData.rarity,
+    ...dragonData.elements.map((el) => ElementsNames[el]),
+    ...(dragonData.tags || []),
+    `${dragonData.name} stats`,
+    `${dragonData.name} skills`,
+    `${dragonData.name} skins`,
+    `${dragonData.name} rankings`,
+    `${dragonData.name} ratings`,
+  ].join(", ");
   // Define dynamic title and description based on dragon data
   return {
     title: `${dragonData.name} - Dragon Details | Dragon City Helper`,
     description: `Explore detailed information on ${dragonData.name}, including skills, stats, skins, and more in Dragon City Helper. Discover if ${dragonData.name} could be a valuable addition to your collection.`,
+    keywords,
     openGraph: {
       title: `${dragonData.name} - Dragon City Helper`,
       description: `Discover detailed stats, skins, and abilities of ${dragonData.name} in Dragon City Helper.`,
@@ -79,7 +97,7 @@ export default async function Page({ params }: { params: { id: string } }) {
   if (dragonData.isSkin) {
     if (dragonData.originalDragonName) {
       const originalDragon = await fetchDragonByName(
-        dragonData.originalDragonName,
+        dragonData.originalDragonName
       );
       redirect(`/dragon/${originalDragon.id}`, RedirectType.replace);
     } else {
