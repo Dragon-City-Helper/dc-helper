@@ -28,11 +28,23 @@ export const fetchHomeDragons = cache(
           originalDragonName: true,
           tags: true,
           perkSuggestions: true,
+          releaseDate: true,
         },
       });
-
+      // return dragons.sort((a, b) => {
+      //   return (
+      //     (b.releaseDate ? new Date(b.releaseDate) : new Date()).getTime() -
+      //     (a.releaseDate ? new Date(a.releaseDate) : new Date()).getTime()
+      //   );
+      // });
       const rarityOrder = ["H", "M", "L", "E", "V", "R", "C"];
       return dragons.sort((a, b) => {
+        if (a.releaseDate !== b.releaseDate) {
+          return (
+            (b.releaseDate ? new Date(b.releaseDate) : new Date()).getTime() -
+            (a.releaseDate ? new Date(a.releaseDate) : new Date()).getTime()
+          );
+        }
         if (b.rating?.overall !== a.rating?.overall)
           return (b.rating?.overall ?? 0) - (a.rating?.overall ?? 0);
         if (b.rating?.score !== a.rating?.score)
@@ -101,6 +113,7 @@ export const fetchRateScreenDragons = cache(
         originalDragonName: true,
         tags: true,
         perkSuggestions: true,
+        releaseDate: true,
       },
     });
   }
@@ -130,6 +143,7 @@ export const fetchRatedDragons = cache(async (options?: { rarity: Rarity }) => {
       originalDragonName: true,
       tags: true,
       perkSuggestions: true,
+      releaseDate: true,
     },
   });
 });
