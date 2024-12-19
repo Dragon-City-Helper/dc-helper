@@ -18,6 +18,9 @@ model dragons {
   image              String
   thumbnail          String
   code               Int
+  createdAt          DateTime?        @default(now())
+  updatedAt          DateTime?        @updatedAt
+  releaseDate        DateTime?
   baseSpeed          Int
   maxSpeed           Int
   baseLife           Int

@@ -172,6 +172,12 @@ const transformData = (data, filterUnreleased = true) => {
         description: TID_DESC,
         code: ID,
         rarity,
+        releaseDate: BOOK.RELEASE.TIMESTAMP
+          ? new Date(BOOK.RELEASE.TIMESTAMP * 1000)
+          : null,
+        createdAt: BOOK.RELEASE.TIMESTAMP
+          ? new Date(BOOK.RELEASE.TIMESTAMP * 1000)
+          : null,
         elements,
         image,
         thumbnail,
@@ -237,11 +243,18 @@ const transformData = (data, filterUnreleased = true) => {
   return dragonsAndSkins;
 };
 const filterData = (data) => {
-  return data
-    .filter((d) => {
-      return !d.name.startsWith("tid_") || !d.name.includes(" test");
-    })
-    .filter((d) => d.hasSkills);
+  return data.filter((d) => {
+    return (
+      !d.name.startsWith("tid_") &&
+      !d.name.includes(" Test") &&
+      !d.name.includes("???") &&
+      !d.name.includes("Copy") &&
+      !d.name.includes("Chest") &&
+      !d.name.includes("Dragoonie") &&
+      d.code > 2222
+    );
+  });
+  // .filter((d) => d.hasSkills);
 };
 
 const writeData = (data) => {
@@ -257,10 +270,12 @@ async function main() {
     const filePath = path.join(folderPath, fileName);
 
     // Read the JSON file
-    // const dragonData = await readJsonFile(filePath);
-    // const transformedData = transformData(dragonData, true);
-    // const filteredData = filterData(transformedData);
-    // writeData(filteredData);
+
+    const dragonData = await readJsonFile(filePath);
+    const transformedData = transformData(dragonData, true);
+    const filteredData = filterData(transformedData);
+    writeData(filteredData);
+
     writeVipDragonsToAFile(filePath);
   } catch (error) {
     console.error("An error occurred in main:", error);
