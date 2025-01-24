@@ -11,7 +11,7 @@ import FilterMessage, { IFilterMessageProps } from "@/components/FilterMessage";
 import { useSession } from "next-auth/react";
 import { useDebouncedCallback } from "@mantine/hooks";
 
-const TAKE = 48; // Number of items to fetch each time
+const TAKE = 24; // Number of items to fetch each time
 export default function Home({
   initialDragons,
   owned,
@@ -112,7 +112,7 @@ export default function Home({
       filters.search,
       filters.vip,
       filters.skins,
-    ],
+    ]
   );
 
   useEffect(() => {
@@ -152,7 +152,7 @@ export default function Home({
         onClientFilterChange(key, value);
       }
     },
-    500,
+    500
   );
 
   const allowedFilters: (keyof IFilters)[] = [

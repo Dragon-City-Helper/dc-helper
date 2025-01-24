@@ -15,7 +15,6 @@ import {
   Loader,
   SimpleGrid,
   Stack,
-  TagsInput,
   Text,
 } from "@mantine/core";
 import DragonFaceCard from "./DragonFaceCard";
@@ -29,10 +28,8 @@ interface IRateDragonsTableProps {
 
 const RateDragonsTable: FC<IRateDragonsTableProps> = ({ dragons }) => {
   const [localRatings, setLocalRatings] = useState<Record<string, Rating>>({});
-  const [localTags, setLocalTags] = useState<Record<string, string[]>>({});
   const [dirty, setDirty] = useState<{ [key: string]: boolean }>({});
   const [loading, setLoading] = useState<{ [key: string]: boolean }>({});
-  const [availableTags, setAvailableTags] = useState<string[]>([]);
   const [localPerks, setLocalPerks] = useState<
     Record<string, IPerkSuggestion[]>
   >({});
@@ -46,13 +43,6 @@ const RateDragonsTable: FC<IRateDragonsTableProps> = ({ dragons }) => {
     }, {});
     setLocalRatings(initRatings);
 
-    const initTags = dragons.reduce((acc, curr) => {
-      return {
-        ...acc,
-        [curr.id]: curr.tags || [],
-      };
-    }, {});
-    setLocalTags(initTags);
     const initPerkSuggestions = dragons.reduce((acc, curr) => {
       return {
         ...acc,
@@ -66,24 +56,6 @@ const RateDragonsTable: FC<IRateDragonsTableProps> = ({ dragons }) => {
     setLocalPerks(initPerkSuggestions);
   }, [dragons]);
 
-  useEffect(() => {
-    const fetchTags = async () => {
-      try {
-        const response = await fetch("/api/tags", {
-          next: {
-            revalidate: 86400, // 1 day
-            tags: ["tags"],
-          },
-        });
-        const tags = await response.json();
-        setAvailableTags(tags);
-      } catch (error) {
-        console.error("Failed to fetch tags:", error);
-      }
-    };
-    fetchTags();
-  }, []);
-
   const updateDragonData = async (id: string) => {
     setLoading({
       ...loading,
@@ -91,7 +63,6 @@ const RateDragonsTable: FC<IRateDragonsTableProps> = ({ dragons }) => {
     });
 
     const updatedData = {
-      tags: localTags[id],
       rating: localRatings[id],
       perkSuggestions: localPerks[id], // Include perkSuggestions here
     };
@@ -104,10 +75,6 @@ const RateDragonsTable: FC<IRateDragonsTableProps> = ({ dragons }) => {
           [id]: localRatings[id],
         }));
       }
-      setLocalTags((tags) => ({
-        ...tags,
-        [id]: updatedDragon.tags,
-      }));
       setDirty({
         ...dirty,
         [id]: false,
@@ -125,7 +92,7 @@ const RateDragonsTable: FC<IRateDragonsTableProps> = ({ dragons }) => {
   const onRatingChange = (
     dragon: BaseDragons[number],
     ratingKey: string,
-    value: number,
+    value: number
   ) => {
     setDirty({
       ...dirty,
@@ -142,17 +109,6 @@ const RateDragonsTable: FC<IRateDragonsTableProps> = ({ dragons }) => {
         [dragon.id]: newRating,
       };
     });
-  };
-
-  const onTagsChange = (dragonId: string, newTags: string[]) => {
-    setDirty({
-      ...dirty,
-      [dragonId]: true,
-    });
-    setLocalTags((prevTags) => ({
-      ...prevTags,
-      [dragonId]: newTags,
-    }));
   };
 
   const getScore = (rating: Rating, dragonRarity: Rarity) => {
@@ -183,7 +139,7 @@ const RateDragonsTable: FC<IRateDragonsTableProps> = ({ dragons }) => {
 
   const onPerksChange = (
     dragonId: string,
-    perkSuggestions: IPerkSuggestion[],
+    perkSuggestions: IPerkSuggestion[]
   ) => {
     setDirty({
       ...dirty,
@@ -223,21 +179,11 @@ const RateDragonsTable: FC<IRateDragonsTableProps> = ({ dragons }) => {
                 <Text w="100%" ta="center">
                   <b>{dragon.name}</b>
                 </Text>
-                <div className="flex flex-col gap-2 mt-4">
-                  <b>Tags</b>
-                  <TagsInput
-                    value={localTags[dragon.id]}
-                    onChange={(value) => onTagsChange(dragon.id, value)}
-                    placeholder="Add tags"
-                    maxTags={6}
-                    data={availableTags}
-                  />
-                </div>
                 <PerkSelector
                   onPerksChange={(perkSuggestions) =>
                     onPerksChange(
                       dragon.id,
-                      perkSuggestions as IPerkSuggestion[],
+                      perkSuggestions as IPerkSuggestion[]
                     )
                   }
                   combinations={localPerks[dragon.id] ?? []}

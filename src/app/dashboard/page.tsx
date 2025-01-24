@@ -108,22 +108,6 @@ const DashboardPage = async () => {
     return acc;
   }, {} as Record<string, { dragons: number; skins: number }>);
 
-  const tagCounts = ownedDragons.reduce((acc, dragon) => {
-    dragon.tags.forEach((tag) => {
-      if (!acc[tag]) {
-        acc[tag] = { dragons: 0, skins: 0 };
-      }
-      if (dragon.hasAllSkins) {
-        return acc;
-      }
-      if (dragon.isSkin) {
-        acc[tag].skins += 1;
-      } else {
-        acc[tag].dragons += 1;
-      }
-    });
-    return acc;
-  }, {} as Record<string, { dragons: number; skins: number }>);
   const rarityOrder = ["H", "M", "L", "E", "V", "R", "C"];
 
   const topRatedDragonsByElement = Object.values(
@@ -171,7 +155,6 @@ const DashboardPage = async () => {
     vipCounts,
     skinCount,
     familyCounts,
-    tagCounts,
     topRatedDragonsByElement,
   };
 

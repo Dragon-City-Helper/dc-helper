@@ -31,7 +31,6 @@ type Stats = {
   vipCounts: { dragons: number; skins: number };
   skinCount: number;
   familyCounts: Record<string, { dragons: number; skins: number }>;
-  tagCounts: Record<string, { dragons: number; skins: number }>;
   topRatedDragonsByElement: Record<Elements, BaseDragons>;
 };
 
@@ -43,7 +42,6 @@ const DragonDashboard = ({ stats }: { stats: Stats }) => {
     vipCounts,
     skinCount,
     familyCounts,
-    tagCounts,
     topRatedDragonsByElement,
   } = stats;
   const { refresh } = useRouter();
@@ -203,35 +201,6 @@ const DragonDashboard = ({ stats }: { stats: Stats }) => {
                         <FamilyImage familyName={family} />
                         <Text>{family}</Text>
                       </Group>
-                    </Table.Td>
-                    <Table.Td>{counts.dragons}</Table.Td>
-                    <Table.Td>{counts.skins}</Table.Td>
-                  </Table.Tr>
-                ))}
-              </Table.Tbody>
-            </Table>
-          </AccordionPanel>
-        </AccordionItem>
-
-        {/* Dragons by Tags */}
-        <AccordionItem value="Dragons by Tags">
-          <AccordionControl>Dragons by Tags</AccordionControl>
-          <AccordionPanel>
-            <Table highlightOnHover withTableBorder withRowBorders={false}>
-              <Table.Thead>
-                <Table.Tr>
-                  <Table.Th>Tag</Table.Th>
-                  <Table.Th>Dragons</Table.Th>
-                  <Table.Th>Skins</Table.Th>
-                </Table.Tr>
-              </Table.Thead>
-              <Table.Tbody>
-                {Object.entries(tagCounts).map(([tag, counts]) => (
-                  <Table.Tr key={tag}>
-                    <Table.Td>
-                      <Badge variant="light" autoContrast>
-                        {tag}
-                      </Badge>
                     </Table.Td>
                     <Table.Td>{counts.dragons}</Table.Td>
                     <Table.Td>{counts.skins}</Table.Td>

@@ -26,7 +26,6 @@ export const fetchHomeDragons = cache(
           image: true,
           thumbnail: true,
           originalDragonName: true,
-          tags: true,
           perkSuggestions: true,
           releaseDate: true,
         },
@@ -111,7 +110,6 @@ export const fetchRateScreenDragons = cache(
         image: true,
         thumbnail: true,
         originalDragonName: true,
-        tags: true,
         perkSuggestions: true,
         releaseDate: true,
       },
@@ -141,20 +139,11 @@ export const fetchRatedDragons = cache(async (options?: { rarity: Rarity }) => {
       image: true,
       thumbnail: true,
       originalDragonName: true,
-      tags: true,
       perkSuggestions: true,
       releaseDate: true,
     },
   });
 });
-
-// Fetch unique tags
-export const fetchUniqueTags = async () => {
-  const tags = await prisma.dragons.findMany({ select: { tags: true } });
-  return Array.from(
-    new Set(tags.flatMap((dragon) => dragon.tags).filter(Boolean))
-  );
-};
 
 // Fetch unique family names
 export const fetchUniqueFamilyNames = async () => {
@@ -264,7 +253,6 @@ export async function updateDragon(
 export async function putDragonData(
   id: string,
   data: {
-    tags: string[];
     rating: Rating;
     perkSuggestions: IPerkSuggestion[];
   }
@@ -309,7 +297,6 @@ export async function putDragonData(
 
     const data = await response.json();
     revalidateTag(`dragons/${id}`);
-    revalidateTag(`tags`);
     return data;
   } catch (error) {
     console.error("Failed to update dragon data:", error);

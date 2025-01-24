@@ -39,7 +39,7 @@ const Page: FC = async () => {
     fetchOwned(),
   ]);
 
-  return <Home initialDragons={dragons.slice(0, 48)} owned={ownedDragons} />;
+  return <Home initialDragons={dragons.slice(0, 24)} owned={ownedDragons} />;
 };
 
 export default Page;

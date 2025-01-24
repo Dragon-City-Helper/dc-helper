@@ -5,36 +5,29 @@ const DragonDetailCardSkeleton: FC = () => {
   return (
     <Card shadow="sm" padding="md" radius="md" withBorder>
       {/* Title Skeleton */}
-      <Skeleton height={20} width="60%" mt="md" mx="auto" />
+      <Skeleton height={40} width="50%" mt="md" mx="auto" />
 
       {/* Image Skeleton */}
-      <Card.Section h={250}>
+      <Card.Section h={130}>
         <Center>
-          <Skeleton height={175} width={175} mt="md" />
+          <Skeleton height={100} width={100} mt="md" />
         </Center>
       </Card.Section>
+      <Card.Section inheritPadding>
+        {/* Elements Skeleton */}
+        <Group justify="center" gap={4} my="md" visibleFrom="sm">
+          {/* Simulate the number of elements (e.g., 4) */}
+          {[...Array(4)].map((_, index) => (
+            <Skeleton key={index} height={32} width={32} radius="xl" />
+          ))}
+        </Group>
 
-      {/* Elements Skeleton */}
-      <Group justify="center" gap={4} my="md">
-        {/* Simulate the number of elements (e.g., 4) */}
-        {[...Array(4)].map((_, index) => (
-          <Skeleton key={index} height={32} width={32} radius="xl" />
-        ))}
-      </Group>
-
-      {/* Rating Skeleton */}
-      <Group justify="space-between">
-        <Text>Rating</Text>
-        <Skeleton height={24} width={80} radius="sm" />
-      </Group>
-
-      {/* Tags Skeleton */}
-      <Group my="md" gap="sm" h={72}>
-        {/* Simulate the number of tags (e.g., 3) */}
-        {[...Array(3)].map((_, index) => (
-          <Skeleton key={index} height={20} width={60} radius="sm" />
-        ))}
-      </Group>
+        {/* Rating Skeleton */}
+        <Group className="justify-center sm:justify-between my-4 sm:mt-0">
+          <Text visibleFrom="sm">Rating</Text>
+          <Skeleton height={24} width={80} radius="sm" />
+        </Group>
+      </Card.Section>
     </Card>
   );
 };

@@ -45,7 +45,7 @@ const DragonDetailCard: FC<PropsWithChildren<IDragonDetailCardProps>> = ({
         </Center>
       </Card.Section>
       <Card.Section inheritPadding>
-        <Stack justify="space-between">
+        <Stack justify="space-between" my="md">
           <Group justify="space-evenly" gap={4} my="sm" visibleFrom="sm">
             {dragon.elements.map((element, index) => (
               <ElementImage
@@ -70,15 +70,6 @@ const DragonDetailCard: FC<PropsWithChildren<IDragonDetailCardProps>> = ({
           <Group className="justify-center sm:justify-between mt-4 sm:mt-0">
             <Text visibleFrom="sm"> Rating </Text>
             <RatingBadge rating={dragon.rating?.overall} />
-          </Group>
-          <Group my="sm" justify="space-evenly" className="h-40 sm:h-28">
-            {dragon.tags
-              .sort((a, b) => b.length - a.length)
-              .map((tag) => (
-                <Badge key={`${dragon.id}-${tag}`} variant="light" size="sm">
-                  {tag}
-                </Badge>
-              ))}
           </Group>
         </Stack>
       </Card.Section>

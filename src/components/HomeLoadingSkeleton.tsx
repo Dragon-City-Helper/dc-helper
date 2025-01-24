@@ -7,7 +7,7 @@ import DragonDetailCardSkeleton from "./DragonCardSkeleton";
 
 const HomeLoadingSkeleton: FC = () => {
   return (
-    <SimpleGrid cols={{ xs: 2, sm: 3, lg: 4 }} my="md">
+    <SimpleGrid cols={{ base: 2, sm: 3, lg: 4 }} my="md">
       {[...Array(12)].map((_, index) => (
         <DragonDetailCardSkeleton key={index} />
       ))}

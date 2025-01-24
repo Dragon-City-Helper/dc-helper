@@ -7,7 +7,7 @@ import { Elements, Rarity } from "@prisma/client";
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
   const skip = Number(searchParams.get("skip")) || 0;
-  const take = Number(searchParams.get("take")) || 48;
+  const take = Number(searchParams.get("take")) || 24;
   const rarity = (searchParams.get("rarity") as Rarity) ?? undefined;
   const element = (searchParams.get("element") as Elements) ?? undefined;
   const familyName = searchParams.get("familyName") || undefined;
@@ -34,7 +34,7 @@ export async function GET(request: Request) {
       isVip,
       skillType,
       search,
-    },
+    }
   );
 
   try {
@@ -72,7 +72,7 @@ export async function GET(request: Request) {
     });
 
     console.log(
-      `Filtered down to ${filteredDragons.length} dragons based on filters`,
+      `Filtered down to ${filteredDragons.length} dragons based on filters`
     );
 
     // Prepare response
@@ -99,7 +99,7 @@ export async function GET(request: Request) {
     console.error("Error fetching or filtering dragons:", error);
     return NextResponse.json(
       { error: "Failed to fetch dragons" },
-      { status: 500 },
+      { status: 500 }
     );
   }
 }

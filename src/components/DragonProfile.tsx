@@ -39,13 +39,6 @@ const DragonProfile: FC<IDragonProfileProps> = ({ dragon }) => {
           height={300}
         />
       </Center>
-      <Group my="md" wrap="wrap" justify="center">
-        {dragon.tags.map((tag) => (
-          <Badge key={`${dragon.id}-${tag}`} variant="light" size="sm">
-            {tag}
-          </Badge>
-        ))}
-      </Group>
 
       <Group justify="space-evenly" align="start" p="sm">
         <DragonPerks dragon={dragon} />

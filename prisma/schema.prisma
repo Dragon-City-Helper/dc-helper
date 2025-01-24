@@ -39,7 +39,6 @@ model dragons {
   hasAllSkins        Boolean
   perkSuggestions    perkSuggestion[] @relation(fields: [perkSuggestionId], references: [id])
   perkSuggestionId   String[]         @db.ObjectId
-  tags               String[]
   strong             Elements[]
   weak               Elements[]
 }

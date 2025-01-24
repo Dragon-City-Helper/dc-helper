@@ -44,7 +44,6 @@ export async function generateMetadata({ params }: { params: { id: string } }) {
     "Dragon City Ratings",
     dragonData.rarity,
     ...dragonData.elements.map((el) => ElementsNames[el]),
-    ...(dragonData.tags || []),
     `${dragonData.name} stats`,
     `${dragonData.name} skills`,
     `${dragonData.name} skins`,
