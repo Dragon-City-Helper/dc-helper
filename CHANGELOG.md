@@ -1,5 +1,17 @@
 # dragon-city-helper
 
+## 1.3.0
+
+### Minor Changes
+
+- 3faf6dc: Revamped navigation for larger screens with grouped links and replaced the donation button with a simple donate link for a cleaner design.
+- 636ad51: Remove tags from all the dragons as they were taking space and not adding any value
+
+### Patch Changes
+
+- b970b86: Improve seo for better google search discoverability
+- 7c8825d: upgrade internal libraries
+
 ## 1.2.1
 
 ### Patch Changes
