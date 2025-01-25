@@ -63,7 +63,7 @@ const DragonsGrid: FC<IDragonsGridProps> = ({
           );
         })}
       </SimpleGrid>
-      {true && <HomeLoadingSkeleton />}
+      {infiniteLoading && <HomeLoadingSkeleton />}
       <DragonPanel dragon={selectedDragon} opened={opened} close={close} />
     </>
   );
