@@ -1,5 +1,11 @@
 # dragon-city-helper
 
+## 1.3.1
+
+### Patch Changes
+
+- ec2778f: Reversed rating styles, making OP use C's colors and vice versa, with all tiers adjusted accordingly.
+
 ## 1.3.0
 
 ### Minor Changes
