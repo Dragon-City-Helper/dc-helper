@@ -149,18 +149,18 @@ export const getRatingText = (score?: number) =>
 export const ratingStyles: {
   [key in (typeof ratings)[number]["label"]]: CSSProperties;
 } = {
-  OP: { backgroundColor: "#FFCCCC", color: "#8B0000" }, // Light Red BG, Dark Red Font
-  SS: { backgroundColor: "#FFB6A8", color: "#8B0000" }, // Light Orange Red BG, Dark Red Font
-  "S++": { backgroundColor: "#FFA07A", color: "#8B4513" }, // Light Dark Orange BG, Saddle Brown Font
-  "S+": { backgroundColor: "#FFDAB9", color: "#8B4513" }, // Light Orange BG, Saddle Brown Font
-  S: { backgroundColor: "#FFFACD", color: "#DAA520" }, // Light Gold BG, Goldenrod Font
-  "S-": { backgroundColor: "#FFFFE0", color: "#DAA520" }, // Light Yellow BG, Goldenrod Font
-  "A+": { backgroundColor: "#F0FFF0", color: "#006400" }, // Light Green BG, Dark Green Font
-  A: { backgroundColor: "#E6FFE6", color: "#006400" }, // Lighter Green BG, Dark Green Font
-  "A-": { backgroundColor: "#CCFFCC", color: "#006400" }, // Pale Green BG, Dark Green Font
-  "B+": { backgroundColor: "#B2FFB2", color: "#228B22" }, // Light Lime Green BG, Forest Green Font
-  B: { backgroundColor: "#99FF99", color: "#228B22" }, // Light Green BG, Forest Green Font
-  "B-": { backgroundColor: "#80FF80", color: "#228B22" }, // Light Sea Green BG, Forest Green Font
-  "C+": { backgroundColor: "#66CC99", color: "#2F4F4F" }, // Light Olive Green BG, Dark Slate Gray Font
-  C: { backgroundColor: "#4CAF50", color: "#FFFFFF" }, // Medium Olive Green BG, White Font
+  C: { backgroundColor: "#FFCCCC", color: "#8B0000" }, // Light Red BG, Dark Red Font
+  "C+": { backgroundColor: "#FFB6A8", color: "#8B0000" }, // Light Orange Red BG, Dark Red Font
+  "B-": { backgroundColor: "#FFA07A", color: "#8B4513" }, // Light Dark Orange BG, Saddle Brown Font
+  B: { backgroundColor: "#FFDAB9", color: "#8B4513" }, // Light Orange BG, Saddle Brown Font
+  "B+": { backgroundColor: "#FFFACD", color: "#DAA520" }, // Light Gold BG, Goldenrod Font
+  "A-": { backgroundColor: "#FFFFE0", color: "#DAA520" }, // Light Yellow BG, Goldenrod Font
+  A: { backgroundColor: "#F0FFF0", color: "#006400" }, // Light Green BG, Dark Green Font
+  "A+": { backgroundColor: "#E6FFE6", color: "#006400" }, // Lighter Green BG, Dark Green Font
+  "S-": { backgroundColor: "#CCFFCC", color: "#006400" }, // Pale Green BG, Dark Green Font
+  S: { backgroundColor: "#B2FFB2", color: "#228B22" }, // Light Lime Green BG, Forest Green Font
+  "S+": { backgroundColor: "#99FF99", color: "#228B22" }, // Light Green BG, Forest Green Font
+  "S++": { backgroundColor: "#80FF80", color: "#228B22" }, // Light Sea Green BG, Forest Green Font
+  SS: { backgroundColor: "#66CC99", color: "#2F4F4F" }, // Light Olive Green BG, Dark Slate Gray Font
+  OP: { backgroundColor: "#4CAF50", color: "#FFFFFF" }, // Medium Olive Green BG, White Font
 };
