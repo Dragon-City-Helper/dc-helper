@@ -83,6 +83,14 @@ const DragonRatings: FC<IDragonRatingsProps> = ({ dragon }) => {
           </Group>
         ))}
       </SimpleGrid>
+      {dragon.rating?.notes?.trim() && (
+        <>
+          <Text fw="bold" my="md">
+            Expert Notes
+          </Text>
+          <Text>{dragon.rating?.notes}</Text>
+        </>
+      )}
     </Box>
   );
 };

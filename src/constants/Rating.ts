@@ -70,20 +70,22 @@ export const rarityBasedOffset: { [key in Rarity]: number } = {
   C: 50,
 };
 
-export const RatingKeys: Exclude<keyof Rating, "id" | "dragonsId" | "score">[] =
-  [
-    "cooldown",
-    "value",
-    "versatility",
-    "potency",
-    "primary",
-    "coverage",
-    "rarity",
-    "usability",
-    "viability",
-    "extra",
-    "overall",
-  ] as const;
+export const RatingKeys: Exclude<
+  keyof Rating,
+  "id" | "dragonsId" | "score" | "notes"
+>[] = [
+  "cooldown",
+  "value",
+  "versatility",
+  "potency",
+  "primary",
+  "coverage",
+  "rarity",
+  "usability",
+  "viability",
+  "extra",
+  "overall",
+] as const;
 export type AllowedRatingKeys = (typeof RatingKeys)[number];
 
 export const RateByKeys: Exclude<AllowedRatingKeys, "extra" | "rarity">[] = [

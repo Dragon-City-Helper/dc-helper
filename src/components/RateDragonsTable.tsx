@@ -16,6 +16,7 @@ import {
   SimpleGrid,
   Stack,
   Text,
+  Textarea,
 } from "@mantine/core";
 import DragonFaceCard from "./DragonFaceCard";
 import ElementImage from "./ElementImage";
@@ -30,6 +31,7 @@ const RateDragonsTable: FC<IRateDragonsTableProps> = ({ dragons }) => {
   const [localRatings, setLocalRatings] = useState<Record<string, Rating>>({});
   const [dirty, setDirty] = useState<{ [key: string]: boolean }>({});
   const [loading, setLoading] = useState<{ [key: string]: boolean }>({});
+  const [localNotes, setLocalNotes] = useState<Record<string, string>>({});
   const [localPerks, setLocalPerks] = useState<
     Record<string, IPerkSuggestion[]>
   >({});
@@ -151,6 +153,23 @@ const RateDragonsTable: FC<IRateDragonsTableProps> = ({ dragons }) => {
     }));
   };
 
+  const updateNotes = (dragon: BaseDragons[number], notes: string) => {
+    setDirty({
+      ...dirty,
+      [dragon.id]: true,
+    });
+    setLocalRatings((rating) => {
+      const newRating = {
+        ...(rating || {})[dragon.id],
+        notes,
+      };
+      return {
+        ...rating,
+        [dragon.id]: newRating,
+      };
+    });
+  };
+
   return (
     <Box>
       {dragons.map((dragon) => {
@@ -205,18 +224,23 @@ const RateDragonsTable: FC<IRateDragonsTableProps> = ({ dragons }) => {
                   <b>Score</b>
                   <div>{localRatings[dragon.id]?.score ?? 0}</div>
                 </div>
-
-                {loading[dragon.id] ? (
-                  <Loader />
-                ) : (
-                  <Button
-                    onClick={() => updateDragonData(dragon.id)}
-                    disabled={!dirty[dragon.id]}
-                  >
-                    Save
-                  </Button>
-                )}
               </SimpleGrid>
+              <Textarea
+                label="Expert Rating Notes"
+                value={localRatings?.[dragon.id]?.notes ?? ""}
+                placeholder="Rating Notes for e.g primary is c+ cuz its shit. It's coverage is bad etc., be descriptive"
+                onChange={(event) => updateNotes(dragon, event.target.value)}
+              />
+              {loading[dragon.id] ? (
+                <Loader />
+              ) : (
+                <Button
+                  onClick={() => updateDragonData(dragon.id)}
+                  disabled={!dirty[dragon.id]}
+                >
+                  Save
+                </Button>
+              )}
             </SimpleGrid>
           </div>
         );
