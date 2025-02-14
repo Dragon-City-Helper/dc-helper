@@ -23,27 +23,27 @@
     ]
   },
   "dependencies": {
-    "@auth/prisma-adapter": "^2.7.3",
-    "@mantine/core": "^7.13.3",
-    "@mantine/hooks": "^7.13.3",
+    "@auth/prisma-adapter": "^2.7.4",
+    "@mantine/core": "^7.16.3",
+    "@mantine/hooks": "^7.16.3",
     "@next/third-parties": "^14.2.18",
-    "@prisma/client": "^6.2.1",
-    "@sentry/nextjs": "^8.32.0",
-    "@tabler/icons-react": "^3.21.0",
+    "@prisma/client": "^6.3.1",
+    "@sentry/nextjs": "^9.1.0",
+    "@tabler/icons-react": "^3.30.0",
     "next": "^14.2.18",
     "next-auth": "^5.0.0-beta.25",
     "react": "^18",
     "react-dom": "^18"
   },
   "devDependencies": {
-    "@changesets/cli": "^2.27.10",
+    "@changesets/cli": "^2.27.12",
     "@testing-library/dom": "^10.4.0",
     "@testing-library/jest-dom": "^6.6.3",
-    "@testing-library/react": "^16.0.1",
+    "@testing-library/react": "^16.2.0",
     "@types/node": "^20",
     "@types/react": "^18",
     "@types/react-dom": "^18",
-    "@vercel/blob": "^0.26.0",
+    "@vercel/blob": "^0.27.1",
     "autoprefixer": "^10.4.20",
     "dotenv-cli": "^7.4.2",
     "eslint": "^8",
@@ -55,10 +55,10 @@
     "postcss": "^8.4.47",
     "postcss-preset-mantine": "^1.17.0",
     "postcss-simple-vars": "^7.0.1",
-    "prisma": "^6.2.1",
+    "prisma": "^6.3.1",
     "supertest": "^7.0.0",
     "tailwindcss": "^3.4.9",
     "ts-node": "^10.9.2",
-    "typescript": "^5.6.3"
+    "typescript": "^5.7.3"
   }
 }
