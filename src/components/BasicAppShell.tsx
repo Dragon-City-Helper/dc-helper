@@ -14,6 +14,7 @@ import {
   IconTipJar,
 } from "@tabler/icons-react";
 import { Session } from "next-auth";
+import { sendGAEvent } from "@next/third-parties/google";
 
 interface IBasicAppShellProps {
   session: Session | null;
@@ -84,37 +85,6 @@ const BasicAppShell: FC<PropsWithChildren<IBasicAppShellProps>> = ({
                 shadow="md"
                 trigger="click-hover"
                 openDelay={100}
-                closeDelay={400}
-              >
-                <Menu.Target>
-                  <NavLink label="Alliances" />
-                </Menu.Target>
-                <Menu.Dropdown>
-                  <NavLink
-                    onClick={close}
-                    component={Link}
-                    label="Alliance Hub"
-                    href="/alliance-hub"
-                    active={pathname === "/alliance-hub"}
-                    prefetch
-                  />
-                  {session && (
-                    <NavLink
-                      onClick={close}
-                      component={Link}
-                      label="Manage Your Alliances"
-                      href="/alliances/manage"
-                      active={pathname === "/alliances/manage"}
-                      // prefetch
-                    />
-                  )}
-                </Menu.Dropdown>
-              </Menu> */}
-              {/* <Menu
-                shadow="md"
-                trigger="click-hover"
-                openDelay={100}
-                closeDelay={400}
               >
                 <Menu.Target>
                   <NavLink label="Arenas" />
@@ -131,15 +101,28 @@ const BasicAppShell: FC<PropsWithChildren<IBasicAppShellProps>> = ({
                     leftSection={<IconBrandDiscordFilled color="#5865F2" />}
                     href="https://discord.gg/U8CyQYpnWT"
                     target="_blank"
+                    onClick={() => {
+                      sendGAEvent("event", "discord-click", {});
+                    }}
                   />
                 </Menu.Dropdown>
               </Menu>
               <NavLink
                 href="https://buymeacoffee.com/8obtn6i2fc"
                 label="Donate"
+                target="_blank"
+                onClick={() => {
+                  sendGAEvent("event", "donate-click", {});
+                }}
               />
               {session ? (
-                <NavLink label="Logout" onClick={() => signOut()} />
+                <NavLink
+                  label="Logout"
+                  onClick={() => {
+                    sendGAEvent("event", "logout", {});
+                    signOut();
+                  }}
+                />
               ) : (
                 <NavLink label="Login" onClick={() => signIn()} />
               )}
@@ -175,23 +158,6 @@ const BasicAppShell: FC<PropsWithChildren<IBasicAppShellProps>> = ({
               active={pathname === "/dashboard"}
             />
           )}
-
-          {/* <NavLink
-            onClick={close}
-            component={Link}
-            label="Alliance Hub"
-            href="/alliance-hub"
-            active={pathname === "/alliance-hub"}
-            prefetch
-          />
-          <NavLink
-            onClick={close}
-            component={Link}
-            label="Manage Your Alliances"
-            href="/alliances/manage"
-            active={pathname === "/alliances/manage"}
-            // prefetch
-          /> */}
         </AppShell.Section>
         <AppShell.Section>
           <NavLink
@@ -199,18 +165,27 @@ const BasicAppShell: FC<PropsWithChildren<IBasicAppShellProps>> = ({
             leftSection={<IconTipJar color="#FFD700" />}
             target="_blank"
             label="Donate"
+            onClick={() => {
+              sendGAEvent("event", "donate-click", {});
+            }}
           />
           <NavLink
             label="Discord"
             leftSection={<IconBrandDiscordFilled color="#5865F2" />}
             href="https://discord.gg/U8CyQYpnWT"
             target="_blank"
+            onClick={() => {
+              sendGAEvent("event", "discord-click", {});
+            }}
           />
           {session ? (
             <NavLink
               label="Logout"
               leftSection={<IconLogout2 />}
-              onClick={() => signOut()}
+              onClick={() => {
+                sendGAEvent("event", "logout", {});
+                signOut();
+              }}
             />
           ) : (
             <NavLink
@@ -226,7 +201,13 @@ const BasicAppShell: FC<PropsWithChildren<IBasicAppShellProps>> = ({
         <Group fz="xs" justify="center">
           <Link href="/terms">Terms & Conditions</Link>
           <Link href="/privacy">Privacy Policy</Link>
-          <Link href="https://buymeacoffee.com/8obtn6i2fc" target="_blank">
+          <Link
+            href="https://buymeacoffee.com/8obtn6i2fc"
+            target="_blank"
+            onClick={() => {
+              sendGAEvent("event", "donate-click", {});
+            }}
+          >
             Donate
           </Link>
         </Group>

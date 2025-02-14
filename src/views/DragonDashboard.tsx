@@ -20,6 +20,7 @@ import {
   SimpleGrid,
   Tabs,
 } from "@mantine/core";
+import { sendGAEvent } from "@next/third-parties/google";
 import { Elements, Rarity } from "@prisma/client";
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
@@ -89,6 +90,12 @@ const DragonDashboard = ({ stats }: { stats: Stats }) => {
                   <Tabs.Tab
                     key={`${element}-top-owned-dragons-tab`}
                     value={element}
+                    onClick={() => {
+                      sendGAEvent(
+                        "event",
+                        `${element}-top-owned-dragons-tab-click`
+                      );
+                    }}
                   >
                     <Group>
                       <ElementImage element={element} />

@@ -10,6 +10,7 @@ import { toggleOwned } from "@/services/owned";
 import FilterMessage, { IFilterMessageProps } from "@/components/FilterMessage";
 import { useSession } from "next-auth/react";
 import { useDebouncedCallback } from "@mantine/hooks";
+import { sendGAEvent } from "@next/third-parties/google";
 
 const TAKE = 24; // Number of items to fetch each time
 export default function Home({
@@ -41,8 +42,14 @@ export default function Home({
       await toggleOwned(dragonId);
       setOwned((owned) => {
         if (checked) {
+          sendGAEvent("event", "owned", {
+            id: dragonId,
+          });
           return [...owned, dragonId];
         } else {
+          sendGAEvent("event", "unowned", {
+            id: dragonId,
+          });
           return owned.filter((id) => id != dragonId);
         }
       });
@@ -150,6 +157,10 @@ export default function Home({
       });
       if (isClientOnlyFilter(key)) {
         onClientFilterChange(key, value);
+      } else {
+        sendGAEvent("event", "filter", {
+          [key]: value,
+        });
       }
     },
     500

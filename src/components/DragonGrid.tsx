@@ -6,6 +6,7 @@ import DragonDetailCard from "./DragonDetailCard";
 import HomeLoadingSkeleton from "./HomeLoadingSkeleton";
 import { useDisclosure } from "@mantine/hooks";
 import DragonPanel from "./DragonPanel";
+import { sendGAEvent } from "@next/third-parties/google";
 
 interface IDragonsGridProps {
   dragons: BaseDragons;
@@ -29,6 +30,9 @@ const DragonsGrid: FC<IDragonsGridProps> = ({
 
   const onDragonClick = (dragon: BaseDragons[number]) => {
     setSelectedDragon(dragon);
+    sendGAEvent("event", "open_dragon_panel", {
+      ...dragon,
+    });
     open();
   };
   return (

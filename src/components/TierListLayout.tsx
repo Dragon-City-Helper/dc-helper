@@ -10,6 +10,7 @@ import {
 import { SimpleGrid, Stack, Title } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
 import DragonPanel from "./DragonPanel";
+import { sendGAEvent } from "@next/third-parties/google";
 
 interface ITierListLayoutProps {
   dragons: BaseDragons;
@@ -22,7 +23,7 @@ const TierListLayout: FC<ITierListLayoutProps> = ({ dragons, ratingKey }) => {
 
   const dragonsByRating = useMemo(() => {
     const sortedDragons = dragons.sort(
-      (a, b) => (b.rating?.score ?? 0) - (a.rating?.score ?? 0),
+      (a, b) => (b.rating?.score ?? 0) - (a.rating?.score ?? 0)
     );
     return sortedDragons.reduce(
       (acc: { [key in string]: BaseDragons }, dragon) => {
@@ -36,12 +37,15 @@ const TierListLayout: FC<ITierListLayoutProps> = ({ dragons, ratingKey }) => {
         acc[ratingText].push(dragon);
         return acc;
       },
-      {},
+      {}
     );
   }, [dragons, ratingKey]);
 
   const onDragonClick = (dragon: BaseDragons[number]) => {
     setSelectedDragon(dragon);
+    sendGAEvent("event", "open_dragon_panel", {
+      ...dragon,
+    });
     open();
   };
 
