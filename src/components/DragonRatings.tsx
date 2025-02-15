@@ -14,10 +14,10 @@ import {
   Group,
   Box,
   SimpleGrid,
-  Tooltip,
   Popover,
+  Blockquote,
 } from "@mantine/core";
-import { IconHelp } from "@tabler/icons-react";
+import { IconHelp, IconInfoCircle } from "@tabler/icons-react";
 
 interface IDragonRatingsProps {
   dragon: fullDragon;
@@ -85,10 +85,9 @@ const DragonRatings: FC<IDragonRatingsProps> = ({ dragon }) => {
       </SimpleGrid>
       {dragon.rating?.notes?.trim() && (
         <>
-          <Text fw="bold" my="md">
-            Expert Notes
-          </Text>
-          <Text>{dragon.rating?.notes}</Text>
+          <Blockquote icon={<IconInfoCircle />} mt="xl" color="gold">
+            {dragon.rating?.notes}
+          </Blockquote>
         </>
       )}
     </Box>
