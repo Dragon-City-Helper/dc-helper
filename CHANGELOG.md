@@ -1,5 +1,16 @@
 # dragon-city-helper
 
+## 1.4.0
+
+### Minor Changes
+
+- 4fceeec: Added "Expert Rating Notes" to dragon details, providing insights into why a dragon received its rating.
+
+### Patch Changes
+
+- 46510ab: Update dependencies to secure versions
+- e74eeb5: Integrated Google Analytics events across the app to track user interactions and improve insights.
+
 ## 1.3.1
 
 ### Patch Changes
