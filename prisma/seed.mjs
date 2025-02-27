@@ -272,7 +272,8 @@ async function main() {
     const transformedData = transformData(dragonData, true);
     const filteredData = filterData(transformedData);
     writeData(filteredData);
-    writeVipDragonsToAFile(filePath);
+    // writeVipDragonsToAFile(filePath);
+    // exportElements();
   } catch (error) {
     console.error("An error occurred in main:", error);
   }
@@ -291,6 +292,74 @@ const writeVipDragonsToAFile = async (filePath) => {
   });
   writeJsonToFile(filteredDragons, "./temp/vipdragons.formatted.json");
 };
+
+async function exportRatings() {
+  const ratings = await prisma.rating.findMany({
+    include: {
+      dragons: {
+        select: {
+          name: true,
+          rarity: true,
+        },
+      },
+    },
+  });
+
+  // Transform data to replace dragonsId with dragonName
+  const formattedRatings = ratings.map(({ dragonsId, dragons, ...rest }) => ({
+    ...rest,
+    name: dragons?.name || "Unknown", // Handle cases where dragon may be null
+    dragonRarity: dragons?.rarity || "Unknown", // Handle cases where dragon may be null
+  }));
+
+  writeJsonToFile(formattedRatings, "./temp/ratings.json");
+}
+
+async function exportElements() {
+  const ratings = await prisma.dragons.findMany({
+    where: {
+      hasSkills: true,
+    },
+    select: {
+      id: true,
+      name: true,
+      strong: true,
+      weak: true,
+    },
+  });
+  const ElementsNames = {
+    pu: "Pure",
+    d: "Dark",
+    f: "Flame",
+    wr: "War",
+    i: "Ice",
+    w: "Sea",
+    m: "Metal",
+    l: "Legend",
+    mg: "Magic",
+    li: "Light",
+    ch: "Chaos",
+    el: "Electric",
+    ti: "Time",
+    wd: "Wind",
+    pr: "Primal",
+    e: "Terra",
+    p: "Nature",
+    hp: "Happy",
+    bt: "Beauty",
+    so: "Soul",
+    dr: "Dream",
+  };
+  // Transform data to replace dragonsId with dragonName
+  const formattedElements = ratings.map(({ strong, weak, ...rest }) => ({
+    ...rest,
+    strong: strong.map((el) => ElementsNames[el]),
+    weak: weak.map((el) => ElementsNames[el]),
+  }));
+
+  writeJsonToFile(formattedElements, "./temp/elements.json");
+}
+
 /**
  * Writes JSON data to a file.
  *
