@@ -8,8 +8,8 @@ generator client {
 }
 
 model dragons {
-  id                 String           @id @default(auto()) @map("_id") @db.ObjectId
-  name               String           @unique
+  id                 String             @id @default(auto()) @map("_id") @db.ObjectId
+  name               String             @unique
   description        String
   rarity             Rarity
   familyName         String?
@@ -18,16 +18,16 @@ model dragons {
   image              String
   thumbnail          String
   code               Int
-  createdAt          DateTime?        @default(now())
-  updatedAt          DateTime?        @updatedAt
+  createdAt          DateTime?          @default(now())
+  updatedAt          DateTime?          @updatedAt
   releaseDate        DateTime?
   baseSpeed          Int
   maxSpeed           Int
   baseLife           Int
   baseAttack         Int
   category           Int
-  skills             Skill[]          @relation(fields: [skillsId], references: [id])
-  skillsId           String[]         @db.ObjectId
+  skills             Skill[]            @relation(fields: [skillsId], references: [id])
+  skillsId           String[]           @db.ObjectId
   rating             Rating?
   isVip              Boolean
   hasSkills          Boolean
@@ -37,11 +37,13 @@ model dragons {
   isSkin             Boolean
   skinDescription    String?
   hasAllSkins        Boolean
-  perkSuggestions    perkSuggestion[] @relation(fields: [perkSuggestionId], references: [id])
-  perkSuggestionId   String[]         @db.ObjectId
+  perkSuggestions    perkSuggestion[]   @relation(fields: [perkSuggestionId], references: [id])
+  perkSuggestionId   String[]           @db.ObjectId
   strong             Elements[]
   weak               Elements[]
   UserRating         UserRating[]
+  LookingForDragon   LookingForDragon[]
+  CanGiveDragon      CanGiveDragon[]
 }
 
 model arena {
@@ -50,6 +52,59 @@ model arena {
   boost Elements[]
   ban   Elements
   chest Elements
+}
+
+model Trade {
+  id                 String           @id @default(auto()) @map("_id") @db.ObjectId
+  lookingFor         LookingForDragon @relation(fields: [lookingForDragonId], references: [id])
+  canGive            CanGiveDragon[]
+  createdAt          DateTime         @default(now())
+  updatedAt          DateTime         @default(now())
+  userId             String           @db.ObjectId
+  user               User             @relation(fields: [userId], references: [id])
+  isVisible          Boolean          @default(true)
+  isDeleted          Boolean          @default(false)
+  isSponsored        Boolean          @default(false)
+  Requests           Request[]
+  handleEssences     HandleEssences   @default(SHARED)
+  lookingForDragonId String           @db.ObjectId
+}
+
+enum HandleEssences {
+  YES
+  NO
+  SHARED
+}
+
+model LookingForDragon {
+  id        String  @id @default(auto()) @map("_id") @db.ObjectId
+  dragon    dragons @relation(fields: [dragonsId], references: [id])
+  dragonsId String  @db.ObjectId
+  orbCount  Int     @default(0)
+  Trade     Trade[]
+}
+
+model CanGiveDragon {
+  id         String  @id @default(auto()) @map("_id") @db.ObjectId
+  dragon     dragons @relation(fields: [dragonsId], references: [id])
+  dragonsId  String  @db.ObjectId
+  orbCount   Int     @default(0)
+  ratioLeft  Int     @default(1)
+  ratioRight Int     @default(1)
+  Trade      Trade   @relation(fields: [tradeId], references: [id])
+  tradeId    String  @db.ObjectId
+}
+
+model Request {
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  createdBy User     @relation(fields: [userId], references: [id])
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now())
+  userId    String   @db.ObjectId
+  trade     Trade    @relation(fields: [tradeId], references: [id])
+  tradeId   String   @db.ObjectId
+
+  @@unique([tradeId, userId])
 }
 
 model perkSuggestion {
@@ -174,6 +229,8 @@ model User {
   createdAt     DateTime        @default(now())
   updatedAt     DateTime        @updatedAt
   UserRating    UserRating[]
+  Trade         Trade[]
+  Request       Request[]
 }
 
 enum Role {
