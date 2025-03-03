@@ -3,6 +3,7 @@ import { IPerkSuggestion } from "@/types/perkSuggestions";
 import { Rarity, Rating, Prisma, Elements } from "@prisma/client";
 import { revalidateTag, unstable_cache } from "next/cache";
 import { cache } from "react";
+import { getAllUserRatings, getUserRating } from "./userRatings";
 
 // Fetch functions
 
@@ -30,6 +31,25 @@ export const fetchHomeDragons = cache(
           releaseDate: true,
         },
       });
+      const userRatings = await getAllUserRatings();
+      const dragonsWithUserRatings = dragons.map((dragon) => {
+        const userRating = userRatings.find(
+          (rating) => rating.dragonsId === dragon.id
+        );
+        return {
+          ...dragon,
+          userRatings: {
+            arena: {
+              rating: userRating?._avg?.arena,
+              count: userRating?._count?.arena,
+            },
+            design: {
+              rating: userRating?._avg?.design,
+              count: userRating?._count?.design,
+            },
+          },
+        };
+      });
       // return dragons.sort((a, b) => {
       //   return (
       //     (b.releaseDate ? new Date(b.releaseDate) : new Date()).getTime() -
@@ -37,7 +57,7 @@ export const fetchHomeDragons = cache(
       //   );
       // });
       const rarityOrder = ["H", "M", "L", "E", "V", "R", "C"];
-      return dragons.sort((a, b) => {
+      return dragonsWithUserRatings.sort((a, b) => {
         if (a.releaseDate !== b.releaseDate) {
           return (
             (b.releaseDate ? new Date(b.releaseDate) : new Date()).getTime() -
@@ -91,7 +111,7 @@ export const fetchRateScreenDragons = cache(
         skins === "skins" ? true : skins === "dragons" ? false : undefined,
     };
 
-    return prisma.dragons.findMany({
+    const dragons = await prisma.dragons.findMany({
       where,
       skip,
       take,
@@ -114,12 +134,32 @@ export const fetchRateScreenDragons = cache(
         releaseDate: true,
       },
     });
+    const userRatings = await getAllUserRatings();
+    const dragonsWithUserRatings = dragons.map((dragon) => {
+      const userRating = userRatings.find(
+        (rating) => rating.dragonsId === dragon.id
+      );
+      return {
+        ...dragon,
+        userRatings: {
+          arena: {
+            rating: userRating?._avg?.arena,
+            count: userRating?._count?.arena,
+          },
+          design: {
+            rating: userRating?._avg?.design,
+            count: userRating?._count?.design,
+          },
+        },
+      };
+    });
+    return dragonsWithUserRatings;
   }
 );
 
 // Fetch dragons with non-null ratings
 export const fetchRatedDragons = cache(async (options?: { rarity: Rarity }) => {
-  return prisma.dragons.findMany({
+  const dragons = await prisma.dragons.findMany({
     where: {
       rarity: options?.rarity,
       NOT: { rating: null },
@@ -143,6 +183,26 @@ export const fetchRatedDragons = cache(async (options?: { rarity: Rarity }) => {
       releaseDate: true,
     },
   });
+  const userRatings = await getAllUserRatings();
+  const dragonsWithUserRatings = dragons.map((dragon) => {
+    const userRating = userRatings.find(
+      (rating) => rating.dragonsId === dragon.id
+    );
+    return {
+      ...dragon,
+      userRatings: {
+        arena: {
+          rating: userRating?._avg?.arena,
+          count: userRating?._count?.arena,
+        },
+        design: {
+          rating: userRating?._avg?.design,
+          count: userRating?._count?.design,
+        },
+      },
+    };
+  });
+  return dragonsWithUserRatings;
 });
 
 // Fetch unique family names
@@ -173,7 +233,7 @@ export const fetchAllSkinIds = async () => {
 };
 
 export const fetchSkinsForADragon = cache(async (name: string) => {
-  return prisma.dragons.findMany({
+  const skins = await prisma.dragons.findMany({
     where: { originalDragonName: name, isSkin: true },
     include: {
       rating: true,
@@ -194,10 +254,30 @@ export const fetchSkinsForADragon = cache(async (name: string) => {
       },
     },
   });
+  const userRatings = await getAllUserRatings();
+  const skinsWithUserRatings = skins.map((dragon) => {
+    const userRating = userRatings.find(
+      (rating) => rating.dragonsId === dragon.id
+    );
+    return {
+      ...dragon,
+      userRatings: {
+        arena: {
+          rating: userRating?._avg?.arena ?? null,
+          count: userRating?._count?.arena ?? 0,
+        },
+        design: {
+          rating: userRating?._avg?.design ?? null,
+          count: userRating?._count?.design ?? 0,
+        },
+      },
+    };
+  });
+  return skinsWithUserRatings;
 });
 
 export const fetchDragon = cache(async (id: string) => {
-  return prisma.dragons.findUniqueOrThrow({
+  const dragon = await prisma.dragons.findUniqueOrThrow({
     where: { id },
     include: {
       rating: true,
@@ -218,10 +298,25 @@ export const fetchDragon = cache(async (id: string) => {
       },
     },
   });
+
+  const userRating = await getUserRating(id);
+  return {
+    ...dragon,
+    userRatings: {
+      arena: {
+        rating: userRating?._avg?.arena,
+        count: userRating?._count?.arena,
+      },
+      design: {
+        rating: userRating?._avg?.design,
+        count: userRating?._count?.design,
+      },
+    },
+  };
 });
 
 export const fetchDragonByName = cache(async (name: string) => {
-  return prisma.dragons.findUniqueOrThrow({
+  const dragon = await prisma.dragons.findUniqueOrThrow({
     where: { name },
     include: {
       rating: true,
@@ -230,6 +325,20 @@ export const fetchDragonByName = cache(async (name: string) => {
       },
     },
   });
+  const userRating = await getUserRating(dragon.id);
+  return {
+    ...dragon,
+    userRatings: {
+      arena: {
+        rating: userRating?._avg?.arena,
+        count: userRating?._count?.arena,
+      },
+      design: {
+        rating: userRating?._avg?.design,
+        count: userRating?._count?.design,
+      },
+    },
+  };
 });
 
 // Update Functions

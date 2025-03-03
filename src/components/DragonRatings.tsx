@@ -1,3 +1,4 @@
+"use client";
 import {
   AllowedRatingKeys,
   elementRatingKeys,
@@ -6,7 +7,7 @@ import {
   skillRatingKeys,
 } from "@/constants/Rating";
 import { fullDragon } from "@/services/dragons";
-import { FC } from "react";
+import { FC, useCallback, useEffect, useMemo, useState } from "react";
 import RatingBadge from "./RatingBadge";
 import {
   Text,
@@ -16,14 +17,89 @@ import {
   SimpleGrid,
   Popover,
   Blockquote,
+  Stack,
+  Button,
+  Badge,
 } from "@mantine/core";
 import { IconHelp, IconInfoCircle } from "@tabler/icons-react";
+import { useSession, signIn } from "next-auth/react";
+import { sendGAEvent } from "@next/third-parties/google";
+import UserRating from "./UserRating";
 
 interface IDragonRatingsProps {
   dragon: fullDragon;
 }
 
 const DragonRatings: FC<IDragonRatingsProps> = ({ dragon }) => {
+  const [userRatings, setUserRatings] = useState<{
+    arena?: number;
+    design?: number;
+  } | null>(null);
+  const session = useSession();
+  const isLoggedIn = useMemo(
+    () => session.status === "authenticated",
+    [session]
+  );
+
+  const getCurrentUserRatings = useCallback(async (id: string) => {
+    const response = await fetch(`/api/user-ratings?dragonId=${id}`);
+    const data = await response.json();
+    setUserRatings(data);
+  }, []);
+
+  useEffect(() => {
+    if (isLoggedIn) {
+      getCurrentUserRatings(dragon.id);
+    }
+  }, [isLoggedIn, dragon.id, getCurrentUserRatings]);
+
+  const onLoginClick = () => {
+    sendGAEvent("event", "ratings_login_click", {});
+    signIn();
+  };
+
+  const handleUserRatingChange =
+    (type: "arena" | "design") => (rating: number) => {
+      sendGAEvent("event", `type_rating_change`, {
+        user_id: session.data?.user?.id,
+        rating,
+        dragon_name: dragon.name,
+      });
+      if (userRatings?.arena || userRatings?.design) {
+        fetch("/api/user-ratings", {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            dragonId: dragon.id,
+            rating: {
+              [type]: rating,
+            },
+          }),
+        });
+      } else {
+        fetch("/api/user-ratings", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            dragonId: dragon.id,
+            rating: {
+              [type]: rating,
+            },
+          }),
+        });
+      }
+      setUserRatings((prev) => ({
+        ...prev!,
+        [type]: rating,
+      }));
+    };
+  const handleArenaRatingChange = handleUserRatingChange("arena");
+  const handleDesignRatingChange = handleUserRatingChange("design");
+
   return (
     <Box>
       <Title order={3}>Ratings</Title>
@@ -83,6 +159,87 @@ const DragonRatings: FC<IDragonRatingsProps> = ({ dragon }) => {
           </Group>
         ))}
       </SimpleGrid>
+      <Group justify="flex-start">
+        <Text fw="bold" my="md">
+          Community Ratings
+        </Text>
+        <Badge color="blue">Beta</Badge>
+      </Group>
+      <SimpleGrid cols={{ base: 1, md: 2 }}>
+        <Stack>
+          <Group key={`${dragon.id}-user-arena`} justify="space-between">
+            <Group>
+              <Text>Arena</Text>
+              <Popover width={200} withArrow shadow="md">
+                <Popover.Target>
+                  <IconHelp />
+                </Popover.Target>
+                <Popover.Dropdown>
+                  <Text>
+                    Community rating on how strong this dragon is in battles
+                  </Text>
+                </Popover.Dropdown>
+              </Popover>
+            </Group>
+
+            {dragon.userRatings.arena.count > 0 ? (
+              <Text>
+                <b>{dragon.userRatings.arena.rating?.toFixed(2)}/5 </b> (
+                {dragon.userRatings.arena.count})
+              </Text>
+            ) : (
+              <RatingBadge />
+            )}
+          </Group>
+          {isLoggedIn && (
+            <UserRating
+              value={userRatings?.arena || 0}
+              onRatingChange={handleArenaRatingChange}
+            />
+          )}
+        </Stack>
+        {!dragon.hasAllSkins && (
+          <Stack>
+            <Group key={`${dragon.id}-user-design`} justify="space-between">
+              <Group>
+                <Text>Design</Text>
+                <Popover width={200} withArrow shadow="md">
+                  <Popover.Target>
+                    <IconHelp />
+                  </Popover.Target>
+                  <Popover.Dropdown>
+                    <Text>
+                      Community rating on how appealing this dragon looks.
+                    </Text>
+                  </Popover.Dropdown>
+                </Popover>
+              </Group>
+              {dragon.userRatings.design.count > 0 ? (
+                <Text>
+                  <b>{dragon.userRatings.design.rating?.toFixed(2)}/5</b> (
+                  {dragon.userRatings.design.count})
+                </Text>
+              ) : (
+                <RatingBadge />
+              )}
+            </Group>
+            {isLoggedIn && (
+              <UserRating
+                value={userRatings?.design || 0}
+                onRatingChange={handleDesignRatingChange}
+              />
+            )}
+          </Stack>
+        )}
+      </SimpleGrid>
+      {!isLoggedIn && (
+        <Group mt="md">
+          You can now contribute your own ratings for this dragon! Rate its
+          design and arena performance, and see how your opinions compare with
+          others.
+          <Button onClick={onLoginClick}>Log in to add your ratings!</Button>
+        </Group>
+      )}
       {dragon.rating?.notes?.trim() && (
         <>
           <Blockquote icon={<IconInfoCircle />} mt="xl" color="gold">

@@ -30,7 +30,6 @@ const DragonDetails: FC<IDragonDetailsProps> = ({ dragon, hideTitle }) => {
             <DragonSkinChanges dragon={dragon} />
           ) : (
             <>
-              <DragonStats dragon={dragon} />
               <DragonSkills dragon={dragon} />
             </>
           )}

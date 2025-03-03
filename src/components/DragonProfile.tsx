@@ -8,6 +8,7 @@ import SkinImage from "./SkinImage";
 import FamilyImage from "./FamilyImage";
 import DragonPerks from "./DragonPerks";
 import DragonCoverage from "./DragonCoverage";
+import DragonStats from "./DragonStats";
 
 interface IDragonProfileProps {
   dragon: fullDragon;
@@ -41,8 +42,9 @@ const DragonProfile: FC<IDragonProfileProps> = ({ dragon }) => {
       </Center>
 
       <Group justify="space-evenly" align="start" p="sm">
-        <DragonPerks dragon={dragon} />
+        <DragonStats dragon={dragon} />
         <DragonCoverage dragon={dragon} />
+        <DragonPerks dragon={dragon} />
       </Group>
     </Box>
   );
