@@ -61,7 +61,7 @@ const DragonRatings: FC<IDragonRatingsProps> = ({ dragon }) => {
 
   const handleUserRatingChange =
     (type: "arena" | "design") => async (rating: number) => {
-      sendGAEvent("event", `type_rating_change`, {
+      sendGAEvent("event", `${type}_rating_change`, {
         user_id: session.data?.user?.id,
         rating,
         dragon_name: dragon.name,
