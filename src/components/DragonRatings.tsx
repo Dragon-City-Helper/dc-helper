@@ -21,6 +21,7 @@ import {
   Button,
   Badge,
 } from "@mantine/core";
+import { notifications } from "@mantine/notifications";
 import { IconHelp, IconInfoCircle } from "@tabler/icons-react";
 import { useSession, signIn } from "next-auth/react";
 import { sendGAEvent } from "@next/third-parties/google";
@@ -59,14 +60,14 @@ const DragonRatings: FC<IDragonRatingsProps> = ({ dragon }) => {
   };
 
   const handleUserRatingChange =
-    (type: "arena" | "design") => (rating: number) => {
+    (type: "arena" | "design") => async (rating: number) => {
       sendGAEvent("event", `type_rating_change`, {
         user_id: session.data?.user?.id,
         rating,
         dragon_name: dragon.name,
       });
       if (userRatings?.arena || userRatings?.design) {
-        fetch("/api/user-ratings", {
+        await fetch("/api/user-ratings", {
           method: "PUT",
           headers: {
             "Content-Type": "application/json",
@@ -78,8 +79,13 @@ const DragonRatings: FC<IDragonRatingsProps> = ({ dragon }) => {
             },
           }),
         });
+        notifications.show({
+          title: `Rating updated successfully`,
+          message:
+            "Your rating has been updated! ⭐ Your contribution will update the Community Ratings within the next hour.",
+        });
       } else {
-        fetch("/api/user-ratings", {
+        await fetch("/api/user-ratings", {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
@@ -90,6 +96,11 @@ const DragonRatings: FC<IDragonRatingsProps> = ({ dragon }) => {
               [type]: rating,
             },
           }),
+        });
+        notifications.show({
+          title: `Rating added successfully`,
+          message:
+            "Your rating has been submitted! ⭐ Your contribution will update the Community Ratings within the next hour.",
         });
       }
       setUserRatings((prev) => ({

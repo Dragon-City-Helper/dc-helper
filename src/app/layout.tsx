@@ -1,11 +1,13 @@
 import { ColorSchemeScript, Container } from "@mantine/core";
+import { Notifications } from "@mantine/notifications";
 import { SessionProvider } from "next-auth/react";
+import { GoogleAnalytics } from "@next/third-parties/google";
 import Theme from "@/components/Theme";
 import BasicAppShell from "@/components/BasicAppShell";
-import "@mantine/core/styles.css";
-import "../styles/globals.css";
 import { auth } from "@/auth";
-import { GoogleAnalytics } from "@next/third-parties/google";
+import "@mantine/core/styles.css";
+import "@mantine/notifications/styles.css";
+import "../styles/globals.css";
 
 export default async function RootLayout({
   children,
@@ -20,6 +22,7 @@ export default async function RootLayout({
       </head>
       <body>
         <Theme>
+          <Notifications autoClose={3000} />
           <SessionProvider>
             <BasicAppShell session={session}>
               <Container my="md">{children}</Container>
