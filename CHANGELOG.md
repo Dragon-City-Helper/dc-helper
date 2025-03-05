@@ -1,5 +1,15 @@
 # dragon-city-helper
 
+## 1.5.0
+
+### Minor Changes
+
+- 6cbd5b3: - Added functionality for logged-in users to contribute ratings for dragons.
+  - Introduced Arena Rating and Design Rating submission options.
+  - Displayed Community Ratings section showing aggregated user ratings.
+- 56ada51: Add support for silencer family
+- b6541ff: Add notifications for in-app user actions
+
 ## 1.4.0
 
 ### Minor Changes
