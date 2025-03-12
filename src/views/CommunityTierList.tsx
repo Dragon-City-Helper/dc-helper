@@ -1,14 +1,12 @@
 "use client";
 
+import CommunityTierListLayout from "@/components/CommunityTierListLayout";
 import DragonFilters from "@/components/DragonFilters";
 import Select from "@/components/Select";
 import SkinImage from "@/components/SkinImage";
-import TierListLayout from "@/components/TierListLayout";
 import {
-  AllowedRatingKeys,
-  RateByKeys,
-  RatingKeysToText,
-  RatingKeyTooltips,
+  CommunityRatingKeyTooltips,
+  CommunityRatingKeysToText,
 } from "@/constants/Rating";
 import useDragonFilters from "@/hooks/useDragonFilters";
 import { BaseDragons } from "@/services/dragons";
@@ -16,14 +14,14 @@ import { IFilters } from "@/types/filters";
 import { Group, Text } from "@mantine/core";
 import { useMemo, useState } from "react";
 
-export default function TierList({
+export default function CommunityTierList({
   dragons,
   owned,
 }: {
   dragons: BaseDragons;
   owned: string[];
 }) {
-  const [ratingKey, setRatingKey] = useState<AllowedRatingKeys>("overall"); // default filter is overall
+  const [ratingKey, setRatingKey] = useState<"arena" | "design">("arena");
 
   const ownedIdsMap = useMemo(() => {
     return owned.reduce((acc, curr) => {
@@ -36,9 +34,9 @@ export default function TierList({
     dragons,
     ownedIdsMap
   );
-  const rateByOptions = RateByKeys.map((rKey) => ({
+  const rateByOptions = ["arena", "design"].map((rKey) => ({
     value: rKey,
-    label: RatingKeysToText[rKey],
+    label: CommunityRatingKeysToText[rKey as "arena" | "design"],
   }));
 
   const allowedFilters: (keyof IFilters)[] = [
@@ -68,9 +66,9 @@ export default function TierList({
         value={ratingKey}
         data={rateByOptions}
         allowDeselect={false}
-        onChange={(value) => setRatingKey(value as AllowedRatingKeys)}
+        onChange={(value) => setRatingKey(value as "arena" | "design")}
       />
-      <Text>{RatingKeyTooltips[ratingKey]}</Text>
+      <Text>{CommunityRatingKeyTooltips[ratingKey as "arena" | "design"]}</Text>
       {filters.skins !== "dragons" && (
         <Group justify="start">
           <Group py="sm">
@@ -81,7 +79,10 @@ export default function TierList({
           </Group>
         </Group>
       )}
-      <TierListLayout dragons={filteredDragons} ratingKey={ratingKey} />
+      <CommunityTierListLayout
+        dragons={filteredDragons}
+        ratingKey={ratingKey}
+      />
     </div>
   );
 }

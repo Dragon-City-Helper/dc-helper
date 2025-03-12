@@ -69,6 +69,15 @@ const BasicAppShell: FC<PropsWithChildren<IBasicAppShellProps>> = ({
                     active={pathname === "/tierlist"}
                     prefetch
                   />
+                  <NavLink
+                    w="100%"
+                    onClick={close}
+                    component={Link}
+                    label="Community Tierlist"
+                    href="/tierlist/community"
+                    active={pathname === "/tierlist/community"}
+                    prefetch
+                  />
                   {session && (
                     <NavLink
                       onClick={close}
@@ -146,6 +155,14 @@ const BasicAppShell: FC<PropsWithChildren<IBasicAppShellProps>> = ({
             label="Tierlist"
             href="/tierlist"
             active={pathname === "/tierlist"}
+            prefetch
+          />
+          <NavLink
+            onClick={close}
+            component={Link}
+            label="Community Tierlist"
+            href="/tierlist/community"
+            active={pathname === "/tierlist/community"}
             prefetch
           />
           {session && (

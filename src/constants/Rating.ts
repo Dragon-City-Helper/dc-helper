@@ -1,6 +1,49 @@
 import { Rarity, Rating } from "@prisma/client";
 import { CSSProperties } from "react";
 
+export const CommunityRatings = [
+  {
+    value: "4.5",
+    label: "OP",
+  },
+  {
+    value: "4",
+    label: "S",
+  },
+  {
+    value: "3.5",
+    label: "A",
+  },
+  {
+    value: "3",
+    label: "A-",
+  },
+  {
+    value: "2.5",
+    label: "B",
+  },
+  {
+    value: "2",
+    label: "B-",
+  },
+  {
+    value: "1.5",
+    label: "C",
+  },
+  {
+    value: "1",
+    label: "C-",
+  },
+  {
+    value: "0.5",
+    label: "D",
+  },
+  {
+    value: "0",
+    label: "F",
+  },
+];
+
 export const ratings = [
   {
     value: "52",
@@ -86,6 +129,7 @@ export const RatingKeys: Exclude<
   "extra",
   "overall",
 ] as const;
+
 export type AllowedRatingKeys = (typeof RatingKeys)[number];
 
 export const RateByKeys: Exclude<AllowedRatingKeys, "extra" | "rarity">[] = [
@@ -132,12 +176,23 @@ export const RatingKeysToText: { [key in AllowedRatingKeys]: string } = {
   viability: "Viability",
 };
 
+export const CommunityRatingKeysToText = {
+  arena: "Arena",
+  design: "Design",
+};
+
+export const CommunityRatingKeyTooltips = {
+  arena: "Community rating on how strong this dragon is in battles.",
+  design: "Community rating on how appealing this dragon looks.",
+};
+
 export const skillRatingKeys: Partial<AllowedRatingKeys>[] = [
   "cooldown",
   "value",
   "versatility",
   "potency",
 ];
+
 export const elementRatingKeys: Partial<AllowedRatingKeys>[] = [
   "primary",
   "coverage",
@@ -147,6 +202,11 @@ export const elementRatingKeys: Partial<AllowedRatingKeys>[] = [
 
 export const getRatingText = (score?: number) =>
   ratings.find((rating) => parseInt(rating.value, 10) === score)?.label ?? "NR";
+export const getCommunityRatingText = (score?: number) =>
+  score
+    ? CommunityRatings.find((rating) => score > parseFloat(rating.value))
+        ?.label ?? "NR"
+    : "NR";
 
 export const ratingStyles: {
   [key in (typeof ratings)[number]["label"]]: CSSProperties;
@@ -164,5 +224,20 @@ export const ratingStyles: {
   "S+": { backgroundColor: "#99FF99", color: "#228B22" }, // Light Green BG, Forest Green Font
   "S++": { backgroundColor: "#80FF80", color: "#228B22" }, // Light Sea Green BG, Forest Green Font
   SS: { backgroundColor: "#66CC99", color: "#2F4F4F" }, // Light Olive Green BG, Dark Slate Gray Font
+  OP: { backgroundColor: "#4CAF50", color: "#FFFFFF" }, // Medium Olive Green BG, White Font
+};
+
+export const CommunityRatingStyles: {
+  [key in (typeof ratings)[number]["label"]]: CSSProperties;
+} = {
+  F: { backgroundColor: "#FFCCCC", color: "#8B0000" }, // Light Red BG, Dark Red Font
+  D: { backgroundColor: "#FFB6A8", color: "#8B0000" }, // Light Orange Red BG, Dark Red Font
+  "C-": { backgroundColor: "#FFA07A", color: "#8B4513" }, // Light Dark Orange BG, Saddle Brown Font
+  C: { backgroundColor: "#FFDAB9", color: "#8B4513" }, // Light Orange BG, Saddle Brown Font
+  "B-": { backgroundColor: "#FFFFE0", color: "#DAA520" }, // Light Yellow BG, Goldenrod Font
+  B: { backgroundColor: "#F0FFF0", color: "#006400" }, // Light Green BG, Dark Green Font
+  "A-": { backgroundColor: "#B2FFB2", color: "#228B22" }, // Light Lime Green BG, Forest Green Font
+  A: { backgroundColor: "#99FF99", color: "#228B22" }, // Light Green BG, Forest Green Font
+  S: { backgroundColor: "#80FF80", color: "#228B22" }, // Light Sea Green BG, Forest Green Font
   OP: { backgroundColor: "#4CAF50", color: "#FFFFFF" }, // Medium Olive Green BG, White Font
 };

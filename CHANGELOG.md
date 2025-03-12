@@ -1,5 +1,11 @@
 # dragon-city-helper
 
+## 1.6.0
+
+### Minor Changes
+
+- 3d4db50: Add community rating tierlist page
+
 ## 1.5.0
 
 ### Minor Changes

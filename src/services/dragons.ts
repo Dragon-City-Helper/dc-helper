@@ -205,6 +205,56 @@ export const fetchRatedDragons = cache(async (options?: { rarity: Rarity }) => {
   return dragonsWithUserRatings;
 });
 
+// Fetch dragons with non-null ratings
+export const fetchUserRatedDragons = cache(
+  async (options?: { rarity: Rarity }) => {
+    const dragons = await prisma.dragons.findMany({
+      where: {
+        rarity: options?.rarity,
+        NOT: { rating: null },
+      },
+      select: {
+        id: true,
+        name: true,
+        familyName: true,
+        elements: true,
+        rarity: true,
+        isSkin: true,
+        hasAllSkins: true,
+        isVip: true,
+        hasSkills: true,
+        skillType: true,
+        rating: true,
+        image: true,
+        thumbnail: true,
+        originalDragonName: true,
+        perkSuggestions: true,
+        releaseDate: true,
+      },
+    });
+    const userRatings = await getAllUserRatings();
+    const dragonsWithUserRatings = dragons.map((dragon) => {
+      const userRating = userRatings.find(
+        (rating) => rating.dragonsId === dragon.id
+      );
+      return {
+        ...dragon,
+        userRatings: {
+          arena: {
+            rating: userRating?._avg?.arena,
+            count: userRating?._count?.arena,
+          },
+          design: {
+            rating: userRating?._avg?.design,
+            count: userRating?._count?.design,
+          },
+        },
+      };
+    });
+    return dragonsWithUserRatings.filter((dragon) => dragon.userRatings);
+  }
+);
+
 // Fetch unique family names
 export const fetchUniqueFamilyNames = async () => {
   const familyNames = await prisma.dragons.findMany({

@@ -174,7 +174,6 @@ const DragonRatings: FC<IDragonRatingsProps> = ({ dragon }) => {
         <Text fw="bold" my="md">
           Community Ratings
         </Text>
-        <Badge color="blue">Beta</Badge>
       </Group>
       <SimpleGrid cols={{ base: 1, md: 2 }}>
         <Stack>
@@ -187,7 +186,7 @@ const DragonRatings: FC<IDragonRatingsProps> = ({ dragon }) => {
                 </Popover.Target>
                 <Popover.Dropdown>
                   <Text>
-                    Community rating on how strong this dragon is in battles
+                    Community rating on how strong this dragon is in battles.
                   </Text>
                 </Popover.Dropdown>
               </Popover>
