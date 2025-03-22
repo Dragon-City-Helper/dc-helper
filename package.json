@@ -11,6 +11,7 @@
     "test": "jest --passWithNoTests",
     "prisma:db:push": "dotenv -e .env.local prisma db push",
     "prisma:seed": "dotenv -e .env.local node prisma/seed.mjs",
+    "prisma:seed:other": "dotenv -e .env.local node prisma/seed-ditlep-dc.mjs",
     "revalidate": "dotenv -e .env.local node scripts/revalidate.mjs",
     "pull:master:data": "dotenv -e .env.local node scripts/pullMaster.mjs",
     "changeset": "changeset",

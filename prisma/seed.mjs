@@ -50,6 +50,7 @@ const getFamilyName = (family) => {
     strategist: "Strategist",
     evader: "Evader",
     guard: "Guardian",
+    Critical: "Crit Crew",
   };
 
   const dragonFamily =
