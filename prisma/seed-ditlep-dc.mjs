@@ -135,8 +135,7 @@ const fetchDragons = async ({
   const dragons = ditlepData.items
     .filter(
       ({ id }) =>
-        [3373, 3346, 3347, 3345, 3375, 3343, 3344, 3333].includes(id) &&
-        !!dcMetaResponseById[id.toString()]
+        [3352, 3351].includes(id) && !!dcMetaResponseById[id.toString()]
     )
     .map(
       ({
@@ -305,7 +304,6 @@ async function main() {
             skinName: "All Skins",
             isSkin: true,
             hasAllSkins: true,
-            skinPrice: "Obtain All Skins",
             skinDescription: allSkillsDescr,
             originalDragonName: curr.name,
           },
@@ -317,7 +315,7 @@ async function main() {
     return [...acc, curr];
   }, []);
   const filteredDragons = dragonsAndSkins.filter((d) =>
-    [3373, 3346, 3347, 3345, 3375, 3343, 3344, 3333].includes(d.code)
+    [3352, 3351].includes(d.code)
   );
   // console.log(filteredDragons);
   seedDragons(filteredDragons);
