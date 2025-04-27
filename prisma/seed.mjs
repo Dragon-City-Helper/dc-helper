@@ -1,6 +1,10 @@
 import fs from "fs/promises";
 import path from "path";
 import { PrismaClient } from "@prisma/client";
+import {
+  getDragonElementWeaknesses,
+  getDragonElementStrengths,
+} from "./updateTypes.mjs";
 const prisma = new PrismaClient();
 
 const dragonSkinThumbnailCorrections = {
@@ -150,8 +154,6 @@ const transformData = (data, filterUnreleased = true) => {
         INFO,
         IMAGES,
         SKILLS = [],
-        WEAKNESS: weak,
-        STRONGEST: strong,
         SKILL_TYPE: skillType,
         TID_NAME,
         TID_DESC,
@@ -188,8 +190,8 @@ const transformData = (data, filterUnreleased = true) => {
         maxSpeed: SPEED[1],
         breedable: getBreedable(BOOK),
         category,
-        weak,
-        strong,
+        weak: getDragonElementWeaknesses(elements),
+        strong: getDragonElementStrengths(elements),
         isVip: !!familyName && hasSkills,
         isSkin: false,
         hasAllSkins: false,

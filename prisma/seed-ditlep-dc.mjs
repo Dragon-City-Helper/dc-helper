@@ -1,4 +1,5 @@
 import { PrismaClient } from "@prisma/client";
+import { getDragonElementStrengths } from "./updateTypes.mjs";
 
 const prisma = new PrismaClient();
 
@@ -146,8 +147,6 @@ const fetchDragons = async ({
         elements,
         baseSpeed,
         maxSpeed,
-        weaknessElements,
-        strongElements,
         skills,
         skillType,
         hasSKill,
@@ -172,8 +171,8 @@ const fetchDragons = async ({
           category,
           code: id,
           releaseDate,
-          weak: weaknessElements,
-          strong: strongElements,
+          weak: getDragonElementWeaknesses(elements),
+          strong: getDragonElementStrengths(elements),
           skills: skills.map((skill) => ({
             name: skill.name === "" ? "Produce Food" : skill.name,
             skillType: skill.skillType === 0 ? 3 : skill.skillType,

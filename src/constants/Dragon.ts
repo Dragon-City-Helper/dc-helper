@@ -78,3 +78,27 @@ export const PerkNames: Record<Perk, string> = {
   B: "Breeding",
   AB: "Advanced Breeding",
 };
+
+export const elementStrengths: Record<Elements, Elements[]> = {
+  e: ["el", "f"],
+  f: ["p", "i"],
+  w: ["f", "wr"],
+  p: ["w", "li"],
+  el: ["w", "m"],
+  i: ["p", "wr"],
+  m: ["e", "i"],
+  pr: ["pu"],
+  wd: ["ti"],
+  pu: ["wd"],
+  d: ["m", "li"],
+  li: ["el", "d"],
+  wr: ["e", "d"],
+  l: ["pr"],
+  ti: ["l"],
+  bt: ["dr", "hp"],
+  mg: ["so", "bt"],
+  ch: ["mg", "so"],
+  hp: ["ch", "mg"],
+  dr: ["ch", "hp"],
+  so: ["dr", "bt"],
+};
