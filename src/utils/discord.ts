@@ -3,7 +3,7 @@ function delay(ms: number): Promise<void> {
 }
 
 export async function addDiscordRoleToUser(
-  userId: string,
+  userId: string
 ): Promise<{ userId: string; success: boolean; message: string }> {
   const BOT_TOKEN = process.env.DISCORD_BOT_TOKEN!;
   const GUILD_ID = process.env.DISCORD_GUILD_ID!;

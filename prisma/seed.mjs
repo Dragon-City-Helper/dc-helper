@@ -383,8 +383,9 @@ async function writeJsonToFile(data, filePath) {
 
 export async function seedDragons(dragons) {
   console.log(`Start seeding dragons...`);
+  const updatedDragons = [];
   for (const dragon of dragons) {
-    await prisma.dragons.upsert({
+    const updatedDragon = await prisma.dragons.upsert({
       where: { name: dragon.name },
       create: {
         ...dragon,
@@ -418,8 +419,18 @@ export async function seedDragons(dragons) {
 
     if (dragon.isSkin) {
       console.log(`Created/Updated Skinned Dragon: ${dragon.name}`);
+      updatedDragons.push({
+        name: updatedDragon.name,
+        image: `https://dci-static-s1.socialpointgames.com/static/dragoncity/mobile/ui${updatedDragon.thumbnail}`,
+        id: updatedDragon.id,
+      });
     } else {
       console.log(`Created/Updated Dragon: ${dragon.name}`);
+      updatedDragons.push({
+        name: updatedDragon.name,
+        image: `https://dci-static-s1.socialpointgames.com/static/dragoncity/mobile/ui${updatedDragon.thumbnail}`,
+        id: updatedDragon.id,
+      });
     }
   }
   const dragonsLength = dragons.filter((dragon) => !dragon.isSkin).length;
@@ -427,10 +438,12 @@ export async function seedDragons(dragons) {
     (dragon) => dragon.isSkin && !dragon.hasAllSkins
   ).length;
   const allSkinsLength = dragons.filter((dragon) => dragon.hasAllSkins).length;
-  console.log(`Seeding finished.
-    ${dragonsLength} Dragons seeded.
-    ${skinsLength} Combat Skins seeded.
-    ${allSkinsLength} All Skin dragons seeded.`);
+  const message = `Seeding finished.
+     ${dragonsLength} Dragons seeded.
+     ${skinsLength} Combat Skins seeded.
+     ${allSkinsLength} All Skin dragons seeded.`;
+  console.log(message);
+  addDiscordDragonUpdatesWebhook(message, updatedDragons);
 }
 
 // Call the main function

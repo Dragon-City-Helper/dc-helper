@@ -1,5 +1,9 @@
 import { PrismaClient } from "@prisma/client";
-import { getDragonElementStrengths } from "./updateTypes.mjs";
+import {
+  getDragonElementStrengths,
+  getDragonElementWeaknesses,
+} from "./updateTypes.mjs";
+import { addDiscordDragonUpdatesWebhook } from "./discordWebhook.mjs";
 
 const prisma = new PrismaClient();
 
@@ -66,6 +70,7 @@ const familyNameCorrections = {
   abilityy: null,
   abilityyskin: null,
   skin: null,
+  abilityyboost: null,
   "skin-vampire": null,
   Redemption1: "Redemption",
   Redemption2: "Redemption",
@@ -134,10 +139,7 @@ const fetchDragons = async ({
     };
   }, {});
   const dragons = ditlepData.items
-    .filter(
-      ({ id }) =>
-        [3352, 3351].includes(id) && !!dcMetaResponseById[id.toString()]
-    )
+    .filter(({ id }) => !!dcMetaResponseById[id.toString()])
     .map(
       ({
         id,
@@ -201,8 +203,9 @@ const fetchDragons = async ({
 };
 export async function seedDragons(dragons) {
   console.log(`Start seeding dragons...`);
+  const updatedDragons = [];
   for (const dragon of dragons) {
-    await prisma.dragons.upsert({
+    const updatedDragon = await prisma.dragons.upsert({
       where: { name: dragon.name },
       create: {
         ...dragon,
@@ -236,8 +239,18 @@ export async function seedDragons(dragons) {
 
     if (dragon.isSkin) {
       console.log(`Created/Updated Skinned Dragon: ${dragon.name}`);
+      updatedDragons.push({
+        name: updatedDragon.name,
+        image: `https://dci-static-s1.socialpointgames.com/static/dragoncity/mobile/ui${updatedDragon.thumbnail}`,
+        id: updatedDragon.id,
+      });
     } else {
       console.log(`Created/Updated Dragon: ${dragon.name}`);
+      updatedDragons.push({
+        name: updatedDragon.name,
+        image: `https://dci-static-s1.socialpointgames.com/static/dragoncity/mobile/ui${updatedDragon.thumbnail}`,
+        id: updatedDragon.id,
+      });
     }
   }
   const dragonsLength = dragons.filter((dragon) => !dragon.isSkin).length;
@@ -245,10 +258,12 @@ export async function seedDragons(dragons) {
     (dragon) => dragon.isSkin && !dragon.hasAllSkins
   ).length;
   const allSkinsLength = dragons.filter((dragon) => dragon.hasAllSkins).length;
-  console.log(`Seeding finished.
-    ${dragonsLength} Dragons seeded.
-    ${skinsLength} Combat Skins seeded.
-    ${allSkinsLength} All Skin dragons seeded.`);
+  const message = `Seeding finished.
+  ${dragonsLength} Dragons seeded.
+  ${skinsLength} Combat Skins seeded.
+  ${allSkinsLength} All Skin dragons seeded.`;
+  console.log(message);
+  addDiscordDragonUpdatesWebhook(message, updatedDragons);
 }
 
 async function main() {
@@ -314,10 +329,10 @@ async function main() {
     return [...acc, curr];
   }, []);
   const filteredDragons = dragonsAndSkins.filter((d) =>
-    [3352, 3351].includes(d.code)
+    [3302, 3324].includes(d.code)
   );
   // console.log(filteredDragons);
-  seedDragons(filteredDragons);
+  await seedDragons(filteredDragons);
 }
 
 main()
