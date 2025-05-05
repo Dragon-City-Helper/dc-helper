@@ -5,6 +5,8 @@ import { revalidateTag, unstable_cache } from "next/cache";
 import { cache } from "react";
 import { getAllUserRatings, getUserRating } from "./userRatings";
 
+const rarityOrder = ["H", "M", "L", "E", "V", "R", "C"];
+
 // Fetch functions
 
 // Home Dragons - Sorted by rating, rarity and skin status
@@ -50,13 +52,6 @@ export const fetchHomeDragons = cache(
           },
         };
       });
-      // return dragons.sort((a, b) => {
-      //   return (
-      //     (b.releaseDate ? new Date(b.releaseDate) : new Date()).getTime() -
-      //     (a.releaseDate ? new Date(a.releaseDate) : new Date()).getTime()
-      //   );
-      // });
-      const rarityOrder = ["H", "M", "L", "E", "V", "R", "C"];
       return dragonsWithUserRatings.sort((a, b) => {
         if (a.releaseDate !== b.releaseDate) {
           return (
@@ -77,6 +72,44 @@ export const fetchHomeDragons = cache(
     {
       revalidate: 21600, // 6 hours
       tags: ["homeDragons"],
+    }
+  )
+);
+
+// Fetch dragons with minimal fields for trading
+export const fetchTradeDragons = cache(
+  unstable_cache(
+    async () => {
+      const dragons = await prisma.dragons.findMany({
+        where: {
+          isSkin: false,
+          rarity: {
+            in: ["H", "M", "L"],
+          },
+        },
+        select: {
+          id: true,
+          name: true,
+          rarity: true,
+          thumbnail: true,
+          familyName: true,
+          isSkin: true,
+          isVip: true,
+          hasSkills: true,
+          hasAllSkins: true,
+          skillType: true,
+        },
+      });
+      return dragons.sort((a, b) => {
+        if (a.rarity !== b.rarity)
+          return rarityOrder.indexOf(a.rarity) - rarityOrder.indexOf(b.rarity);
+        return a.name.localeCompare(b.name);
+      });
+    },
+    ["tradeDragons"],
+    {
+      revalidate: 21600, // 6 hours
+      tags: ["tradeDragons"],
     }
   )
 );
@@ -505,4 +538,5 @@ export async function getDragonById(id: string) {
 // Types
 type ThenArg<T> = T extends PromiseLike<infer U> ? U : T;
 export type BaseDragons = ThenArg<ReturnType<typeof fetchHomeDragons>>;
+export type TradeDragons = ThenArg<ReturnType<typeof fetchTradeDragons>>;
 export type fullDragon = ThenArg<ReturnType<typeof fetchDragon>>;

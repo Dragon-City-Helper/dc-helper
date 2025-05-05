@@ -39,6 +39,7 @@ const Select: FC<ISelectProps & SelectProps> = ({
         dropdownOpened={opened}
         renderOption={renderOption}
         allowDeselect
+        maxDropdownHeight={400}
         {...rest}
       />
     </div>

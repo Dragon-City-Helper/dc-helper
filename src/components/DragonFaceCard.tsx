@@ -47,7 +47,7 @@ const DragonFaceCard: FC<IDragonFaceCardProps> = ({
         dragon.hasSkills ? (
           <NextImage
             src={`/images/skilltype/${dragon.skillType}.png`}
-            alt={dragon.rarity}
+            alt={"skill"}
             width={32}
             height={32}
           />
