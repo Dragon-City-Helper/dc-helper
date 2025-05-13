@@ -2,6 +2,7 @@ import { FC } from "react";
 import TradingHub from "@/views/TradingHub";
 import { getTrades } from "@/services/trades";
 import { auth } from "@/auth";
+import { TradingHubWrapper } from "@/components/TradingHubWrapper";
 
 export const metadata = {
   title: "Trading Hub | Dragon City Helper",
@@ -25,7 +26,11 @@ export const metadata = {
 
 const Page: FC = async () => {
   const trades = await getTrades();
-  return <TradingHub trades={trades} />;
+  return (
+    <TradingHubWrapper>
+      <TradingHub trades={trades} />
+    </TradingHubWrapper>
+  );
 };
 
 export default Page;

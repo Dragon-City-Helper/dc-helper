@@ -231,6 +231,18 @@ model User {
   UserRating    UserRating[]
   Trade         Trade[]
   Request       Request[]
+  Contacts      Contact?
+}
+
+model Contact {
+  id        String  @id @default(auto()) @map("_id") @db.ObjectId
+  userId    String  @unique @db.ObjectId
+  discord   String?
+  facebook  String?
+  twitter   String?
+  instagram String?
+  reddit    String?
+  User      User    @relation(fields: [userId], references: [id])
 }
 
 enum Role {

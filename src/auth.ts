@@ -12,6 +12,13 @@ declare module "next-auth" {
     user: DefaultSession["user"] & {
       id: string;
       role: Role;
+      Contacts?: {
+        discord: string | null;
+        facebook: string | null;
+        twitter: string | null;
+        instagram: string | null;
+        reddit: string | null;
+      } | null;
     };
   }
 }
@@ -20,14 +27,35 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
   adapter: PrismaAdapter(prisma),
   providers: [Discord],
   callbacks: {
-    session({ session }) {
+    async session({ session, user }) {
+      // Get the user with their contacts
+      const userWithContacts = await prisma.user.findUnique({
+        where: { id: user.id },
+        include: { Contacts: true },
+      });
+
+      // Cast user to any to access the role property
+      const typedUser = user as any;
+
       return {
-        expires: session.expires,
+        ...session,
         user: {
-          email: session.user.email,
-          role: session.user.role,
-          id: session.user.id,
-          name: session.user.name,
+          ...session.user,
+          id: user.id,
+          role: typedUser.role || 'USER',
+          Contacts: userWithContacts?.Contacts ? {
+            discord: userWithContacts.Contacts.discord,
+            facebook: userWithContacts.Contacts.facebook,
+            twitter: userWithContacts.Contacts.twitter,
+            instagram: userWithContacts.Contacts.instagram,
+            reddit: userWithContacts.Contacts.reddit || null,
+          } : {
+            discord: null,
+            facebook: null,
+            twitter: null,
+            instagram: null,
+            reddit: null,
+          },
         },
       };
     },

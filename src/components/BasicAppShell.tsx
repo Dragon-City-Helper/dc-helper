@@ -1,20 +1,23 @@
 "use client";
 
-import { AppShell, Burger, Group, Menu, NavLink } from "@mantine/core";
+import { AppShell, Avatar, Burger, Group, Menu, NavLink, Text } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
 import Link from "next/link";
 import Logo from "./Logo";
-import { FC, PropsWithChildren } from "react";
-import { signIn, signOut } from "next-auth/react";
+import { FC, PropsWithChildren, useState } from "react";
+import { signIn, signOut, useSession } from "next-auth/react";
 import { usePathname } from "next/navigation";
 import {
   IconBrandDiscordFilled,
   IconLogin2,
   IconLogout2,
   IconTipJar,
+  IconUser,
+  IconUserEdit,
 } from "@tabler/icons-react";
 import { Session } from "next-auth";
 import { sendGAEvent } from "@next/third-parties/google";
+import UpdateContactModal from "./UpdateContactModal";
 
 interface IBasicAppShellProps {
   session: Session | null;
@@ -24,7 +27,9 @@ const BasicAppShell: FC<PropsWithChildren<IBasicAppShellProps>> = ({
   session,
 }) => {
   const [opened, { toggle, close }] = useDisclosure(false);
+  const [contactModalOpened, setContactModalOpened] = useState(false);
   const pathname = usePathname();
+  const { data: sessionData } = useSession();
 
   return (
     <AppShell
@@ -125,20 +130,70 @@ const BasicAppShell: FC<PropsWithChildren<IBasicAppShellProps>> = ({
                 }}
               />
               {session ? (
-                <NavLink
-                  label="Logout"
-                  onClick={() => {
-                    sendGAEvent("event", "logout", {});
-                    signOut();
-                  }}
-                />
+                <Menu shadow="md" width={200}>
+                  <Menu.Target>
+                    <NavLink
+                      label={
+                        <Group gap="xs" wrap="nowrap" align="center">
+                          <Avatar
+                            size="sm"
+                            radius="xl"
+                            src={session.user?.image}
+                            alt={session.user?.name || 'User'}
+                          >
+                            {session.user?.name?.[0] || <IconUser size={16} />}
+                          </Avatar>
+                          <Text size="sm" truncate style={{ lineHeight: 1 }}>
+                            {session.user?.name || 'Account'}
+                          </Text>
+                        </Group>
+                      }
+                    />
+                  </Menu.Target>
+                  <Menu.Dropdown>
+                    <Menu.Label>Account</Menu.Label>
+                    <Menu.Item
+                      leftSection={<IconUserEdit size={14} />}
+                      onClick={() => setContactModalOpened(true)}
+                    >
+                      Update Contact Details
+                    </Menu.Item>
+                    <Menu.Divider />
+                    <Menu.Item
+                      color="red"
+                      leftSection={<IconLogout2 size={14} />}
+                      onClick={() => {
+                        sendGAEvent("event", "logout", {});
+                        signOut();
+                      }}
+                    >
+                      Logout
+                    </Menu.Item>
+                  </Menu.Dropdown>
+                </Menu>
               ) : (
-                <NavLink label="Login" onClick={() => signIn()} />
+                <NavLink
+                  leftSection={<IconLogin2 size={18} />}
+                  label="Login"
+                  onClick={() => signIn()}
+                />
               )}
             </Group>
           </Group>
         </Group>
       </AppShell.Header>
+      
+      <UpdateContactModal
+        isOpen={contactModalOpened}
+        onClose={() => setContactModalOpened(false)}
+        initialData={sessionData?.user?.Contacts ? {
+          discord: sessionData.user.Contacts.discord || null,
+          facebook: sessionData.user.Contacts.facebook || null,
+          twitter: sessionData.user.Contacts.twitter || null,
+          instagram: sessionData.user.Contacts.instagram || null,
+          reddit: sessionData.user.Contacts.reddit || null,
+        } : null}
+      />
       <AppShell.Navbar p="md">
         <AppShell.Section grow my="md">
           <NavLink
@@ -183,6 +238,7 @@ const BasicAppShell: FC<PropsWithChildren<IBasicAppShellProps>> = ({
             target="_blank"
             label="Donate"
             onClick={() => {
+              close();
               sendGAEvent("event", "donate-click", {});
             }}
           />
@@ -192,23 +248,39 @@ const BasicAppShell: FC<PropsWithChildren<IBasicAppShellProps>> = ({
             href="https://discord.gg/U8CyQYpnWT"
             target="_blank"
             onClick={() => {
+              close();
               sendGAEvent("event", "discord-click", {});
             }}
           />
           {session ? (
-            <NavLink
-              label="Logout"
-              leftSection={<IconLogout2 />}
-              onClick={() => {
-                sendGAEvent("event", "logout", {});
-                signOut();
-              }}
-            />
+            <>
+              <NavLink
+                label="Update Contact Details"
+                leftSection={<IconUserEdit size={18} />}
+                onClick={() => {
+                  setContactModalOpened(true);
+                  close();
+                }}
+              />
+              <NavLink
+                color="red"
+                label="Logout"
+                leftSection={<IconLogout2 size={18} />}
+                onClick={() => {
+                  close();
+                  sendGAEvent("event", "logout", {});
+                  signOut();
+                }}
+              />
+            </>
           ) : (
             <NavLink
               label="Login"
-              leftSection={<IconLogin2 />}
-              onClick={() => signIn()}
+              leftSection={<IconLogin2 size={18} />}
+              onClick={() => {
+                close();
+                signIn();
+              }}
             />
           )}
         </AppShell.Section>
