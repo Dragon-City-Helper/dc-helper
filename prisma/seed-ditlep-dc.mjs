@@ -115,24 +115,21 @@ const fetchDragons = async ({
   }
 
   const ditlepData = await ditlepResponse.json();
-  const dcMetaResponse = await fetch(
-    "https://dragoncitymeta.com/calculate-tier/t-all-nonee",
-    {
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-      },
-    }
-  );
+  const dcMetaResponse = await fetch("https://dragoncitymeta.com/rank/all", {
+    method: "GET",
+    headers: {
+      "Content-Type": "application/json",
+    },
+  });
 
   if (!dcMetaResponse.ok) {
     throw new Error("Failed to fetch tier data from Dragon City Meta");
   }
 
-  const dcMetaData = await dcMetaResponse.json();
+  const { data: dcMetaData } = await dcMetaResponse.json();
 
   const dcMetaResponseById = dcMetaData.reduce((acc, curr) => {
-    const name = curr.dragon.dragon_Id;
+    const name = curr.dragon_Id;
     return {
       ...acc,
       [name]: curr,
@@ -157,7 +154,7 @@ const fetchDragons = async ({
         releaseDate,
       }) => {
         const trimmedName = name.trim();
-        const { dragon } = dcMetaResponseById[id.toString()];
+        const dragon = dcMetaResponseById[id.toString()];
         const dragonFamily =
           familyNameCorrections[dragon.family] !== undefined
             ? familyNameCorrections[dragon.family]
@@ -329,7 +326,7 @@ async function main() {
     return [...acc, curr];
   }, []);
   const filteredDragons = dragonsAndSkins.filter((d) =>
-    [3302, 3324].includes(d.code)
+    [3361, 3360, 3304].includes(d.code)
   );
   // console.log(filteredDragons);
   await seedDragons(filteredDragons);

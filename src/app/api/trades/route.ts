@@ -1,59 +1,26 @@
-import {
-  createTrade,
-  createTradeRequest,
-  getTradesByFilters,
-} from "@/services/trades";
+import { createTrade } from "@/services/trades";
 import { NextResponse } from "next/server";
-import { Rarity, Elements, HandleEssences } from "@prisma/client";
+import { HandleEssences } from "@prisma/client";
 import { auth } from "@/auth";
 
-export async function GET(request: Request) {
-  console.log("Received trades API request");
-  const { searchParams } = new URL(request.url);
-  const rarity = searchParams.get("rarity");
-  const element = searchParams.get("element");
-  const familyName = searchParams.get("familyName");
-  const isSponsored = searchParams.get("isSponsored");
-  const lookingForDragonIds = searchParams.get("lookingForDragonIds");
-  const canGiveDragonIds = searchParams.get("canGiveDragonIds");
-
-  console.log("Request parameters:", {
-    rarity,
-    element,
-    familyName,
-    isSponsored,
-    lookingForDragonIds,
-    canGiveDragonIds,
-  });
-
-  const trades = await getTradesByFilters({
-    rarity: rarity ? (rarity as Rarity) : undefined,
-    element: element ? (element as Elements) : undefined,
-    familyName: familyName ? (familyName as string) : undefined,
-    isSponsored: isSponsored ? isSponsored === "true" : undefined,
-    lookingForDragonIds: lookingForDragonIds
-      ? (lookingForDragonIds as string).split(",")
-      : undefined,
-    canGiveDragonIds: canGiveDragonIds
-      ? (canGiveDragonIds as string).split(",")
-      : undefined,
-  });
-
-  console.log(`Found ${trades.length} trades matching the criteria`);
-  return NextResponse.json(trades);
-}
-
 export async function POST(request: Request) {
+  const startTime = Date.now();
+  const requestId = Math.random().toString(36).substring(2, 9);
+  
+  console.log(`[${new Date().toISOString()}] [${requestId}] [POST /api/trades] Request started`);
+  
   const session = await auth();
 
   if (!session || !session.user) {
     console.warn(
-      "Unauthorized access attempt detected. Redirecting to signin."
+      `[${new Date().toISOString()}] [${requestId}] [POST /api/trades] Unauthorized access attempt detected. Redirecting to signin.`
     );
     return NextResponse.redirect("/api/auth/signin");
   }
 
   const { id: userId } = session.user;
+  console.log(`[${new Date().toISOString()}] [${requestId}] [POST /api/trades] User ${userId} creating new trade`);
+  
   const { lookingForDragon, canGiveDragons } = (await request.json()) as {
     lookingForDragon: {
       dragonId: string;
@@ -66,6 +33,14 @@ export async function POST(request: Request) {
       ratioRight: number;
     }[];
   };
+  
+  console.log(`[${new Date().toISOString()}] [${requestId}] [POST /api/trades] Trade details:`, {
+    lookingForDragon: {
+      dragonId: lookingForDragon.dragonId,
+      orbs: lookingForDragon.orbs
+    },
+    canGiveDragons: canGiveDragons.length
+  });
   try {
     const trade = await createTrade(userId, {
       lookingFor: {
@@ -84,11 +59,25 @@ export async function POST(request: Request) {
       handleEssences: HandleEssences.NO,
     });
 
+    const endTime = Date.now();
+    console.log(`[${new Date().toISOString()}] [${requestId}] [POST /api/trades] Trade created successfully in ${endTime - startTime}ms`, {
+      userId,
+      tradeId: trade.id,
+      duration: `${endTime - startTime}ms`
+    });
+    
     return NextResponse.json(trade);
   } catch (error) {
-    console.error("Error creating trade:", error);
+    const endTime = Date.now();
+    console.error(`[${new Date().toISOString()}] [${requestId}] [POST /api/trades] Error creating trade:`, {
+      userId,
+      error: error instanceof Error ? error.message : 'Unknown error',
+      stack: error instanceof Error ? error.stack : undefined,
+      requestDuration: `${endTime - startTime}ms`
+    });
+    
     const errorMessage =
       error instanceof Error ? error.message : "Failed to create trade";
-    return NextResponse.json({ error: errorMessage }, { status: 500 });
+    return NextResponse.json({ error: errorMessage, requestId }, { status: 500 });
   }
 }

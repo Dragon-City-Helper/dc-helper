@@ -39,18 +39,37 @@ export default function UpdateContactModal({
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState(false);
 
-  // Create a form key based on the initialData to force remount when it changes
-  const formKey = JSON.stringify(initialData || {});
-  
   const form = useForm<ContactFormValues>({
-    initialValues: {
-      discord: initialData?.discord || '',
-      facebook: initialData?.facebook || '',
-      twitter: initialData?.twitter || '',
-      instagram: initialData?.instagram || '',
-      reddit: initialData?.reddit || '',
+    initialValues: initialData ? {
+      discord: initialData.discord || '',
+      facebook: initialData.facebook || '',
+      twitter: initialData.twitter || '',
+      instagram: initialData.instagram || '',
+      reddit: initialData.reddit || '',
+    } : {
+      discord: '',
+      facebook: '',
+      twitter: '',
+      instagram: '',
+      reddit: '',
     },
   });
+
+  // Update form values when initialData changes, but only if different from current form values
+  useEffect(() => {
+    if (initialData) {
+      const nextValues = {
+        discord: initialData.discord || '',
+        facebook: initialData.facebook || '',
+        twitter: initialData.twitter || '',
+        instagram: initialData.instagram || '',
+        reddit: initialData.reddit || '',
+      };
+      form.setValues(nextValues);
+    }
+    // only run when initialData changes
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [initialData]);
 
   const hasAtLeastOneContactMethod = (values: ContactFormValues) => {
     return Object.values(values).some(value => value && value.trim() !== '');
@@ -107,10 +126,17 @@ export default function UpdateContactModal({
     }
   };
 
+  const handleClose = () => {
+    if (forceUpdate) {
+      return;
+    }
+    onClose(false);
+  };
+
   return (
     <Modal 
       opened={isOpen} 
-      onClose={forceUpdate ? () => {} : () => onClose(false)} 
+      onClose={handleClose} 
       title={forceUpdate ? "Contact Information Required" : "Update Contact Information"}
       size="md"
       withCloseButton={!forceUpdate}
@@ -138,7 +164,7 @@ export default function UpdateContactModal({
           <Text c="green.7" size="sm">Contact information updated successfully!</Text>
         </Box>
       ) : (
-        <form key={formKey} onSubmit={form.onSubmit(handleSubmit)}>
+        <form onSubmit={form.onSubmit(handleSubmit)}>
           <Stack gap="lg">
             <TextInput
               label="Discord"

@@ -1,36 +1,31 @@
-import { FC } from "react";
-import TradingHub from "@/views/TradingHub";
-import { getTrades } from "@/services/trades";
-import { auth } from "@/auth";
-import { TradingHubWrapper } from "@/components/TradingHubWrapper";
+import { Metadata } from 'next';
+import { getTrades } from '@/services/trades';
+import { auth } from '@/auth';
+import { redirect } from 'next/navigation';
+import { TradingHubPublicClient } from '@/views/trading-hub/logged-out/TradingHubPublicClient';
 
-export const metadata = {
+export const metadata: Metadata = {
   title: "Trading Hub | Dragon City Helper",
-  description: "Trade dragons with other players on Dragon City Helper!",
-  keywords: [
-    "Dragon City",
-    "Dragon City Helper",
-    "Trading Hub",
-    "Dragon Trading",
-    "Dragon City Trading",
-    "Dragon City Trading Hub",
-  ].join(", "),
-  robots: {
-    index: true,
-    follow: true,
-  },
-  icons: {
-    icon: "/favicon.ico",
-  },
+  description: "Browse and trade dragons with other players. Log in to create your own trades!",
 };
 
-const Page: FC = async () => {
-  const trades = await getTrades();
+export const revalidate = 60; // Revalidate every minute
+
+export default async function TradingHubPage() {
+  const session = await auth();
+  
+  // If user is logged in, redirect to the logged-in version
+  if (session) {
+    redirect('/trading-hub/me');
+  }
+
+  // Get the first 10 trades for the public view
+  const allTrades = await getTrades();
+  const initialTrades = allTrades.slice(0, 10);
+
   return (
-    <TradingHubWrapper>
-      <TradingHub trades={trades} />
-    </TradingHubWrapper>
+    <div className="container mx-auto px-4 py-8">
+      <TradingHubPublicClient initialTrades={initialTrades} />
+    </div>
   );
-};
-
-export default Page;
+}

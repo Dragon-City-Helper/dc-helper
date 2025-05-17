@@ -12,6 +12,7 @@ interface DragonSelectProps {
   placeholder: string;
   loading?: boolean;
   disabled?: boolean;
+  description?: string;
 }
 
 const DragonSelect: FC<DragonSelectProps> = ({
@@ -22,6 +23,7 @@ const DragonSelect: FC<DragonSelectProps> = ({
   placeholder,
   loading = false,
   disabled = false,
+  description,
 }) => {
   return (
     <Box>
@@ -39,6 +41,7 @@ const DragonSelect: FC<DragonSelectProps> = ({
         clearable
         {...(loading && { loading: true })}
         disabled={disabled}
+        description={description}
       />
     </Box>
   );

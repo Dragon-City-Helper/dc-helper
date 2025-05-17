@@ -1,12 +1,21 @@
 "use client";
 
-import { AppShell, Avatar, Burger, Group, Menu, NavLink, Text } from "@mantine/core";
+import {
+  AppShell,
+  Avatar,
+  Badge,
+  Burger,
+  Group,
+  Menu,
+  NavLink,
+  Text,
+} from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
 import Link from "next/link";
 import Logo from "./Logo";
 import { FC, PropsWithChildren, useState } from "react";
 import { signIn, signOut, useSession } from "next-auth/react";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import {
   IconBrandDiscordFilled,
   IconLogin2,
@@ -105,6 +114,22 @@ const BasicAppShell: FC<PropsWithChildren<IBasicAppShellProps>> = ({
                 </Menu.Target>
                 <Menu.Dropdown></Menu.Dropdown>
               </Menu> */}
+              {session && (
+                <NavLink
+                  component={Link}
+                  label={
+                    <Group gap="xs" wrap="nowrap">
+                      <span>Trading</span>
+                    </Group>
+                  }
+                  href="/trading-hub/me"
+                  active={pathname.startsWith("/trading-hub")}
+                  prefetch={false}
+                  onClick={() => {
+                    sendGAEvent("event", "trading-hub-click", {});
+                  }}
+                />
+              )}
               <Menu shadow="md" trigger="hover" openDelay={100}>
                 <Menu.Target>
                   <NavLink label="Community" />
@@ -139,12 +164,12 @@ const BasicAppShell: FC<PropsWithChildren<IBasicAppShellProps>> = ({
                             size="sm"
                             radius="xl"
                             src={session.user?.image}
-                            alt={session.user?.name || 'User'}
+                            alt={session.user?.name || "User"}
                           >
                             {session.user?.name?.[0] || <IconUser size={16} />}
                           </Avatar>
                           <Text size="sm" truncate style={{ lineHeight: 1 }}>
-                            {session.user?.name || 'Account'}
+                            {session.user?.name || "Account"}
                           </Text>
                         </Group>
                       }
@@ -182,17 +207,21 @@ const BasicAppShell: FC<PropsWithChildren<IBasicAppShellProps>> = ({
           </Group>
         </Group>
       </AppShell.Header>
-      
+
       <UpdateContactModal
         isOpen={contactModalOpened}
         onClose={() => setContactModalOpened(false)}
-        initialData={sessionData?.user?.Contacts ? {
-          discord: sessionData.user.Contacts.discord || null,
-          facebook: sessionData.user.Contacts.facebook || null,
-          twitter: sessionData.user.Contacts.twitter || null,
-          instagram: sessionData.user.Contacts.instagram || null,
-          reddit: sessionData.user.Contacts.reddit || null,
-        } : null}
+        initialData={
+          sessionData?.user?.Contacts
+            ? {
+                discord: sessionData.user.Contacts.discord || null,
+                facebook: sessionData.user.Contacts.facebook || null,
+                twitter: sessionData.user.Contacts.twitter || null,
+                instagram: sessionData.user.Contacts.instagram || null,
+                reddit: sessionData.user.Contacts.reddit || null,
+              }
+            : null
+        }
       />
       <AppShell.Navbar p="md">
         <AppShell.Section grow my="md">
@@ -222,12 +251,32 @@ const BasicAppShell: FC<PropsWithChildren<IBasicAppShellProps>> = ({
           />
           {session && (
             <NavLink
-              onClick={close}
               component={Link}
               label="Dragon Dashboard"
               href="/dashboard"
               prefetch={false}
               active={pathname === "/dashboard"}
+              onClick={() => {
+                close();
+                sendGAEvent("event", "dashboard-click", {});
+              }}
+            />
+          )}
+          {session && (
+            <NavLink
+              component={Link}
+              label={
+                <Group gap="xs" wrap="nowrap">
+                  <span>Trading Hub</span>
+                </Group>
+              }
+              href="/trading-hub/me"
+              prefetch={false}
+              active={pathname.startsWith("/trading-hub")}
+              onClick={() => {
+                close();
+                sendGAEvent("event", "trading-hub-click", {});
+              }}
             />
           )}
         </AppShell.Section>
