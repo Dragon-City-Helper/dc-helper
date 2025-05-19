@@ -42,9 +42,10 @@ const handleEssencesDisplay = {
 
 interface TradeDetailProps {
   trade: UITrades[number];
+  onEditTrade?: (trade: UITrades[number]) => void;
 }
 
-export default function TradeDetail({ trade }: TradeDetailProps) {
+export default function TradeDetail({ trade, onEditTrade }: TradeDetailProps) {
   const router = useRouter();
   const { data: session } = useSession();
   const [isRequesting, setIsRequesting] = useState(false);
@@ -287,7 +288,12 @@ export default function TradeDetail({ trade }: TradeDetailProps) {
                         trade_id: trade.id,
                         from_page: 'trade_detail'
                       });
-                      router.push(`/trades/${trade.id}/edit`);
+                      
+                      if (onEditTrade) {
+                        onEditTrade(trade);
+                      } else {
+                        router.push(`/trades/${trade.id}/edit`);
+                      }
                     }}
                     size={isMobile ? 'sm' : 'md'}
                   >
