@@ -1,22 +1,38 @@
 "use client";
 
-import { Card, Group, Text, Badge, Button, Stack, Tooltip, Anchor } from "@mantine/core";
-import { IconEdit, IconMessageCircle, IconTrash, IconEye, IconEyeOff } from "@tabler/icons-react";
+import {
+  Card,
+  Group,
+  Text,
+  Badge,
+  Button,
+  Stack,
+  Tooltip,
+  Anchor,
+  Image,
+} from "@mantine/core";
+import {
+  IconEdit,
+  IconMessageCircle,
+  IconTrash,
+  IconEye,
+  IconEyeOff,
+} from "@tabler/icons-react";
 import { FC } from "react";
-import { HandleEssences } from '@prisma/client';
+import { HandleEssences } from "@prisma/client";
 import { useSession } from "next-auth/react";
-import { useRouter } from 'next/navigation';
+import { useRouter } from "next/navigation";
 
 // Map enum values to display text
 const handleEssencesDisplay = {
-  [HandleEssences.YES]: 'Poster Handles Essence',
-  [HandleEssences.NO]: 'Requestor Handles Essence',
-  [HandleEssences.SHARED]: 'Both Players Share Essence'
+  [HandleEssences.YES]: "Poster Handles Essence",
+  [HandleEssences.NO]: "Requestor Handles Essence",
+  [HandleEssences.SHARED]: "Both Players Share Essence",
 };
 import TradeDragonFaceCard from "@/components/TradeDragonFaceCard";
 import { UITrades } from "@/services/trades";
 import { timeAgo } from "@/utils/time";
-import { formatDistanceToNow } from 'date-fns';
+import { formatDistanceToNow } from "date-fns";
 
 interface TradeCardProps {
   trade: UITrades[number];
@@ -29,15 +45,15 @@ interface TradeCardProps {
   isRequested?: boolean;
 }
 
-const TradeCard: FC<TradeCardProps> = ({ 
-  trade, 
-  onEdit, 
-  onDelete, 
-  onToggleVisibility, 
-  onOpenTradePanel, 
-  onRequestTrade, 
+const TradeCard: FC<TradeCardProps> = ({
+  trade,
+  onEdit,
+  onDelete,
+  onToggleVisibility,
+  onOpenTradePanel,
+  onRequestTrade,
   showRequestButton = false,
-  isRequested = false
+  isRequested = false,
 }) => {
   const router = useRouter();
   const { data: session } = useSession();
@@ -46,10 +62,9 @@ const TradeCard: FC<TradeCardProps> = ({
       withBorder
       radius="md"
       shadow="sm"
-      className="h-full flex flex-col hover:shadow-md transition-shadow"
+      className="h-full flex flex-col hover:shadow-md transition-shadow relative cursor-pointer"
       component="article"
       onClick={() => router.push(`/trades/${trade.id}`)}
-      style={{ cursor: 'pointer' }}
     >
       <Card.Section p="md">
         <Group justify="space-between" align="flex-start">
@@ -58,7 +73,10 @@ const TradeCard: FC<TradeCardProps> = ({
               {trade.lookingFor.dragon.name}
             </Text>
             <Text size="sm" c="dimmed">
-              Posted {formatDistanceToNow(new Date(trade.createdAt), { addSuffix: true })}
+              Posted{" "}
+              {formatDistanceToNow(new Date(trade.createdAt), {
+                addSuffix: true,
+              })}
             </Text>
           </div>
           <Group gap="xs">
@@ -83,7 +101,9 @@ const TradeCard: FC<TradeCardProps> = ({
       <Card.Section p="md" className="flex-1">
         <Stack gap="md">
           <div>
-            <Text size="sm" fw={500} c="dimmed" mb="xs">Looking For</Text>
+            <Text size="sm" fw={500} c="dimmed" mb="xs">
+              Looking For
+            </Text>
             <Group gap="sm">
               <TradeDragonFaceCard dragon={trade.lookingFor.dragon} size="sm" />
               <div>
@@ -96,15 +116,21 @@ const TradeCard: FC<TradeCardProps> = ({
           </div>
 
           <div>
-            <Text size="sm" fw={500} c="dimmed" mb="xs">Can Give</Text>
+            <Text size="sm" fw={500} c="dimmed" mb="xs">
+              Can Give
+            </Text>
             <Stack gap="sm">
               {trade.canGive.slice(0, 3).map((item, index) => (
                 <Group key={index} gap="sm">
                   <TradeDragonFaceCard dragon={item.dragon} size="xs" />
                   <div>
-                    <Text size="sm" fw={500}>{item.dragon.name}</Text>
+                    <Text size="sm" fw={500}>
+                      {item.dragon.name}
+                    </Text>
                     <Group gap="xs">
-                      <Text size="xs" c="green">{item.orbCount} orbs</Text>
+                      <Text size="xs" c="green">
+                        {item.orbCount} orbs
+                      </Text>
                       <Text size="xs" c="dimmed">
                         {item.ratioLeft}:{item.ratioRight}
                       </Text>
@@ -121,8 +147,18 @@ const TradeCard: FC<TradeCardProps> = ({
           </div>
 
           <div>
-            <Text size="sm" fw={500} c="dimmed" mb="xs">Essence Handling</Text>
-            <Text size="sm" fw={500} c={trade.handleEssences === HandleEssences.SHARED ? 'green' : 'dimmed'}>
+            <Text size="sm" fw={500} c="dimmed" mb="xs">
+              Essence Handling
+            </Text>
+            <Text
+              size="sm"
+              fw={500}
+              c={
+                trade.handleEssences === HandleEssences.SHARED
+                  ? "green"
+                  : "dimmed"
+              }
+            >
               {handleEssencesDisplay[trade.handleEssences]}
             </Text>
           </div>
@@ -131,7 +167,7 @@ const TradeCard: FC<TradeCardProps> = ({
 
       <Card.Section p="md" className="border-t border-gray-200">
         <Group justify="space-between">
-          {(onEdit || onDelete || onToggleVisibility) ? (
+          {onEdit || onDelete || onToggleVisibility ? (
             <Group>
               {onEdit && (
                 <Tooltip label="Edit trade">
@@ -150,18 +186,24 @@ const TradeCard: FC<TradeCardProps> = ({
                 </Tooltip>
               )}
               {onToggleVisibility && (
-                <Tooltip label={trade.isVisible ? 'Hide trade' : 'Show trade'}>
+                <Tooltip label={trade.isVisible ? "Hide trade" : "Show trade"}>
                   <Button
                     variant="subtle"
-                    color={trade.isVisible ? 'blue' : 'gray'}
-                    leftSection={trade.isVisible ? <IconEye size={16} /> : <IconEyeOff size={16} />}
+                    color={trade.isVisible ? "blue" : "gray"}
+                    leftSection={
+                      trade.isVisible ? (
+                        <IconEye size={16} />
+                      ) : (
+                        <IconEyeOff size={16} />
+                      )
+                    }
                     onClick={(e) => {
                       e.stopPropagation();
                       onToggleVisibility();
                     }}
                     size="xs"
                   >
-                    {trade.isVisible ? 'Visible' : 'Hidden'}
+                    {trade.isVisible ? "Visible" : "Hidden"}
                   </Button>
                 </Tooltip>
               )}
@@ -185,7 +227,7 @@ const TradeCard: FC<TradeCardProps> = ({
           ) : (
             <div />
           )}
-          
+
           <Group>
             {showRequestButton && session && onRequestTrade && (
               <Button
@@ -201,7 +243,7 @@ const TradeCard: FC<TradeCardProps> = ({
                 disabled={isRequested}
                 size="sm"
               >
-                {isRequested ? 'Requested' : 'Request Trade'}
+                {isRequested ? "Requested" : "Request Trade"}
               </Button>
             )}
             <Button
@@ -219,6 +261,19 @@ const TradeCard: FC<TradeCardProps> = ({
           </Group>
         </Group>
       </Card.Section>
+      <div className="mt-auto pt-2">
+        <div className="flex items-center justify-end gap-1 text-xs py-1.5">
+          <span>Trade powered by</span>
+          <Image
+            src="/logo.png"
+            alt="Dragon City Helper"
+            w={16}
+            h={16}
+            className="inline-block"
+          />
+          <span className="font-medium">Dragon City Helper</span>
+        </div>
+      </div>
     </Card>
   );
 };

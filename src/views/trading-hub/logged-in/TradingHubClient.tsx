@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useEffect, useMemo } from "react";
-import { Text, Title, Stack, Group, Container, Box } from "@mantine/core";
+import { Text, Title, Stack, Group, Container, Box, Badge } from "@mantine/core";
 import { notifications } from "@mantine/notifications";
 import { useRouter } from "next/navigation";
 import { sendGAEvent } from "@next/third-parties/google";
@@ -292,9 +292,14 @@ export function TradingHubClient() {
       <Stack gap="lg">
         {/* Header */}
         <Stack gap="xs" align="center" mt={-8} mb={-4}>
-          <Title order={2} size="h3" ta="center" lh={1.2}>
-            Trading Hub
-          </Title>
+          <Group justify="center" gap="sm">
+            <Title order={2} size="h3" lh={1.2}>
+              Trading Hub
+            </Title>
+            <Badge color="blue" variant="light" size="lg" radius="sm">
+              Beta
+            </Badge>
+          </Group>
           <Text c="dimmed" ta="center" maw={600} size="sm" lh={1.3}>
             Connect with other players to trade dragons. Browse available trades
             or manage your own.
