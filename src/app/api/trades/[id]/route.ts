@@ -2,6 +2,93 @@ import { NextResponse } from "next/server";
 import { auth } from "@/auth";
 import { HandleEssences } from "@prisma/client";
 import { deleteTrade, updateTrade } from "@/services/trades";
+import { prisma } from "@/lib/prisma";
+
+// GET /api/trades/[id] - Get a single trade by ID
+export async function GET(
+  request: Request,
+  { params }: { params: { id: string } }
+) {
+  const startTime = Date.now();
+  const requestId = Math.random().toString(36).substring(2, 9);
+  const tradeId = params.id;
+  
+  console.log(`[${new Date().toISOString()}] [${requestId}] [GET /api/trades/${tradeId}] Request started`);
+
+  try {
+    const trade = await prisma.trade.findUnique({
+      where: { id: tradeId, isDeleted: false },
+      include: {
+        lookingFor: {
+          include: {
+            dragon: {
+              select: {
+                id: true,
+                name: true,
+                rarity: true,
+                thumbnail: true,
+                familyName: true,
+                isSkin: true,
+                isVip: true,
+                hasSkills: true,
+                hasAllSkins: true,
+                skillType: true,
+              },
+            },
+          },
+        },
+        canGive: {
+          include: {
+            dragon: {
+              select: {
+                id: true,
+                name: true,
+                rarity: true,
+                thumbnail: true,
+                familyName: true,
+                isSkin: true,
+                isVip: true,
+                hasSkills: true,
+                hasAllSkins: true,
+                skillType: true,
+              },
+            },
+          },
+        },
+        user: {
+          select: {
+            id: true,
+            name: true,
+            image: true,
+          },
+        },
+      },
+    });
+
+    if (!trade) {
+      console.log(`[${new Date().toISOString()}] [${requestId}] [GET /api/trades/${tradeId}] Trade not found`);
+      return NextResponse.json(
+        { error: "Trade not found" },
+        { status: 404 }
+      );
+    }
+
+    const endTime = Date.now();
+    console.log(`[${new Date().toISOString()}] [${requestId}] [GET /api/trades/${tradeId}] Request completed successfully in ${endTime - startTime}ms`);
+    return NextResponse.json(trade);
+  } catch (error) {
+    const endTime = Date.now();
+    console.error(`[${new Date().toISOString()}] [${requestId}] [GET /api/trades/${tradeId}] Error:`, {
+      error: error instanceof Error ? error.message : "Unknown error",
+      stack: error instanceof Error ? error.stack : undefined,
+      requestDuration: `${endTime - startTime}ms`
+    });
+    
+    const errorMessage =
+      error instanceof Error ? error.message : "Failed to fetch trade";
+    return NextResponse.json({ error: errorMessage, requestId }, { status: 500 });
+  }
+}
 
 export async function PATCH(
   request: Request,

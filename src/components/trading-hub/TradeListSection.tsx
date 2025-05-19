@@ -43,7 +43,6 @@ export function TradeListSection({
 
   return (
     <div className="mt-4">
-      
       <TradeList
         trades={trades}
         onOpenTradePanel={onOpenTradePanel}

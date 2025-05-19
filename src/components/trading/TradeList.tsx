@@ -2,10 +2,12 @@
 
 import { type UITrades } from "@/services/trades";
 import TradeCard from "@/components/TradeCard";
-import { Text, Stack } from "@mantine/core";
+import { Text, Stack, SimpleGrid, Box } from "@mantine/core";
 import { useSession } from "next-auth/react";
 import { useEffect, useState } from "react";
 import { fetchTradeRequests } from "@/services/tradeApi";
+import { useMediaQuery } from "@mantine/hooks";
+import { useMantineTheme } from "@mantine/core";
 
 interface TradeListProps {
   trades: UITrades;
@@ -36,6 +38,9 @@ export function TradeList({
 }: TradeListProps) {
   const { data: session } = useSession();
   const [requestedTrades, setRequestedTrades] = useState<Set<string>>(new Set());
+  const theme = useMantineTheme();
+  const isMobile = useMediaQuery(`(max-width: ${theme.breakpoints.sm})`);
+  const isTablet = useMediaQuery(`(max-width: ${theme.breakpoints.md})`);
 
   useEffect(() => {
     const loadRequestedTrades = async () => {
@@ -89,78 +94,46 @@ export function TradeList({
   }
 
   return (
-    <>
-      <style>{`
-        .trade-list-grid {
-          display: grid;
-          grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-          gap: 1rem;
-          width: 100vw;
-          margin-left: calc(-50vw + 50%);
-          margin-right: calc(-50vw + 50%);
-          box-sizing: border-box;
-        }
-        .trade-list-card {
-          margin-bottom: 0.5rem;
-        }
-        @media (max-width: 600px) {
-          .trade-list-grid {
-            grid-template-columns: 1fr;
-            gap: 0.3rem;
-            padding: 0;
-            width: 100vw;
-            margin-left: calc(-50vw + 50%);
-            margin-right: calc(-50vw + 50%);
-          }
-          .trade-list-card {
-            margin-bottom: 0.3rem;
-          }
-        }
-        @media (min-width: 601px) and (max-width: 900px) {
-          .trade-list-grid {
-            grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-            gap: 0.75rem;
-            padding: 0 0.5rem;
-            width: 100%;
-            margin-left: 0;
-            margin-right: 0;
-          }
-        }
-      `}</style>
-      <Stack gap="md">
-      <div className="trade-list-grid">
-        {trades.map((trade) => {
-          const isRequested = requestedTrades.has(trade.id);
-          return (
-            <div className="trade-list-card" key={trade.id}>
-              <TradeCard
-                trade={trade}
-                onEdit={
-                  showActions && onEditTrade ? () => onEditTrade(trade) : undefined
-                }
-                onDelete={
-                  showActions && onDeleteTrade
-                    ? () => onDeleteTrade(trade)
-                    : undefined
-                }
-                onToggleVisibility={
-                  showActions && onToggleVisibility
-                    ? () => onToggleVisibility(trade)
-                    : undefined
-                }
-                onOpenTradePanel={
-                  onOpenTradePanel ? () => onOpenTradePanel(trade) : undefined
-                }
-                onRequestTrade={
-                  onRequestTrade && !isRequested ? () => onRequestTrade(trade) : undefined
-                }
-                showRequestButton={showRequestButton}
-                isRequested={isRequested}
-              />
-            </div>
-          );
-        })}
-      </div>
+    <Stack gap="md">
+      <Box px={{ base: 0, sm: 'md' }} mx={{ base: -16, sm: 0 }}>
+        <SimpleGrid
+          cols={{ base: 1, sm: 2, lg: 3 }}
+          spacing={{ base: 'xs', sm: 'md' }}
+          verticalSpacing={{ base: 'xs', sm: 'md' }}
+        >
+          {trades.map((trade) => {
+            const isRequested = requestedTrades.has(trade.id);
+            return (
+              <Box key={trade.id}>
+                <TradeCard
+                  trade={trade}
+                  onEdit={
+                    showActions && onEditTrade ? () => onEditTrade(trade) : undefined
+                  }
+                  onDelete={
+                    showActions && onDeleteTrade
+                      ? () => onDeleteTrade(trade)
+                      : undefined
+                  }
+                  onToggleVisibility={
+                    showActions && onToggleVisibility
+                      ? () => onToggleVisibility(trade)
+                      : undefined
+                  }
+                  onOpenTradePanel={
+                    onOpenTradePanel ? () => onOpenTradePanel(trade) : undefined
+                  }
+                  onRequestTrade={
+                    onRequestTrade ? () => onRequestTrade(trade) : undefined
+                  }
+                  showRequestButton={showRequestButton}
+                  isRequested={isRequested}
+                />
+              </Box>
+            );
+          })}
+        </SimpleGrid>
+      </Box>
 
       {trades.length > 0 ? (
         <Text size="sm" c="dimmed" ta="center" py="md">
@@ -172,6 +145,5 @@ export function TradeList({
         </Text>
       )}
     </Stack>
-    </>
   );
 }

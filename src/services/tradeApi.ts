@@ -1,7 +1,7 @@
 // API service for trade operations
 import { notifications } from "@mantine/notifications";
 import { sendGAEvent } from "@next/third-parties/google";
-import { UITrades } from "./trades";
+import { UITrades, Trade } from "./trades";
 
 export interface UpdateTradeData {
   lookingForDragon?: {
@@ -170,6 +170,22 @@ export const updateTradeApi = async (tradeId: string, data: UpdateTradeData) => 
 /**
  * Toggle trade visibility
  */
+/**
+ * Fetch a single trade by ID
+ */
+export const getTradeById = async (tradeId: string): Promise<Trade | null> => {
+  try {
+    const response = await fetch(`/api/trades/${tradeId}`);
+    if (!response.ok) {
+      throw new Error('Failed to fetch trade');
+    }
+    return await response.json();
+  } catch (error) {
+    console.error('Error fetching trade:', error);
+    return null;
+  }
+};
+
 export const toggleTradeVisibility = async (trade: UITrades[number]) => {
   try {
     const newVisibility = !trade.isVisible;

@@ -1,10 +1,11 @@
 "use client";
 
-import { Card, Group, Text, Badge, Button, Stack, Tooltip } from "@mantine/core";
+import { Card, Group, Text, Badge, Button, Stack, Tooltip, Anchor } from "@mantine/core";
 import { IconEdit, IconMessageCircle, IconTrash, IconEye, IconEyeOff } from "@tabler/icons-react";
 import { FC } from "react";
 import { HandleEssences } from '@prisma/client';
 import { useSession } from "next-auth/react";
+import { useRouter } from 'next/navigation';
 
 // Map enum values to display text
 const handleEssencesDisplay = {
@@ -38,18 +39,24 @@ const TradeCard: FC<TradeCardProps> = ({
   showRequestButton = false,
   isRequested = false
 }) => {
+  const router = useRouter();
   const { data: session } = useSession();
   return (
     <Card
       withBorder
       radius="md"
       shadow="sm"
-      className="h-full flex flex-col"
+      className="h-full flex flex-col hover:shadow-md transition-shadow"
+      component="article"
+      onClick={() => router.push(`/trades/${trade.id}`)}
+      style={{ cursor: 'pointer' }}
     >
       <Card.Section p="md">
         <Group justify="space-between" align="flex-start">
           <div>
-            <Text size="lg" fw={600}>{trade.lookingFor.dragon.name}</Text>
+            <Text size="lg" fw={600} className="hover:underline">
+              {trade.lookingFor.dragon.name}
+            </Text>
             <Text size="sm" c="dimmed">
               Posted {formatDistanceToNow(new Date(trade.createdAt), { addSuffix: true })}
             </Text>
@@ -129,13 +136,14 @@ const TradeCard: FC<TradeCardProps> = ({
               {onEdit && (
                 <Tooltip label="Edit trade">
                   <Button
+                    component="a"
+                    href={`/trades/${trade.id}`}
                     variant="subtle"
                     leftSection={<IconEdit size={16} />}
                     onClick={(e) => {
                       e.stopPropagation();
-                      onEdit();
+                      router.push(`/trades/${trade.id}`);
                     }}
-                    size="xs"
                   >
                     Edit
                   </Button>
@@ -197,10 +205,12 @@ const TradeCard: FC<TradeCardProps> = ({
               </Button>
             )}
             <Button
+              component="a"
+              href={`/trades/${trade.id}`}
               variant="light"
               onClick={(e) => {
                 e.stopPropagation();
-                onOpenTradePanel?.(trade);
+                router.push(`/trades/${trade.id}`);
               }}
               size="sm"
             >

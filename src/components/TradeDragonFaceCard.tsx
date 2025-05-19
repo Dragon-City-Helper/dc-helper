@@ -1,6 +1,5 @@
 import { TradeDragons } from "@/services/dragons";
 import { Box, Card, Image } from "@mantine/core";
-import NextImage from "next/image";
 import { FC } from "react";
 import FamilyImage from "./FamilyImage";
 import { RarityColors } from "@/constants/Dragon";
@@ -10,61 +9,77 @@ interface ITradeDragonFaceCardProps {
     skillType: number | null;
   };
   size?: "xs" | "sm" | "md" | "lg";
+  style?: React.CSSProperties;
 }
+
+const sizeMap = {
+  xs: { card: 50, icon: 16 },
+  sm: { card: 80, icon: 32 },
+  md: { card: 100, icon: 48 },
+  lg: { card: 120, icon: 64 },
+};
 
 const TradeDragonFaceCard: FC<ITradeDragonFaceCardProps> = ({
   dragon,
   size = "sm",
+  style,
 }) => {
-  const sizes = {
-    xs: { width: 50, height: 50, iconSize: 16 },
-    sm: { width: 100, height: 100, iconSize: 32 },
-    md: { width: 200, height: 200, iconSize: 48 },
-    lg: { width: 300, height: 300, iconSize: 64 },
-  };
+  const { card: cardSize, icon: iconSize } = sizeMap[size];
 
-  const currentSize = sizes[size || "sm"];
   return (
-    <Box className="relative">
+    <Box style={{ position: "relative", display: "inline-block", ...style }}>
       <Card
-        shadow="sm"
-        padding="0"
-        radius="md"
+        p={0}
         withBorder
-        bd={`4px solid ${RarityColors[dragon.rarity]}`}
-        w={currentSize.width}
-        h={currentSize.height}
-        className="cursor-pointer box-content "
+        radius="md"
+        style={{
+          width: cardSize,
+          height: cardSize,
+          border: `3px solid ${RarityColors[dragon.rarity]}`,
+          padding: 0,
+          overflow: "hidden",
+        }}
       >
         <Card.Section>
           <Image
-            component={NextImage}
             src={`https://dci-static-s1.socialpointgames.com/static/dragoncity/mobile/ui${dragon.thumbnail}`}
             alt={dragon.name}
-            width={currentSize.width}
-            height={currentSize.height}
-            w={currentSize.width}
-            h={currentSize.height}
-            title={dragon.name}
+            width={cardSize}
+            height={cardSize}
+            fit="contain"
+            style={{
+              padding: "4px",
+              boxSizing: "border-box",
+            }}
           />
         </Card.Section>
       </Card>
-      <Box className="absolute -left-0 top-1 ">
+
+      <Box
+        style={{
+          position: "absolute",
+          top: 4,
+          left: 4,
+          display: "flex",
+          flexDirection: "column",
+          gap: 4,
+        }}
+      >
         {dragon.familyName && (
           <FamilyImage
             familyName={dragon.familyName}
-            width={currentSize.iconSize}
-            height={currentSize.iconSize}
+            width={iconSize / 2}
+            height={iconSize / 2}
           />
         )}
-        {!dragon.isVip && dragon.hasSkills ? (
-          <NextImage
+        {!dragon.isVip && dragon.hasSkills && dragon.skillType !== null && (
+          <Image
             src={`/images/skilltype/${dragon.skillType}.png`}
-            alt={"skill"}
-            width={currentSize.iconSize}
-            height={currentSize.iconSize}
+            alt="skill"
+            w={iconSize / 2 - 4}
+            h={iconSize / 2 - 4}
           />
-        ) : null}
+        )}
       </Box>
     </Box>
   );

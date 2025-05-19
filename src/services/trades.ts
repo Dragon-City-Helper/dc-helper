@@ -4,6 +4,59 @@ import { prisma } from "@/lib/prisma";
 import { Elements, HandleEssences, Rarity, Trade } from "@prisma/client";
 
 // list page
+export async function getTradeById(id: string) {
+  const trade = await prisma.trade.findUnique({
+    where: { id, isDeleted: false },
+    include: {
+      lookingFor: {
+        include: {
+          dragon: {
+            select: {
+              id: true,
+              name: true,
+              rarity: true,
+              thumbnail: true,
+              familyName: true,
+              isSkin: true,
+              isVip: true,
+              hasSkills: true,
+              hasAllSkins: true,
+              skillType: true,
+            },
+          },
+        },
+      },
+      canGive: {
+        include: {
+          dragon: {
+            select: {
+              id: true,
+              name: true,
+              rarity: true,
+              thumbnail: true,
+              familyName: true,
+              isSkin: true,
+              isVip: true,
+              hasSkills: true,
+              hasAllSkins: true,
+              skillType: true,
+            },
+          },
+        },
+      },
+      user: {
+        select: {
+          id: true,
+          name: true,
+          image: true,
+        },
+      },
+    },
+  });
+
+  return trade;
+}
+
 export async function getTrades() {
   const trades = await prisma.trade.findMany({
     where: { isDeleted: false, isVisible: true },
@@ -638,9 +691,14 @@ export async function getTradeRequestsForTrade(tradeId: string, userId: string) 
   }
 }
 
-//types
+// Export the Trade type from Prisma
+export type { Trade } from "@prisma/client";
+
+// Re-export other types for backward compatibility
 type ThenArg<T> = T extends PromiseLike<infer U> ? U : T;
-export type UITrades = ThenArg<ReturnType<typeof getTrades>>;
+// UI-specific trade type with related data
+export type UITrade = ThenArg<ReturnType<typeof getTrades>>[number];
+export type UITrades = UITrade[];
 export interface TradeFilters {
   lookingForDragonIds?: string[];
   canGiveDragonIds?: string[];
