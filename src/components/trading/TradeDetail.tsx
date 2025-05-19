@@ -5,6 +5,7 @@ import { IconArrowLeft, IconEdit, IconTrash, IconEye, IconEyeOff, IconMessageCir
 import { useDisclosure, useMediaQuery } from '@mantine/hooks';
 import { useRouter } from 'next/navigation';
 import { useSession } from 'next-auth/react';
+import { sendGAEvent } from "@next/third-parties/google";
 import { useState, useEffect } from 'react';
 import { formatDistanceToNow } from 'date-fns';
 import TradeDragonFaceCard from "../TradeDragonFaceCard";
@@ -119,6 +120,13 @@ export default function TradeDetail({ trade }: TradeDetailProps) {
       
       if (!response.ok) throw new Error('Failed to update trade');
       
+      // Track trade visibility toggle in Google Analytics
+      sendGAEvent("event", "toggle_trade_visibility", {
+        trade_id: trade.id,
+        dragon_requested: trade.lookingFor.dragon.name,
+        new_visibility: !trade.isVisible ? "visible" : "hidden"
+      });
+      
       showNotification({
         title: 'Success',
         message: `Trade is now ${trade.isVisible ? 'hidden' : 'visible'}`,
@@ -148,6 +156,13 @@ export default function TradeDetail({ trade }: TradeDetailProps) {
       
       if (!response.ok) throw new Error('Failed to delete trade');
       
+      // Track trade deletion in Google Analytics
+      sendGAEvent("event", "trade_deleted", {
+        trade_id: trade.id,
+        dragon_requested: trade.lookingFor.dragon.name,
+        from_page: 'trade_detail'
+      });
+      
       showNotification({
         title: 'Success',
         message: 'Trade deleted successfully',
@@ -171,6 +186,11 @@ export default function TradeDetail({ trade }: TradeDetailProps) {
 
   const handleRequestTrade = async () => {
     if (!session) {
+      // Track sign-in redirection for trade request
+      sendGAEvent("event", "sign_in_required", {
+        action: "trade_request",
+        trade_id: trade.id
+      });
       router.push('/auth/signin');
       return;
     }
@@ -178,17 +198,22 @@ export default function TradeDetail({ trade }: TradeDetailProps) {
     try {
       setIsRequesting(true);
       await requestTrade(trade);
+      
+      // Track trade request in Google Analytics
+      sendGAEvent("event", "trade_requested", {
+        trade_id: trade.id,
+        dragon_requested: trade.lookingFor.dragon.name,
+        requester_id: session.user?.id,
+        trade_owner_id: trade.userId
+      });
+      
+      // Update local state to show request was sent
+      setRequestedTrades(prev => new Set(Array.from(prev).concat(trade.id)))
+      
       showNotification({
         title: 'Trade Requested',
         message: 'Your trade request has been sent to the trader',
         color: 'green',
-      });
-    } catch (error) {
-      console.error('Error requesting trade:', error);
-      showNotification({
-        title: 'Error',
-        message: 'Failed to request trade. Please try again.',
-        color: 'red',
       });
     } finally {
       setIsRequesting(false);
@@ -256,7 +281,14 @@ export default function TradeDetail({ trade }: TradeDetailProps) {
                   <ActionIcon
                     variant="subtle"
                     color="blue"
-                    onClick={() => router.push(`/trades/${trade.id}/edit`)}
+                    onClick={() => {
+                      // Track edit trade click
+                      sendGAEvent("event", "edit_trade_click", {
+                        trade_id: trade.id,
+                        from_page: 'trade_detail'
+                      });
+                      router.push(`/trades/${trade.id}/edit`);
+                    }}
                     size={isMobile ? 'sm' : 'md'}
                   >
                     <IconEdit size={18} />
@@ -460,6 +492,18 @@ export default function TradeDetail({ trade }: TradeDetailProps) {
                             )
                           }
                           onClick={() => {
+                            const isExpanding = expandedRequestId !== request.id;
+                            if (isExpanding) {
+                              // Track when user views contact information
+                              sendGAEvent("event", "view_contact_info", {
+                                trade_id: trade.id,
+                                requester_id: request.createdBy.id,
+                                has_discord: !!request.createdBy.Contacts?.discord,
+                                has_email: !!request.createdBy.Contacts?.email,
+                                has_phone: !!request.createdBy.Contacts?.phone,
+                                has_ingame: !!request.createdBy.Contacts?.inGameName
+                              });
+                            }
                             setExpandedRequestId(
                               expandedRequestId === request.id ? null : request.id
                             );

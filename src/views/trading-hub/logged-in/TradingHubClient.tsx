@@ -151,6 +151,15 @@ export function TradingHubClient() {
       };
 
       await updateTradeApi(tradeToEdit.id, updateData);
+      
+      // Track trade update in Google Analytics
+      sendGAEvent("event", "update_trade", {
+        trade_id: tradeToEdit.id,
+        dragon_requested: values.lookingFor.dragonId,
+        orbs_requested: values.lookingFor.orbs,
+        dragons_offered: values.canGiveDragons.length,
+      });
+      
       refreshTrades();
       setUpdateModalOpened(false);
       setTradeToEdit(null);
@@ -195,6 +204,11 @@ export function TradingHubClient() {
     try {
       const success = await requestTrade(tradeToRequest);
       if (success) {
+        // Track successful trade request in Google Analytics
+        sendGAEvent("event", "trade_request_submitted", {
+          trade_id: tradeToRequest.id,
+          dragon_requested: tradeToRequest.lookingFor.dragon.name,
+        });
         setRequestModalOpened(false);
         setTradeToRequest(null);
       }
@@ -204,6 +218,11 @@ export function TradingHubClient() {
   };
 
   const handleOpenTradePanel = (trade: UITrades[number]) => {
+    // Track trade view in Google Analytics
+    sendGAEvent("event", "view_trade_details", {
+      trade_id: trade.id,
+      dragon_requested: trade.lookingFor.dragon.name,
+    });
     router.push(`/trades/${trade.id}`);
   };
 
@@ -222,6 +241,11 @@ export function TradingHubClient() {
 
     try {
       await deleteTradeApi(tradeToDelete);
+      // Track successful trade deletion in Google Analytics
+      sendGAEvent("event", "trade_deleted", {
+        trade_id: tradeToDelete.id,
+        dragon_requested: tradeToDelete.lookingFor.dragon.name,
+      });
       refreshTrades();
       setDeleteModalOpened(false);
       notifications.show({
@@ -254,6 +278,11 @@ export function TradingHubClient() {
   const handleToggleVisibility = async (trade: UITrades[number]) => {
     const success = await toggleTradeVisibility(trade);
     if (success) {
+      // Track trade visibility toggle in Google Analytics
+      sendGAEvent("event", "toggle_trade_visibility", {
+        trade_id: trade.id,
+        new_visibility: !trade.isVisible ? "visible" : "hidden"
+      });
       refreshTrades();
     }
   };
