@@ -8,6 +8,7 @@ import { auth } from "@/auth";
 import "@mantine/core/styles.css";
 import "@mantine/notifications/styles.css";
 import "../styles/globals.css";
+import RedirectToDCM from "@/components/RedirectToDCM";
 
 export default async function RootLayout({
   children,
@@ -22,12 +23,7 @@ export default async function RootLayout({
       </head>
       <body>
         <Theme>
-          <Notifications autoClose={3000} />
-          <SessionProvider>
-            <BasicAppShell session={session}>
-              <Container my="md">{children}</Container>
-            </BasicAppShell>
-          </SessionProvider>
+          <RedirectToDCM />
         </Theme>
       </body>
       <GoogleAnalytics gaId="G-QHLYJ2EH3M" />
